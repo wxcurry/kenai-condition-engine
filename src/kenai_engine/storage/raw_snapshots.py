@@ -31,3 +31,26 @@ def get_latest_raw_snapshot(connection: sqlite3.Connection, source: str) -> sqli
         (source,),
     )
     return cursor.fetchone()
+
+
+def list_latest_raw_snapshots(
+    connection: sqlite3.Connection,
+    limit: int = 50,
+) -> list[sqlite3.Row]:
+    cursor = connection.execute(
+        """
+        SELECT id, source, fetched_at, payload
+        FROM raw_snapshots AS current
+        WHERE id = (
+            SELECT latest.id
+            FROM raw_snapshots AS latest
+            WHERE latest.source = current.source
+            ORDER BY latest.fetched_at DESC, latest.id DESC
+            LIMIT 1
+        )
+        ORDER BY fetched_at DESC, id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+    return list(cursor.fetchall())

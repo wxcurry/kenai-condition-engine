@@ -33,6 +33,29 @@ def initialize_database(connection: sqlite3.Connection) -> None:
             observed_at TEXT NOT NULL,
             payload TEXT NOT NULL
         );
+
+        CREATE INDEX IF NOT EXISTS idx_raw_snapshots_source_fetched_at_id
+        ON raw_snapshots (source, fetched_at DESC, id DESC);
+
+        CREATE INDEX IF NOT EXISTS idx_normalized_records_type_observed_at_id
+        ON normalized_records (record_type, observed_at DESC, id DESC);
+        """
+    )
+    connection.execute(
+        """
+        DELETE FROM normalized_records
+        WHERE id NOT IN (
+            SELECT MIN(id)
+            FROM normalized_records
+            GROUP BY record_type, observed_at, payload
+        )
+        """
+    )
+    connection.executescript(
+        """
+
+        CREATE UNIQUE INDEX IF NOT EXISTS ux_normalized_records_type_observed_payload
+        ON normalized_records (record_type, observed_at, payload);
         """
     )
     connection.commit()

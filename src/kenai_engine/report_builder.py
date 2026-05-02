@@ -25,13 +25,14 @@ def build_placeholder_report(
     regulations: list[Regulation] | None = None,
     fish_counts: list[FishCount] | None = None,
     alerts: list[Alert] | None = None,
+    source_health: list[SourceHealth] | None = None,
 ) -> Report:
     """Build a valid placeholder report until production adapters are implemented."""
 
     generated_at = now or datetime.now(UTC)
     today = generated_at.date()
-    observations = usgs_observations or []
-    active_regulations = regulations or [
+    observations = [] if usgs_observations is None else usgs_observations
+    active_regulations = regulations if regulations is not None else [
         Regulation(
             title="MVP placeholder regulation status",
             status="open",
@@ -40,7 +41,7 @@ def build_placeholder_report(
             summary="No production emergency-order fetch has run in this skeleton.",
         )
     ]
-    active_fish_counts = fish_counts or [
+    active_fish_counts = fish_counts if fish_counts is not None else [
         FishCount(
             species="Sockeye salmon",
             location="Kenai River",
@@ -49,7 +50,7 @@ def build_placeholder_report(
             source_url="https://www.adfg.alaska.gov/",
         )
     ]
-    active_alerts = alerts or [
+    active_alerts = alerts if alerts is not None else [
         Alert(
             title="Placeholder data",
             severity="info",
@@ -81,26 +82,35 @@ def build_placeholder_report(
         regulations=active_regulations,
         fish_counts=active_fish_counts,
         alerts=active_alerts,
-        source_health=[
+        source_health=source_health if source_health is not None else [
             _source_health(
                 "usgs",
                 len(observations),
                 "normalized USGS observations",
                 generated_at,
+                zero_records_are_normalized=usgs_observations is not None,
             ),
             _source_health(
                 "adfg_emergency_orders",
-                len(regulations or []),
+                len(active_regulations) if regulations is not None else 0,
                 "normalized ADFG emergency orders",
                 generated_at,
+                zero_records_are_normalized=regulations is not None,
             ),
             _source_health(
                 "adfg_fish_counts",
-                len(fish_counts or []),
+                len(active_fish_counts) if fish_counts is not None else 0,
                 "normalized ADFG fish count records",
                 generated_at,
+                zero_records_are_normalized=fish_counts is not None,
             ),
-            _source_health("nws", len(alerts or []), "normalized NWS alerts", generated_at),
+            _source_health(
+                "nws",
+                len(active_alerts) if alerts is not None else 0,
+                "normalized NWS alerts",
+                generated_at,
+                zero_records_are_normalized=alerts is not None,
+            ),
         ],
     )
 
@@ -162,14 +172,16 @@ def _source_health(
     record_count: int,
     label: str,
     generated_at: datetime,
+    *,
+    zero_records_are_normalized: bool = False,
 ) -> SourceHealth:
     return SourceHealth(
         source=source,
-        status="ok" if record_count else "placeholder",
+        status="ok" if record_count or zero_records_are_normalized else "placeholder",
         last_checked_at=generated_at,
         message=(
             f"{record_count} {label} available."
-            if record_count
+            if record_count or zero_records_are_normalized
             else f"Adapter available; no {label} are available yet."
         ),
     )

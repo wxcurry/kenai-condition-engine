@@ -11,7 +11,7 @@ from datetime import date
 
 from kenai_engine.config import Settings
 from kenai_engine.db import connect, initialize_database
-from kenai_engine.models import Alert, FishCount, Regulation, UsgsObservation
+from kenai_engine.models import Alert, FishCount, Regulation, SourceHealth, UsgsObservation
 from kenai_engine.report_builder import build_placeholder_report, load_report, write_latest_report
 from kenai_engine.sources.adfg_emergency_orders import (
     AdfgEmergencyOrdersAdapter,
@@ -25,6 +25,7 @@ from kenai_engine.storage.normalized_records import (
     save_normalized_record,
 )
 from kenai_engine.storage.raw_snapshots import get_latest_raw_snapshot, save_raw_snapshot
+from kenai_engine.storage.source_health import list_latest_source_health, save_source_health
 from kenai_engine.utils.logging import configure_logging
 from kenai_engine.utils.time import utc_now
 
@@ -44,14 +45,24 @@ def fetch(settings: Settings) -> None:
             NwsAdapter(settings),
         ]
         for adapter in adapters:
+            checked_at = utc_now().isoformat()
             try:
                 snapshot = adapter.fetch()
             except Exception as exc:
                 LOGGER.warning("fetch failed for %s: %s", adapter.source_name, exc)
                 snapshot = RawSnapshot(
                     source=adapter.source_name,
-                    fetched_at=utc_now().isoformat(),
+                    fetched_at=checked_at,
                     payload=json.dumps({"error": str(exc), "placeholder": True}),
+                )
+                save_source_health(connection, adapter.source_name, checked_at, "error", str(exc))
+            else:
+                save_source_health(
+                    connection,
+                    adapter.source_name,
+                    snapshot.fetched_at,
+                    "ok",
+                    "Fetched live source payload.",
                 )
             save_raw_snapshot(connection, snapshot.source, snapshot.payload, snapshot.fetched_at)
             LOGGER.info("stored raw snapshot for %s", snapshot.source)
@@ -106,11 +117,13 @@ def build_report(settings: Settings) -> None:
             Alert.model_validate_json(row["payload"])
             for row in list_normalized_records(connection, "alert", limit=20)
         ]
+        source_health = _source_health_from_rows(list_latest_source_health(connection))
     report = build_placeholder_report(
         usgs_observations=observations,
-        regulations=regulations or None,
-        fish_counts=fish_counts or None,
-        alerts=alerts or None,
+        regulations=regulations,
+        fish_counts=fish_counts,
+        alerts=alerts,
+        source_health=source_health or None,
     )
     path = write_latest_report(settings.output_dir, report)
     LOGGER.info("wrote report to %s", path)
@@ -227,6 +240,8 @@ def _regulation_from_order(order: dict[str, str]) -> Regulation:
     return Regulation(
         title=order["title"],
         status=regulation_status,
+        effective_date=_parse_date(order.get("effective_date", "")),
+        expires_date=_parse_date(order.get("expires_date", "")),
         source_url=order.get("url"),
         summary=order.get("summary") or order["title"],
     )
@@ -251,6 +266,18 @@ def _parse_date(value: str) -> date | None:
         return date.fromisoformat(value)
     except ValueError:
         return None
+
+
+def _source_health_from_rows(rows) -> list[SourceHealth]:
+    return [
+        SourceHealth(
+            source=row["source"],
+            status=row["status"],
+            last_checked_at=row["checked_at"],
+            message=row["message"],
+        )
+        for row in rows
+    ]
 
 
 def build_parser() -> argparse.ArgumentParser:

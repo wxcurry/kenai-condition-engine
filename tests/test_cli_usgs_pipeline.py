@@ -5,6 +5,7 @@ from kenai_engine.config import Settings
 from kenai_engine.db import connect, initialize_database
 from kenai_engine.storage.normalized_records import list_normalized_records
 from kenai_engine.storage.raw_snapshots import save_raw_snapshot
+from kenai_engine.storage.source_health import save_source_health
 
 
 def test_normalize_converts_latest_usgs_snapshot_to_records(tmp_path) -> None:
@@ -102,6 +103,35 @@ def test_normalize_and_build_report_use_regulations_fish_counts_and_alerts(tmp_p
     assert report["regulations"][0]["status"] == "closed"
     assert report["fish_counts"][0]["count"] == 123
     assert report["alerts"][0]["severity"] == "warning"
+
+
+def test_build_report_uses_latest_persisted_source_health(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_source_health(
+            connection,
+            source="adfg_emergency_orders",
+            checked_at="2026-05-02T12:00:00+00:00",
+            status="error",
+            message="Fetch timed out.",
+        )
+
+    build_report(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+
+    assert report["regulations"] == []
+    assert report["fish_counts"] == []
+    assert report["alerts"] == []
+    assert report["source_health"] == [
+        {
+            "source": "adfg_emergency_orders",
+            "status": "error",
+            "last_checked_at": "2026-05-02T12:00:00Z",
+            "message": "Fetch timed out.",
+        }
+    ]
 
 
 def _settings(tmp_path) -> Settings:

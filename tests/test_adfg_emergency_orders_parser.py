@@ -56,6 +56,7 @@ def test_parse_emergency_orders_extracts_cards_and_detects_closure_keywords() ->
                 "Effective Saturday, May 2, 2026"
             ),
             "status": "closure",
+            "effective_date": "2026-05-02",
         }
     ]
 
@@ -83,6 +84,107 @@ def test_parse_emergency_orders_extracts_table_rows_and_detects_restrictions() -
             "title": "EO 2-RS-1-26",
             "url": "https://www.adfg.alaska.gov/static/orders/eo-2-rs.pdf",
             "summary": "Kenai River Restricts bait and harvest for sockeye salmon.",
+            "status": "restriction",
+        }
+    ]
+
+
+def test_parse_emergency_orders_filters_to_kenai_relevant_orders_by_default() -> None:
+    html = """
+    <main>
+      <div class="views-row">
+        <h3>
+          <a href="/sf/EONR/index.cfm?ADFG=region.NR&Year=2026&NRID=4012">
+            Emergency Order 2-KS-7-26
+          </a>
+        </h3>
+        <p>
+          Kenai River and Kasilof River king salmon sport fisheries are restricted to
+          catch-and-release fishing.
+        </p>
+      </div>
+      <div class="views-row">
+        <h3>
+          <a href="/sf/EONR/index.cfm?ADFG=region.NR&Year=2026&NRID=3999">
+            Emergency Order 2-SW-1-26
+          </a>
+        </h3>
+        <p>All flowing waters of Southeast Alaska are closed to sport fishing.</p>
+      </div>
+      <div class="views-row">
+        <h3>
+          <a href="/sf/EONR/index.cfm?ADFG=region.NR&Year=2026&NRID=4000">
+            Emergency Order 2-STATE-1-26
+          </a>
+        </h3>
+        <p>Statewide king salmon regulations are summarized for all anglers.</p>
+      </div>
+    </main>
+    """
+
+    orders = parse_emergency_orders(html)
+
+    assert orders == [
+        {
+            "title": "Emergency Order 2-KS-7-26",
+            "url": "https://www.adfg.alaska.gov/sf/EONR/index.cfm?ADFG=region.NR&Year=2026&NRID=4012",
+            "summary": (
+                "Kenai River and Kasilof River king salmon sport fisheries are restricted to "
+                "catch-and-release fishing."
+            ),
+            "status": "restriction",
+        }
+    ]
+
+
+def test_parse_emergency_orders_extracts_dates_from_actualish_eonr_card_text() -> None:
+    html = """
+    <article class="node node-news-release">
+      <h2>
+        <a href="/sf/EONR/index.cfm?ADFG=region.NR&Year=2026&NRID=4025">
+          Emergency Order 2-RS-4-26
+        </a>
+      </h2>
+      <div class="field-content">
+        Russian River Sanctuary Area opens to sport fishing for sockeye salmon.
+        Effective 12:01 a.m. Saturday, May 2, 2026 through 11:59 p.m. Tuesday, July 14, 2026.
+      </div>
+    </article>
+    """
+
+    orders = parse_emergency_orders(html)
+
+    assert orders == [
+        {
+            "title": "Emergency Order 2-RS-4-26",
+            "url": "https://www.adfg.alaska.gov/sf/EONR/index.cfm?ADFG=region.NR&Year=2026&NRID=4025",
+            "summary": (
+                "Russian River Sanctuary Area opens to sport fishing for sockeye salmon. "
+                "Effective 12:01 a.m. Saturday, May 2, 2026 through 11:59 p.m. "
+                "Tuesday, July 14, 2026."
+            ),
+            "status": "open",
+            "effective_date": "2026-05-02",
+            "expires_date": "2026-07-14",
+        }
+    ]
+
+
+def test_parse_emergency_orders_allows_callers_to_disable_relevance_filter() -> None:
+    html = """
+    <div>
+      <a href="/orders/statewide">Emergency Order 2-STATE-1-26</a>
+      <p>Statewide king salmon restrictions apply in marine waters.</p>
+    </div>
+    """
+
+    orders = parse_emergency_orders(html, is_relevant=lambda _order_text: True)
+
+    assert orders == [
+        {
+            "title": "Emergency Order 2-STATE-1-26",
+            "url": "https://www.adfg.alaska.gov/orders/statewide",
+            "summary": "Statewide king salmon restrictions apply in marine waters.",
             "status": "restriction",
         }
     ]

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
+from datetime import datetime
 from urllib.parse import urljoin
 
 import httpx
@@ -19,6 +21,15 @@ ADFG_EMERGENCY_ORDERS_URL = "https://www.adfg.alaska.gov/sf/EONR/"
 
 _ORDER_TITLE_PATTERN = re.compile(r"\b(?:emergency\s+order|e\.?o\.?)\b", re.IGNORECASE)
 _WHITESPACE_PATTERN = re.compile(r"\s+")
+_KENAI_RELEVANCE_PATTERN = re.compile(
+    r"\b(?:kenai|kasilof|russian\s+river|2-(?:ks|rs)-)\b",
+    re.IGNORECASE,
+)
+_MONTH_DATE_PATTERN = re.compile(
+    r"\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+"
+    r"\d{1,2},\s+\d{4}\b",
+    re.IGNORECASE,
+)
 
 
 class AdfgEmergencyOrdersAdapter:
@@ -54,7 +65,11 @@ class AdfgEmergencyOrdersAdapter:
         )
 
 
-def parse_emergency_orders(html: str, base_url: str = ADFG_BASE_URL) -> list[dict[str, str]]:
+def parse_emergency_orders(
+    html: str,
+    base_url: str = ADFG_BASE_URL,
+    is_relevant: Callable[[str], bool] | None = None,
+) -> list[dict[str, str]]:
     """Extract simple emergency-order links from HTML.
 
     This is intentionally small and fixture-driven until the real ADFG page
@@ -63,22 +78,28 @@ def parse_emergency_orders(html: str, base_url: str = ADFG_BASE_URL) -> list[dic
 
     soup = BeautifulSoup(html, "lxml")
     orders: list[dict[str, str]] = []
+    relevance_predicate = is_relevant or _is_kenai_relevant
     for link in soup.select("a"):
         title = link.get_text(" ", strip=True)
         href = link.get("href")
         if not title or not isinstance(href, str) or not _looks_like_order(title, href):
             continue
 
+        summary = _extract_summary(link, title)
+        searchable_text = _clean_text(f"{title} {summary}")
+        if not relevance_predicate(searchable_text):
+            continue
+
         order = {
             "title": _clean_text(title),
             "url": urljoin(base_url, href),
         }
-        summary = _extract_summary(link, title)
         if summary:
             order["summary"] = summary
-        status = _detect_status(f"{title} {summary}")
+        status = _detect_status(searchable_text)
         if status:
             order["status"] = status
+        order.update(_extract_dates(searchable_text))
 
         orders.append(order)
     return orders
@@ -106,7 +127,45 @@ def _detect_status(text: str) -> str:
         return "closure"
     if any(keyword in normalized for keyword in ("restrict", "restriction", "restricted")):
         return "restriction"
+    if any(keyword in normalized for keyword in ("open", "opens", "reopen")):
+        return "open"
     return ""
+
+
+def _extract_dates(text: str) -> dict[str, str]:
+    dates: dict[str, str] = {}
+    effective = _extract_labeled_date(text, ("effective", "beginning"))
+    if effective:
+        dates["effective_date"] = effective
+    expires = _extract_labeled_date(text, ("through", "until", "expires"))
+    if expires:
+        dates["expires_date"] = expires
+    return dates
+
+
+def _extract_labeled_date(text: str, labels: tuple[str, ...]) -> str:
+    for label in labels:
+        match = re.search(
+            rf"\b{label}\b(?P<date_text>.*?{_MONTH_DATE_PATTERN.pattern})",
+            text,
+            re.IGNORECASE,
+        )
+        if match:
+            date_match = _MONTH_DATE_PATTERN.search(match.group("date_text"))
+            if date_match:
+                return _to_iso_date(date_match.group(0))
+    return ""
+
+
+def _to_iso_date(date_text: str) -> str:
+    try:
+        return datetime.strptime(date_text, "%B %d, %Y").date().isoformat()
+    except ValueError:
+        return ""
+
+
+def _is_kenai_relevant(text: str) -> bool:
+    return bool(_KENAI_RELEVANCE_PATTERN.search(text))
 
 
 def _clean_text(text: str) -> str:
