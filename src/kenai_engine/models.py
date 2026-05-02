@@ -42,6 +42,19 @@ class FishCount(BaseModel):
     source_url: str | None = None
 
 
+class UsgsObservation(BaseModel):
+    """Normalized USGS instantaneous-value observation."""
+
+    site_id: str
+    site_name: str
+    parameter_code: str
+    parameter_name: str
+    value: float
+    unit: str
+    observed_at: datetime
+    qualifiers: list[str] = Field(default_factory=list)
+
+
 class Alert(BaseModel):
     """Weather, river, or operational alert."""
 

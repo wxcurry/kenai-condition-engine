@@ -17,3 +17,17 @@ def save_raw_snapshot(
     )
     connection.commit()
     return int(cursor.lastrowid)
+
+
+def get_latest_raw_snapshot(connection: sqlite3.Connection, source: str) -> sqlite3.Row | None:
+    cursor = connection.execute(
+        """
+        SELECT id, source, fetched_at, payload
+        FROM raw_snapshots
+        WHERE source = ?
+        ORDER BY id DESC
+        LIMIT 1
+        """,
+        (source,),
+    )
+    return cursor.fetchone()

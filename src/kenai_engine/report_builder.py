@@ -14,15 +14,20 @@ from kenai_engine.models import (
     Report,
     ScoreInput,
     SourceHealth,
+    UsgsObservation,
 )
 from kenai_engine.scoring import score_conditions
 
 
-def build_placeholder_report(now: datetime | None = None) -> Report:
+def build_placeholder_report(
+    now: datetime | None = None,
+    usgs_observations: list[UsgsObservation] | None = None,
+) -> Report:
     """Build a valid placeholder report until production adapters are implemented."""
 
     generated_at = now or datetime.now(UTC)
     today = generated_at.date()
+    observations = usgs_observations or []
     regulations = [
         Regulation(
             title="MVP placeholder regulation status",
@@ -33,6 +38,19 @@ def build_placeholder_report(now: datetime | None = None) -> Report:
         )
     ]
     score = score_conditions(_score_input_from_regulations(regulations))
+    location_notes = score.reasons
+    if observations:
+        location_notes = [_format_usgs_note(observation) for observation in observations[:3]]
+    usgs_health = SourceHealth(
+        source="usgs",
+        status="ok" if observations else "placeholder",
+        last_checked_at=generated_at,
+        message=(
+            f"{len(observations)} normalized USGS observations available."
+            if observations
+            else "Adapter available; no normalized USGS observations are available yet."
+        ),
+    )
 
     return Report(
         report_date=today,
@@ -47,7 +65,7 @@ def build_placeholder_report(now: datetime | None = None) -> Report:
                 name="Kenai River",
                 status=score.overall_status,
                 score=score.overall_score,
-                notes=score.reasons,
+                notes=location_notes,
             )
         ],
         regulations=regulations,
@@ -69,12 +87,7 @@ def build_placeholder_report(now: datetime | None = None) -> Report:
             )
         ],
         source_health=[
-            SourceHealth(
-                source="usgs",
-                status="placeholder",
-                last_checked_at=generated_at,
-                message="Adapter stub available; production fetch not implemented.",
-            ),
+            usgs_health,
             SourceHealth(
                 source="adfg_emergency_orders",
                 status="placeholder",
@@ -120,4 +133,11 @@ def _score_input_from_regulations(regulations: list[Regulation]) -> ScoreInput:
     return ScoreInput(
         active_closure=any(regulation.status == "closed" for regulation in regulations),
         active_restriction=any(regulation.status == "restricted" for regulation in regulations),
+    )
+
+
+def _format_usgs_note(observation: UsgsObservation) -> str:
+    return (
+        f"USGS {observation.parameter_code} at {observation.site_name}: "
+        f"{observation.value:g} {observation.unit}"
     )
