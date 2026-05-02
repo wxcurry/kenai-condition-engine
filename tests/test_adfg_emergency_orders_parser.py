@@ -1,4 +1,13 @@
-from kenai_engine.sources.adfg_emergency_orders import parse_emergency_orders
+import json
+
+import httpx
+
+from kenai_engine.config import Settings
+from kenai_engine.sources.adfg_emergency_orders import (
+    ADFG_EMERGENCY_ORDERS_URL,
+    AdfgEmergencyOrdersAdapter,
+    parse_emergency_orders,
+)
 
 
 def test_parse_emergency_orders_extracts_matching_links() -> None:
@@ -13,4 +22,122 @@ def test_parse_emergency_orders_extracts_matching_links() -> None:
 
     orders = parse_emergency_orders(html)
 
-    assert orders == [{"title": "Emergency Order 2-KS-1", "url": "/orders/1"}]
+    assert orders == [
+        {
+            "title": "Emergency Order 2-KS-1",
+            "url": "https://www.adfg.alaska.gov/orders/1",
+        }
+    ]
+
+
+def test_parse_emergency_orders_extracts_cards_and_detects_closure_keywords() -> None:
+    html = """
+    <section class="card">
+      <h3><a href="?adfg=some.order">Emergency Order 2-KS-4-26</a></h3>
+      <p>Kenai River king salmon sport fishery is closed below Skilak Lake.</p>
+      <span>Effective Saturday, May 2, 2026</span>
+    </section>
+    <section>
+      <a href="/news">Advisory announcement</a>
+    </section>
+    """
+
+    orders = parse_emergency_orders(
+        html,
+        base_url="https://www.adfg.alaska.gov/sf/EONR/index.cfm",
+    )
+
+    assert orders == [
+        {
+            "title": "Emergency Order 2-KS-4-26",
+            "url": "https://www.adfg.alaska.gov/sf/EONR/index.cfm?adfg=some.order",
+            "summary": (
+                "Kenai River king salmon sport fishery is closed below Skilak Lake. "
+                "Effective Saturday, May 2, 2026"
+            ),
+            "status": "closure",
+        }
+    ]
+
+
+def test_parse_emergency_orders_extracts_table_rows_and_detects_restrictions() -> None:
+    html = """
+    <table>
+      <tr>
+        <th>Emergency Order</th>
+        <th>Area</th>
+        <th>Action</th>
+      </tr>
+      <tr>
+        <td><a href="https://www.adfg.alaska.gov/static/orders/eo-2-rs.pdf">EO 2-RS-1-26</a></td>
+        <td>Kenai River</td>
+        <td>Restricts bait and harvest for sockeye salmon.</td>
+      </tr>
+    </table>
+    """
+
+    orders = parse_emergency_orders(html)
+
+    assert orders == [
+        {
+            "title": "EO 2-RS-1-26",
+            "url": "https://www.adfg.alaska.gov/static/orders/eo-2-rs.pdf",
+            "summary": "Kenai River Restricts bait and harvest for sockeye salmon.",
+            "status": "restriction",
+        }
+    ]
+
+
+def test_adfg_adapter_fetches_configured_url(tmp_path) -> None:
+    settings = Settings(
+        user_agent="test-agent",
+        db_path=tmp_path / "db.sqlite3",
+        output_dir=tmp_path / "reports",
+        raw_dir=tmp_path / "raw",
+        usgs_site_ids=["15266300"],
+        nws_locations=["Kenai,AK"],
+        fetch_timeout_seconds=1,
+    )
+    seen_requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen_requests.append(request)
+        return httpx.Response(200, text="<html>orders</html>")
+
+    client = httpx.Client(
+        headers={"User-Agent": settings.user_agent},
+        transport=httpx.MockTransport(handler),
+    )
+
+    snapshot = AdfgEmergencyOrdersAdapter(settings, client=client).fetch()
+
+    assert snapshot.source == "adfg_emergency_orders"
+    assert snapshot.payload == "<html>orders</html>"
+    assert seen_requests
+    assert str(seen_requests[0].url) == ADFG_EMERGENCY_ORDERS_URL
+    assert seen_requests[0].headers["User-Agent"] == "test-agent"
+
+
+def test_adfg_adapter_can_fetch_custom_url(tmp_path) -> None:
+    settings = Settings(
+        user_agent="test-agent",
+        db_path=tmp_path / "db.sqlite3",
+        output_dir=tmp_path / "reports",
+        raw_dir=tmp_path / "raw",
+        usgs_site_ids=["15266300"],
+        nws_locations=["Kenai,AK"],
+        fetch_timeout_seconds=1,
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"url": str(request.url)})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+
+    snapshot = AdfgEmergencyOrdersAdapter(
+        settings,
+        client=client,
+        url="https://www.adfg.alaska.gov/sf/EONR/",
+    ).fetch()
+
+    assert json.loads(snapshot.payload) == {"url": "https://www.adfg.alaska.gov/sf/EONR/"}

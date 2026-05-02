@@ -41,6 +41,69 @@ def test_build_report_includes_latest_usgs_observation_note(tmp_path) -> None:
     assert "USGS 00060" in report["locations"][0]["notes"][0]
 
 
+def test_normalize_and_build_report_use_regulations_fish_counts_and_alerts(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_raw_snapshot(
+            connection,
+            "adfg_emergency_orders",
+            """
+            <section>
+              <a href="/orders/closure">Emergency Order 2-KS-9-26</a>
+              <p>Kenai River sport fishing is closed.</p>
+            </section>
+            """,
+            "2026-05-02T12:00:00+00:00",
+        )
+        save_raw_snapshot(
+            connection,
+            "adfg_fish_counts",
+            """
+            <table>
+              <tr><th>Species</th><th>Location</th><th>Count</th><th>Date</th></tr>
+              <tr><td>Sockeye</td><td>Kenai sonar</td><td>123</td><td>2026-05-02</td></tr>
+            </table>
+            """,
+            "2026-05-02T12:00:00+00:00",
+        )
+        save_raw_snapshot(
+            connection,
+            "nws",
+            """
+            {
+              "locations": [
+                {
+                  "alerts": {
+                    "features": [
+                      {
+                        "properties": {
+                          "event": "Flood Warning",
+                          "severity": "Severe",
+                          "headline": "Flooding possible",
+                          "senderName": "NWS Anchorage"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+            """,
+            "2026-05-02T12:00:00+00:00",
+        )
+
+    normalize(settings)
+    build_report(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+
+    assert report["overall_status"] == "closed"
+    assert report["regulations"][0]["status"] == "closed"
+    assert report["fish_counts"][0]["count"] == 123
+    assert report["alerts"][0]["severity"] == "warning"
+
+
 def _settings(tmp_path) -> Settings:
     return Settings(
         user_agent="test-agent",

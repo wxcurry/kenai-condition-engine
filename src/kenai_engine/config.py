@@ -12,6 +12,11 @@ def _csv_env(name: str, default: str) -> list[str]:
     return [value.strip() for value in raw_value.split(",") if value.strip()]
 
 
+def _semicolon_env(name: str, default: str) -> list[str]:
+    raw_value = os.getenv(name, default)
+    return [value.strip() for value in raw_value.split(";") if value.strip()]
+
+
 @dataclass(frozen=True)
 class Settings:
     """Runtime settings for the engine."""
@@ -35,6 +40,6 @@ class Settings:
             output_dir=Path(os.getenv("KENAI_ENGINE_OUTPUT_DIR", "data/reports")),
             raw_dir=Path(os.getenv("KENAI_ENGINE_RAW_DIR", "data/raw")),
             usgs_site_ids=_csv_env("USGS_SITE_IDS", "15266300"),
-            nws_locations=_csv_env("NWS_LOCATIONS", "Kenai,AK"),
+            nws_locations=_semicolon_env("NWS_LOCATIONS", "Kenai,AK"),
             fetch_timeout_seconds=float(os.getenv("FETCH_TIMEOUT_SECONDS", "20")),
         )
