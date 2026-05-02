@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0.0",
+  "access_points": [
+    {
+      "id": "cooper_landing_upper_kenai",
+      "name": "Cooper Landing / Upper Kenai",
+      "segment": "upper",
+      "lat": 60.489,
+      "lon": -149.834,
+      "river_mile": 82.0,
+      "access_modes": ["bank", "drift_boat"],
+      "target_species": ["sockeye", "rainbow_trout", "dolly_varden"],
+      "tide_relevance": "none",
+      "legal_area_ids": ["upper_kenai"],
+      "source_relevance": [
+        {
+          "source": "usgs",
+          "source_id": "15258000",
+          "role": "primary",
+          "applies_to": ["flow", "stage", "water_temperature"],
+          "confidence_weight": 0.75,
+          "distance_miles": 0.5,
+          "river_mile_delta": 0.0,
+          "notes": "Upper Kenai gage near Cooper Landing."
+        }
+      ]
+    },
+    {
+      "id": "soldotna",
+      "name": "Soldotna",
+      "segment": "soldotna",
+      "lat": 60.487,
+      "lon": -151.058,
+      "river_mile": 21.0,
+      "access_modes": ["bank", "boat"],
+      "target_species": ["sockeye", "chinook", "coho"],
+      "tide_relevance": "none",
+      "legal_area_ids": ["middle_lower_kenai"],
+      "source_relevance": [
+        {
+          "source": "usgs",
+          "source_id": "15266300",
+          "role": "primary",
+          "applies_to": ["flow", "stage", "water_temperature"],
+          "confidence_weight": 0.7,
+          "distance_miles": 1.0,
+          "river_mile_delta": 0.0,
+          "notes": "Soldotna gage is primary local water context."
+        },
+        {
+          "source": "adfg_fish_counts",
+          "source_id": "kenai_late_run_sockeye_rm19",
+          "role": "regional",
+          "applies_to": ["sockeye_run_timing"],
+          "confidence_weight": 0.75,
+          "notes": "RM19 sockeye sonar is relevant to Soldotna/lower river timing."
+        }
+      ]
+    },
+    {
+      "id": "kenai_river_mouth",
+      "name": "Kenai River Mouth",
+      "segment": "mouth",
+      "lat": 60.554,
+      "lon": -151.27,
+      "river_mile": 0.0,
+      "access_modes": ["bank", "boat", "dipnet"],
+      "target_species": ["sockeye", "coho"],
+      "tide_relevance": "high",
+      "legal_area_ids": ["lower_kenai", "personal_use"],
+      "source_relevance": [
+        {
+          "source": "usgs",
+          "source_id": "15266300",
+          "role": "upstream",
+          "applies_to": ["flow", "stage"],
+          "confidence_weight": 0.45,
+          "distance_miles": 20.0,
+          "river_mile_delta": 21.0,
+          "notes": "Soldotna gage is upstream context, not direct tidewater truth."
+        },
+        {
+          "source": "noaa_tides",
+          "source_id": "9455742",
+          "role": "marine",
+          "applies_to": ["tide_stage"],
+          "confidence_weight": 0.8,
+          "notes": "NOAA tide predictions are relevant only to lower river and mouth timing."
+        }
+      ]
+    }
+  ]
+}

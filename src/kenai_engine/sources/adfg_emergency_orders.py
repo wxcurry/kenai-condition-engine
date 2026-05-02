@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from datetime import datetime
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
@@ -54,6 +54,9 @@ class AdfgEmergencyOrdersAdapter:
             response = client.get(self._url)
             response.raise_for_status()
             payload = response.text
+            detail_payloads = _fetch_detail_payloads(client, self._url, payload)
+            if detail_payloads:
+                payload = _bundle_payload(payload, detail_payloads)
         finally:
             if should_close:
                 client.close()
@@ -78,7 +81,18 @@ def parse_emergency_orders(
 
     soup = BeautifulSoup(html, "lxml")
     orders: list[dict[str, str]] = []
+    seen_keys: set[tuple[str, str]] = set()
     relevance_predicate = is_relevant or _is_kenai_relevant
+    for detail in _detail_documents(soup, base_url):
+        detail_text = _clean_text(f"{detail.get('title', '')} {detail.get('summary', '')}")
+        if not detail_text or not relevance_predicate(detail_text):
+            continue
+        key = (detail.get("title", ""), detail.get("url", ""))
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        orders.append(detail)
+
     for link in soup.select("a"):
         title = link.get_text(" ", strip=True)
         href = link.get("href")
@@ -99,10 +113,105 @@ def parse_emergency_orders(
         status = _detect_status(searchable_text)
         if status:
             order["status"] = status
+        if _is_pdf_url(order["url"]):
+            order["manual_review_required"] = "true"
+            order["content_type"] = "pdf"
         order.update(_extract_dates(searchable_text))
 
+        key = (order.get("title", ""), order.get("url", ""))
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
         orders.append(order)
     return orders
+
+
+def parse_emergency_order_detail(html: str, source_url: str) -> dict[str, str]:
+    """Extract a normalized emergency order from an ADF&G detail document."""
+
+    soup = BeautifulSoup(html, "lxml")
+    container = soup.select_one("main, article, .node-news-release, body")
+    if container is None:
+        return {}
+
+    heading = container.find(["h1", "h2", "h3"])
+    title = _clean_text(heading.get_text(" ", strip=True) if heading else "")
+    if not title or not _looks_like_order(title, source_url):
+        return {}
+
+    paragraphs = [
+        _clean_text(element.get_text(" ", strip=True))
+        for element in container.find_all(["p", "div"], recursive=True)
+        if _clean_text(element.get_text(" ", strip=True))
+    ]
+    summary_parts = [text for text in paragraphs if text != title]
+    summary = _dedupe_summary_text(" ".join(summary_parts))
+    searchable_text = _clean_text(f"{title} {summary}")
+
+    order = {
+        "title": title,
+        "url": source_url,
+    }
+    if summary:
+        order["summary"] = summary
+    status = _detect_status(searchable_text)
+    if status:
+        order["status"] = status
+    order.update(_extract_dates(searchable_text))
+    return order
+
+
+def _fetch_detail_payloads(
+    client: httpx.Client,
+    list_url: str,
+    list_payload: str,
+) -> list[tuple[str, str]]:
+    detail_payloads: list[tuple[str, str]] = []
+    seen_urls: set[str] = set()
+    for order in parse_emergency_orders(list_payload, base_url=list_url):
+        detail_url = order.get("url", "")
+        if not _should_fetch_detail(list_url, detail_url) or detail_url in seen_urls:
+            continue
+        seen_urls.add(detail_url)
+        response = client.get(detail_url)
+        response.raise_for_status()
+        detail_payloads.append((detail_url, response.text))
+    return detail_payloads
+
+
+def _bundle_payload(list_payload: str, detail_payloads: list[tuple[str, str]]) -> str:
+    detail_documents = "\n".join(
+        f'<article data-source-url="{url}">\n{detail_html}\n</article>'
+        for url, detail_html in detail_payloads
+    )
+    return f"{list_payload}\n<section data-adfg-detail-documents>\n{detail_documents}\n</section>"
+
+
+def _detail_documents(soup: BeautifulSoup, base_url: str) -> list[dict[str, str]]:
+    details: list[dict[str, str]] = []
+    for detail_container in soup.select("[data-source-url]"):
+        source_url = detail_container.get("data-source-url")
+        if not isinstance(source_url, str):
+            continue
+        detail = parse_emergency_order_detail(
+            str(detail_container),
+            source_url=urljoin(base_url, source_url),
+        )
+        if detail:
+            details.append(detail)
+    return details
+
+
+def _should_fetch_detail(list_url: str, detail_url: str) -> bool:
+    if not detail_url or _is_pdf_url(detail_url):
+        return False
+    list_host = urlparse(list_url).netloc
+    detail_host = urlparse(detail_url).netloc
+    return not detail_host or detail_host == list_host
+
+
+def _is_pdf_url(url: str) -> bool:
+    return url.lower().split("?", 1)[0].endswith(".pdf")
 
 
 def _looks_like_order(title: str, href: str) -> bool:
@@ -170,3 +279,11 @@ def _is_kenai_relevant(text: str) -> bool:
 
 def _clean_text(text: str) -> str:
     return _WHITESPACE_PATTERN.sub(" ", text).strip()
+
+
+def _dedupe_summary_text(text: str) -> str:
+    parts = _clean_text(text).split(" ")
+    midpoint = len(parts) // 2
+    if len(parts) >= 8 and len(parts) % 2 == 0 and parts[:midpoint] == parts[midpoint:]:
+        return " ".join(parts[:midpoint])
+    return _clean_text(text)

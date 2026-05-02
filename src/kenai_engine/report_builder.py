@@ -7,16 +7,111 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from kenai_engine.models import (
+    ENGINE_NAME,
+    ENGINE_VERSION,
+    SCHEMA_VERSION,
     Alert,
+    BaselineRegulation,
     FishCount,
     LocationCondition,
     Regulation,
     Report,
     ScoreInput,
     SourceHealth,
+    SourceWarning,
+    SpeciesScore,
+    TidePrediction,
+    UsgsFlowStatistic,
     UsgsObservation,
+    WeatherObservation,
 )
-from kenai_engine.scoring import score_conditions
+from kenai_engine.scoring import FRESHNESS_LIMIT_HOURS, score_conditions
+from kenai_engine.sources.noaa_tides import determine_tide_stage
+from kenai_engine.sources.usgs import calculate_flow_percentile, classify_usgs_trend
+
+REQUIRED_SCORE_SOURCES = {
+    "usgs",
+    "usgs_statistics",
+    "adfg_emergency_orders",
+    "adfg_fish_counts",
+    "nws",
+    "noaa_tides",
+}
+
+DEFAULT_LOCATIONS = [
+    {
+        "id": "cooper_landing_upper_kenai",
+        "name": "Cooper Landing / Upper Kenai",
+        "segment": "upper",
+        "lat": 60.489,
+        "lon": -149.834,
+        "monitoring_location_id": "USGS-15258000",
+        "nwis_site_id": "15258000",
+        "fishing_context": (
+            "Upper river drift, wade, trout, dolly varden, and seasonal salmon access."
+        ),
+        "score_key": "upper_kenai",
+    },
+    {
+        "id": "russian_river_confluence",
+        "name": "Russian River Confluence",
+        "segment": "upper",
+        "lat": 60.489,
+        "lon": -149.969,
+        "fishing_context": (
+            "Sockeye-focused confluence and sanctuary-area context; check ADF&G orders."
+        ),
+        "score_key": "upper_kenai",
+        "monitoring_location_id": "USGS-15266010",
+        "nwis_site_id": "15266010",
+    },
+    {
+        "id": "middle_kenai_skilak_outlet",
+        "name": "Skilak Lake Outlet / Middle Kenai",
+        "segment": "middle",
+        "lat": 60.477,
+        "lon": -150.470,
+        "fishing_context": "Middle river boat and drift context below Skilak Lake.",
+        "score_key": "middle_kenai",
+        "monitoring_location_id": "USGS-15266110",
+        "nwis_site_id": "15266110",
+    },
+    {
+        "id": "soldotna",
+        "name": "Soldotna",
+        "segment": "soldotna",
+        "lat": 60.487,
+        "lon": -151.058,
+        "fishing_context": "High-use bank and boat access near Soldotna.",
+        "score_key": "soldotna",
+        "monitoring_location_id": "USGS-15266300",
+        "nwis_site_id": "15266300",
+    },
+    {
+        "id": "lower_kenai_tidewater",
+        "name": "Lower Kenai / Tidewater",
+        "segment": "lower",
+        "lat": 60.553,
+        "lon": -151.258,
+        "fishing_context": "Lower river salmon movement influenced by tide stage and boat access.",
+        "score_key": "lower_kenai",
+        "monitoring_location_id": "USGS-15266300",
+        "nwis_site_id": "15266300",
+    },
+    {
+        "id": "kenai_river_mouth",
+        "name": "Kenai River Mouth",
+        "segment": "mouth",
+        "lat": 60.554,
+        "lon": -151.270,
+        "fishing_context": (
+            "Mouth and dipnet-adjacent context; strongly tide and regulation sensitive."
+        ),
+        "score_key": "lower_kenai",
+        "monitoring_location_id": "USGS-15266300",
+        "nwis_site_id": "15266300",
+    },
+]
 
 
 def build_placeholder_report(
@@ -25,7 +120,11 @@ def build_placeholder_report(
     regulations: list[Regulation] | None = None,
     fish_counts: list[FishCount] | None = None,
     alerts: list[Alert] | None = None,
+    weather_observations: list[WeatherObservation] | None = None,
+    tide_predictions: list[TidePrediction] | None = None,
+    usgs_flow_statistics: list[UsgsFlowStatistic] | None = None,
     source_health: list[SourceHealth] | None = None,
+    baseline_regulations: list[BaselineRegulation] | None = None,
 ) -> Report:
     """Build a valid placeholder report until production adapters are implemented."""
 
@@ -58,31 +157,830 @@ def build_placeholder_report(
             source="kenai-condition-engine",
         )
     ]
-    score = score_conditions(_score_input_from_regulations(active_regulations))
+    active_weather = [] if weather_observations is None else weather_observations
+    active_tides = [] if tide_predictions is None else tide_predictions
+    active_flow_statistics = [] if usgs_flow_statistics is None else usgs_flow_statistics
+    active_baseline_regulations = [] if baseline_regulations is None else baseline_regulations
+    baseline_missing = baseline_regulations is not None and not active_baseline_regulations
+    warn_on_source_health = source_health is not None
+    active_source_health = (
+        _default_source_health(
+            generated_at,
+            observations,
+            active_regulations,
+            active_fish_counts,
+            active_alerts,
+            usgs_observations,
+            regulations,
+            fish_counts,
+            alerts,
+        )
+        if source_health is None
+        else _enrich_source_health(generated_at, source_health)
+    )
+    usable_observations = observations if _source_is_usable(active_source_health, "usgs") else []
+    usable_flow_statistics = (
+        active_flow_statistics
+        if _source_is_usable(active_source_health, "usgs_statistics")
+        else []
+    )
+    score = score_conditions(
+        _score_input_from_records(
+            generated_at,
+            usable_observations,
+            active_regulations,
+            active_fish_counts,
+            active_alerts,
+            active_weather,
+            active_tides,
+            usable_flow_statistics,
+            active_source_health,
+        )
+    )
+    warnings = (
+        _build_warnings(generated_at, active_source_health, active_regulations)
+        if warn_on_source_health
+        else _manual_review_warnings(active_regulations)
+    )
+    if baseline_missing:
+        warnings.append(
+            SourceWarning(
+                source="baseline_regulations",
+                severity="warning",
+                user_title="Baseline regulations need review",
+                user_message=(
+                    "No structured baseline regulation record is available; emergency orders "
+                    "alone do not define full legal status."
+                ),
+                affects_score=True,
+                affects_legal_status=True,
+            )
+        )
+    manual_review_alerts = _manual_review_alerts(active_regulations)
+    if manual_review_alerts:
+        active_alerts = [*active_alerts, *manual_review_alerts]
+    report_confidence = score.confidence
+    if baseline_missing:
+        report_confidence = max(0.05, round(report_confidence - 0.2, 2))
     location_notes = score.reasons
-    if observations:
-        location_notes = [_format_usgs_note(observation) for observation in observations[:3]]
+    if usable_observations:
+        location_notes = [
+            *[_format_usgs_note(observation) for observation in usable_observations[:3]],
+            *_fish_count_notes(active_fish_counts),
+            *_weather_notes(active_weather),
+            *_tide_notes(active_tides, generated_at),
+            *_flow_percentile_notes(usable_observations, usable_flow_statistics, generated_at),
+            *score.reasons,
+        ]
+    elif observations and not _source_is_usable(active_source_health, "usgs"):
+        location_notes = [
+            "USGS water source failed; cached water readings are withheld from active conditions.",
+            *score.reasons,
+        ]
 
     return Report(
+        schema_version=SCHEMA_VERSION,
+        engine_version=ENGINE_VERSION,
+        generated_by=ENGINE_NAME,
         report_date=today,
         generated_at=generated_at,
         river="Kenai River",
         overall_score=score.overall_score,
         overall_status=score.overall_status,
-        confidence=score.confidence,
-        summary=_build_summary(score.overall_status, observations, active_alerts),
-        locations=[
-            LocationCondition(
-                name="Kenai River",
-                status=score.overall_status,
-                score=score.overall_score,
-                notes=location_notes,
-            )
-        ],
+        confidence=report_confidence,
+        summary=_build_summary(
+            score.overall_status,
+            usable_observations,
+            active_alerts,
+            generated_at,
+            active_source_health if warn_on_source_health else [],
+        ),
+        locations=_build_locations(
+            score,
+            report_confidence,
+            location_notes,
+            usable_observations,
+            active_weather,
+            active_alerts,
+            active_tides,
+            generated_at,
+        ),
+        species_scores=_build_species_scores(score, report_confidence, active_fish_counts),
+        baseline_regulations=active_baseline_regulations,
+        emergency_orders=active_regulations,
         regulations=active_regulations,
         fish_counts=active_fish_counts,
         alerts=active_alerts,
-        source_health=source_health if source_health is not None else [
+        warnings=warnings,
+        source_health=active_source_health,
+    )
+
+
+def write_latest_report(output_dir: Path, report: Report | None = None) -> Path:
+    """Write `latest.json` and return its path."""
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    latest_path = output_dir / "latest.json"
+    report_to_write = report or build_placeholder_report()
+    latest_path.write_text(
+        json.dumps(report_to_write.model_dump(mode="json"), indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return latest_path
+
+
+def load_report(path: Path) -> Report:
+    """Load and validate a report JSON file."""
+
+    return Report.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+def _score_input_from_records(
+    generated_at: datetime,
+    usgs_observations: list[UsgsObservation],
+    regulations: list[Regulation],
+    fish_counts: list[FishCount],
+    alerts: list[Alert],
+    weather_observations: list[WeatherObservation],
+    tide_predictions: list[TidePrediction],
+    usgs_flow_statistics: list[UsgsFlowStatistic],
+    source_health: list[SourceHealth],
+) -> ScoreInput:
+    latest_observations = {
+        observation.parameter_code: observation for observation in usgs_observations
+    }
+    water_temperature_f = _water_temperature_f(latest_observations.get("00010"))
+    sockeye_counts = [
+        count
+        for count in fish_counts
+        if "sockeye" in count.species.lower() and "kenai" in count.location.lower()
+    ]
+    fish_count_3day_avg = _three_day_average(sockeye_counts)
+    weather = _latest_weather(weather_observations)
+    flow_percentile = _current_flow_percentile(
+        generated_at,
+        latest_observations,
+        usgs_flow_statistics,
+    )
+    tide_stage = determine_tide_stage(tide_predictions, generated_at) if tide_predictions else None
+    flood_alerts = [alert for alert in alerts if "flood" in alert.title.lower()]
+
+    return ScoreInput(
+        active_closure=any(
+            regulation.status == "closed"
+            for regulation in _active_regulations_for_date(regulations, generated_at)
+        ),
+        active_restriction=any(
+            regulation.status == "restricted"
+            for regulation in _active_regulations_for_date(regulations, generated_at)
+        ),
+        legal_uncertainty=any(
+            regulation.status == "unknown" or regulation.manual_review_required
+            for regulation in _active_regulations_for_date(regulations, generated_at)
+        ),
+        location="lower_kenai" if sockeye_counts else "soldotna",
+        species="sockeye" if sockeye_counts else None,
+        water_temperature_f=water_temperature_f,
+        flow_percentile=flow_percentile,
+        recent_rain_inches_24h=weather.recent_rain_inches_24h if weather else None,
+        wind_mph=weather.wind_mph if weather else None,
+        tide_stage=tide_stage,
+        fish_count_3day_avg=fish_count_3day_avg,
+        fish_count_trend=_fish_count_trend(sockeye_counts),
+        flood_alert_active=any(alert.severity in {"watch", "warning"} for alert in flood_alerts),
+        flood_alert_severity="warning"
+        if any(alert.severity == "warning" for alert in flood_alerts)
+        else "watch",
+        source_freshness_hours=_source_freshness_hours(generated_at, source_health),
+        missing_sources=_missing_score_sources(source_health),
+    )
+
+
+def _format_usgs_note(observation: UsgsObservation) -> str:
+    return (
+        f"USGS {observation.parameter_code} at {observation.site_name}: "
+        f"{observation.value:g} {observation.unit}"
+    )
+
+
+def _source_is_usable(source_health: list[SourceHealth], source: str) -> bool:
+    matching = [health for health in source_health if health.source == source]
+    if not matching:
+        return True
+    return all(health.status == "ok" for health in matching)
+
+
+def _build_locations(
+    score,
+    report_confidence: float,
+    notes: list[str],
+    observations: list[UsgsObservation],
+    weather_observations: list[WeatherObservation],
+    alerts: list[Alert],
+    tide_predictions: list[TidePrediction],
+    generated_at: datetime,
+) -> list[LocationCondition]:
+    latest = _latest_observations_by_site_and_parameter(observations)
+    weather = _latest_weather(weather_observations)
+    tide_stage = determine_tide_stage(tide_predictions, generated_at) if tide_predictions else None
+    base_confidence = report_confidence if observations else max(0.05, report_confidence - 0.1)
+    trend = classify_usgs_trend(observations, parameter_code="00065") if observations else {}
+    locations: list[LocationCondition] = []
+    for location in DEFAULT_LOCATIONS:
+        site_id = location.get("nwis_site_id")
+        site_latest = _site_latest(latest, site_id if isinstance(site_id, str) else None)
+        flow = site_latest.get("00060")
+        stage = site_latest.get("00065")
+        temp = site_latest.get("00010")
+        turbidity = site_latest.get("63680")
+        conductance = site_latest.get("00095")
+        oxygen = site_latest.get("00300")
+        ph = site_latest.get("00400")
+        observed_at = _latest_observed_at(site_latest)
+        condition_score = score.location_scores.get(
+            str(location["score_key"]),
+            score.overall_score,
+        )
+        site_usgs_notes = [_format_usgs_note(observation) for observation in site_latest.values()]
+        has_local_flow_note = any("USGS 00060" in note for note in site_usgs_notes)
+        fallback_usgs_notes = (
+            [note for note in notes if note.startswith("USGS 00060")]
+            if not has_local_flow_note
+            else []
+        )
+        location_notes = [
+            *site_usgs_notes,
+            *fallback_usgs_notes,
+            *[note for note in notes if not note.startswith("USGS 000")],
+        ]
+        if not observations:
+            location_notes = [
+                "No current USGS water reading matched this location; confidence reduced.",
+                *location_notes,
+            ]
+        water_data_status = "current" if site_latest else "unavailable"
+        locations.append(
+            LocationCondition(
+                id=str(location["id"]),
+                name=str(location["name"]),
+                segment=str(location["segment"]),
+                lat=float(location["lat"]),
+                lon=float(location["lon"]),
+                fishing_context=str(location["fishing_context"]),
+                condition_score=condition_score,
+                score=condition_score,
+                status=score.overall_status,
+                confidence=base_confidence,
+                water={
+                    "monitoring_location_id": location.get("monitoring_location_id")
+                    or (flow.monitoring_location_id if flow else None),
+                    "nwis_site_id": location.get("nwis_site_id")
+                    or (flow.site_id if flow else None),
+                    "discharge_cfs": flow.value if flow else None,
+                    "gage_height_ft": stage.value if stage else None,
+                    "water_temp_c": temp.value if temp and _is_celsius(temp.unit) else None,
+                    "water_temp_f": _water_temperature_f(temp),
+                    "turbidity_fnu": turbidity.value if turbidity else None,
+                    "specific_conductance_us_cm": conductance.value if conductance else None,
+                    "dissolved_oxygen_mg_l": oxygen.value if oxygen else None,
+                    "ph": ph.value if ph else None,
+                    "trend": trend.get("classification", "unknown"),
+                    "trend_window_minutes": trend.get("window_minutes"),
+                    "observed_at": observed_at.isoformat() if observed_at else None,
+                    "source": "USGS",
+                    "data_status": water_data_status,
+                    "tide_stage": tide_stage if location["score_key"] == "lower_kenai" else None,
+                },
+                weather={
+                    "recent_rain_inches_24h": weather.recent_rain_inches_24h
+                    if weather
+                    else None,
+                    "wind_mph": weather.wind_mph if weather else None,
+                    "wind_direction": weather.wind_direction if weather else None,
+                    "temperature_f": weather.temperature_f if weather else None,
+                    "short_forecast": weather.short_forecast if weather else None,
+                    "precipitation_probability": weather.precipitation_probability
+                    if weather
+                    else None,
+                    "detailed_forecast": weather.detailed_forecast if weather else None,
+                },
+                alerts=[alert.title for alert in alerts],
+                notes=location_notes,
+                bank_fishing_score=max(
+                    0,
+                    condition_score - 5 if flow and flow.value > 8000 else condition_score,
+                ),
+                boat_fishing_score=max(
+                    0,
+                    condition_score - 8
+                    if weather and weather.wind_mph and weather.wind_mph >= 20
+                    else condition_score,
+                ),
+                sockeye_score=score.species_scores.get("sockeye"),
+                chinook_score=score.species_scores.get("chinook"),
+                coho_score=score.species_scores.get("coho"),
+                rainbow_trout_score=score.species_scores.get("rainbow_trout"),
+                dolly_varden_score=score.species_scores.get("dolly_varden"),
+                score_delta_reason=score.score_delta_reason,
+                contributing_factors=score.contributing_factors,
+                limiting_factors=score.limiting_factors,
+                confidence_explanation=score.confidence_explanation,
+                legal_explanation=score.legal_explanation,
+                recommended_user_action=score.recommended_user_action,
+            )
+        )
+    return locations
+
+
+def _build_species_scores(
+    score,
+    confidence: float,
+    fish_counts: list[FishCount],
+) -> list[SpeciesScore]:
+    supported_species = {
+        "sockeye": any("sockeye" in count.species.lower() for count in fish_counts),
+        "chinook": any(
+            "chinook" in count.species.lower() or "king" in count.species.lower()
+            for count in fish_counts
+        ),
+        "coho": any("coho" in count.species.lower() for count in fish_counts),
+        "rainbow_trout": False,
+        "dolly_varden": False,
+    }
+    labels = {
+        "sockeye": "Sockeye salmon",
+        "chinook": "Chinook salmon",
+        "coho": "Coho salmon",
+        "rainbow_trout": "Rainbow trout",
+        "dolly_varden": "Dolly Varden",
+    }
+    results: list[SpeciesScore] = []
+    for key, label in labels.items():
+        if supported_species[key] and key in score.species_scores:
+            species_score = score.species_scores[key]
+            results.append(
+                SpeciesScore(
+                    species=label,
+                    score=species_score,
+                    status=_status_from_score(species_score),
+                    confidence=confidence,
+                    explanation="Score supported by current official fish-count records.",
+                    source="adfg_fish_counts",
+                )
+            )
+        else:
+            results.append(
+                SpeciesScore(
+                    species=label,
+                    score=None,
+                    status="unknown",
+                    confidence=max(0.05, confidence - 0.25),
+                    explanation="No current species-specific official count supports a score.",
+                )
+            )
+    return results
+
+
+def _fish_count_notes(fish_counts: list[FishCount]) -> list[str]:
+    average = _three_day_average(
+        [
+            count
+            for count in fish_counts
+            if "sockeye" in count.species.lower() and "kenai" in count.location.lower()
+        ]
+    )
+    if average is None:
+        return []
+    return [f"Sockeye 3-day average: {average:,} fish from ADF&G count records."]
+
+
+def _weather_notes(weather_observations: list[WeatherObservation]) -> list[str]:
+    weather = _latest_weather(weather_observations)
+    if weather is None:
+        return []
+    notes: list[str] = []
+    if weather.recent_rain_inches_24h is not None:
+        notes.append(f"NWS forecast rain: {weather.recent_rain_inches_24h:g} inches in 24h.")
+    if weather.wind_mph is not None:
+        notes.append(f"NWS wind: {weather.wind_mph:g} mph.")
+    return notes
+
+
+def _tide_notes(tide_predictions: list[TidePrediction], generated_at: datetime) -> list[str]:
+    if not tide_predictions:
+        return []
+    return [f"NOAA tide stage: {determine_tide_stage(tide_predictions, generated_at)}."]
+
+
+def _flow_percentile_notes(
+    observations: list[UsgsObservation],
+    statistics: list[UsgsFlowStatistic],
+    generated_at: datetime,
+) -> list[str]:
+    percentile = _current_flow_percentile(
+        generated_at,
+        {observation.parameter_code: observation for observation in observations},
+        statistics,
+    )
+    if percentile is None:
+        return []
+    return [f"USGS flow percentile: {percentile:g} for the current day-of-year."]
+
+
+def _water_temperature_f(observation: UsgsObservation | None) -> float | None:
+    if observation is None:
+        return None
+    if _is_celsius(observation.unit):
+        return observation.value * 9 / 5 + 32
+    if observation.unit.lower() in {"deg f", "f", "fahrenheit"}:
+        return observation.value
+    return None
+
+
+def _is_celsius(unit: str) -> bool:
+    return unit.lower() in {"deg c", "degc", "c", "celsius"}
+
+
+def _latest_observations_by_site_and_parameter(
+    observations: list[UsgsObservation],
+) -> dict[str, dict[str, UsgsObservation]]:
+    latest: dict[str, dict[str, UsgsObservation]] = {}
+    for observation in sorted(observations, key=lambda item: item.observed_at, reverse=True):
+        site_records = latest.setdefault(observation.site_id, {})
+        site_records.setdefault(observation.parameter_code, observation)
+    return latest
+
+
+def _site_latest(
+    latest: dict[str, dict[str, UsgsObservation]],
+    site_id: str | None,
+) -> dict[str, UsgsObservation]:
+    if site_id and site_id in latest:
+        return latest[site_id]
+    if site_id:
+        return {}
+    return next(iter(latest.values()), {})
+
+
+def _latest_observed_at(site_latest: dict[str, UsgsObservation]) -> datetime | None:
+    if not site_latest:
+        return None
+    return max(observation.observed_at for observation in site_latest.values())
+
+
+def _status_from_score(score: int) -> str:
+    if score >= 85:
+        return "excellent"
+    if score >= 70:
+        return "good"
+    if score >= 40:
+        return "fair"
+    return "poor"
+
+
+def _latest_weather(weather_observations: list[WeatherObservation]) -> WeatherObservation | None:
+    if not weather_observations:
+        return None
+    return max(weather_observations, key=lambda weather: weather.observed_at)
+
+
+def _current_flow_percentile(
+    generated_at: datetime,
+    latest_observations: dict[str, UsgsObservation],
+    statistics: list[UsgsFlowStatistic],
+) -> float | None:
+    flow_observation = latest_observations.get("00060")
+    if flow_observation is None:
+        return None
+    matching_stats = [
+        statistic
+        for statistic in statistics
+        if statistic.site_id == flow_observation.site_id
+        and statistic.month == generated_at.month
+        and statistic.day == generated_at.day
+    ]
+    if not matching_stats:
+        return None
+    return calculate_flow_percentile(flow_observation.value, matching_stats[0])
+
+
+def _three_day_average(fish_counts: list[FishCount]) -> int | None:
+    if not fish_counts:
+        return None
+    latest_counts = sorted(fish_counts, key=lambda count: count.observation_date, reverse=True)[:3]
+    return round(sum(count.count for count in latest_counts) / len(latest_counts))
+
+
+def _fish_count_trend(fish_counts: list[FishCount]) -> str:
+    latest_counts = sorted(fish_counts, key=lambda count: count.observation_date, reverse=True)[:3]
+    if len(latest_counts) < 2:
+        return "unknown"
+    newest = latest_counts[0].count
+    oldest = latest_counts[-1].count
+    if newest > oldest:
+        return "rising"
+    if newest < oldest:
+        return "falling"
+    return "steady"
+
+
+def _source_freshness_hours(
+    generated_at: datetime,
+    source_health: list[SourceHealth],
+) -> dict[str, float]:
+    freshness: dict[str, float] = {}
+    for health in source_health:
+        checked_at = health.last_checked_at
+        if checked_at.tzinfo is None:
+            checked_at = checked_at.replace(tzinfo=UTC)
+        freshness[health.source] = max(0.0, (generated_at - checked_at).total_seconds() / 3600)
+    return freshness
+
+
+def _missing_score_sources(source_health: list[SourceHealth]) -> list[str]:
+    if not source_health:
+        return []
+    available = {health.source for health in source_health if health.status != "failed"}
+    return sorted(REQUIRED_SCORE_SOURCES - available)
+
+
+def _build_summary(
+    status: str,
+    usgs_observations: list[UsgsObservation],
+    alerts: list[Alert],
+    generated_at: datetime,
+    source_health: list[SourceHealth],
+) -> str:
+    real_alerts = [alert for alert in alerts if alert.source != "kenai-condition-engine"]
+    source_warning = _source_warning_summary(generated_at, source_health)
+    if status == "closed":
+        summary = "Active emergency order indicates a closure. Check official ADFG sources."
+        return _prefix_source_warning(summary, source_warning)
+    if status == "restricted":
+        summary = "Active emergency order indicates restrictions. Check official ADFG sources."
+        return _prefix_source_warning(summary, source_warning)
+    if usgs_observations and real_alerts:
+        summary = "MVP report with normalized USGS readings and source alerts."
+        return _prefix_source_warning(summary, source_warning)
+    if usgs_observations:
+        summary = "MVP report with normalized USGS readings."
+        return _prefix_source_warning(summary, source_warning)
+    if real_alerts:
+        summary = "MVP report with source alerts."
+        return _prefix_source_warning(summary, source_warning)
+    summary = "Placeholder MVP report. Production source fetching is not implemented yet."
+    return _prefix_source_warning(summary, source_warning)
+
+
+def _source_warning_summary(
+    generated_at: datetime,
+    source_health: list[SourceHealth],
+) -> str:
+    if not source_health:
+        return ""
+
+    missing_sources = _missing_score_sources(source_health)
+    if missing_sources:
+        return f"Source warning: missing required sources ({', '.join(missing_sources)})."
+
+    stale_sources = _stale_required_sources(generated_at, source_health)
+    if stale_sources:
+        return f"Source warning: stale required sources ({', '.join(stale_sources)})."
+
+    problem_sources = sorted(health.source for health in source_health if health.status == "failed")
+    if problem_sources:
+        return f"Source warning: source errors ({', '.join(problem_sources)})."
+
+    return ""
+
+
+def _build_warnings(
+    generated_at: datetime,
+    source_health: list[SourceHealth],
+    regulations: list[Regulation],
+) -> list[SourceWarning]:
+    warnings: list[SourceWarning] = []
+    for health in source_health:
+        if health.severity in {"watch", "warning", "critical"}:
+            warnings.append(
+                SourceWarning(
+                    source=health.source,
+                    severity=health.severity,
+                    user_title=health.user_title,
+                    user_message=health.user_message,
+                    affects_score=health.affects_score,
+                    affects_legal_status=health.affects_legal_status,
+                )
+            )
+    for source in _missing_score_sources(source_health):
+        warnings.append(_source_warning_for_missing(source))
+    for source in _stale_required_sources(generated_at, source_health):
+        if not any(warning.source == source for warning in warnings):
+            warnings.append(_source_warning_for_stale(source))
+    for regulation in regulations:
+        if regulation.manual_review_required:
+            warnings.append(_manual_review_warning(regulation))
+    return warnings
+
+
+def _manual_review_warnings(regulations: list[Regulation]) -> list[SourceWarning]:
+    return [
+        _manual_review_warning(regulation)
+        for regulation in regulations
+        if regulation.manual_review_required
+    ]
+
+
+def _manual_review_warning(regulation: Regulation) -> SourceWarning:
+    return SourceWarning(
+        source="adfg_emergency_orders",
+        severity="critical" if regulation.status == "closed" else "warning",
+        user_title="Emergency order needs manual review",
+        user_message=(
+            f"{regulation.title} is PDF-only or not confidently parsed. "
+            "Check the official ADF&G order before relying on legal status."
+        ),
+        affects_score=True,
+        affects_legal_status=True,
+    )
+
+
+def _active_regulations_for_date(
+    regulations: list[Regulation],
+    generated_at: datetime,
+) -> list[Regulation]:
+    today = generated_at.date()
+    active: list[Regulation] = []
+    for regulation in regulations:
+        if regulation.effective_date is not None and regulation.effective_date > today:
+            continue
+        if regulation.expires_date is not None and regulation.expires_date < today:
+            continue
+        active.append(regulation)
+    return active
+
+
+def _manual_review_alerts(regulations: list[Regulation]) -> list[Alert]:
+    alerts: list[Alert] = []
+    for regulation in regulations:
+        if not regulation.manual_review_required:
+            continue
+        alerts.append(
+            Alert(
+                title="Manual review required for ADF&G order",
+                severity="warning",
+                summary=(
+                    f"{regulation.title} is PDF-only or could not be confidently parsed. "
+                    "Review the official ADF&G source."
+                ),
+                source="adfg_emergency_orders",
+            )
+        )
+    return alerts
+
+
+def _enrich_source_health(
+    generated_at: datetime,
+    source_health: list[SourceHealth],
+) -> list[SourceHealth]:
+    return [_enriched_health(generated_at, health) for health in source_health]
+
+
+def _enriched_health(generated_at: datetime, health: SourceHealth) -> SourceHealth:
+    checked_at = health.last_checked_at
+    if checked_at.tzinfo is None:
+        checked_at = checked_at.replace(tzinfo=UTC)
+    freshness_minutes = max(0, round((generated_at - checked_at).total_seconds() / 60))
+    stale = freshness_minutes > FRESHNESS_LIMIT_HOURS.get(health.source, 24) * 60
+    status = health.status
+    severity = health.severity
+    if status == "ok" and stale:
+        status = "degraded"
+        severity = "warning"
+    elif status == "failed":
+        severity = "critical" if _affects_legal_status(health.source) else "warning"
+    elif status == "degraded" and severity == "info":
+        severity = "watch"
+    user_title, user_message = _source_user_copy(health.source, status, stale, health.message)
+    return SourceHealth(
+        source=health.source,
+        status=status,
+        severity=severity,
+        user_title=health.user_title or user_title,
+        user_message=health.user_message or user_message,
+        last_checked_at=health.last_checked_at,
+        last_success_at=health.last_success_at
+        or (health.last_checked_at if status != "failed" else None),
+        freshness_minutes=freshness_minutes,
+        last_error=health.last_error or (health.message if status == "failed" else None),
+        affects_score=_affects_score(health.source),
+        affects_legal_status=_affects_legal_status(health.source),
+        message=health.message,
+    )
+
+
+def _source_user_copy(
+    source: str,
+    status: str,
+    stale: bool,
+    message: str,
+) -> tuple[str, str]:
+    if source == "adfg_emergency_orders":
+        if status == "failed":
+            return "Regulation source unavailable", message
+        return (
+            "Regulation source needs attention",
+            message if stale else "ADF&G emergency orders checked.",
+        )
+    if source == "adfg_fish_counts":
+        return "Fish count data needs attention", message
+    if source == "usgs":
+        return "Water data needs attention", message
+    if source == "nws":
+        return "Weather data needs attention", message
+    if source == "noaa_tides":
+        return "Tide data needs attention", message
+    if source == "usgs_statistics":
+        return "Historical flow data needs attention", message
+    return f"{source} source needs attention", message
+
+
+def _source_warning_for_missing(source: str) -> SourceWarning:
+    severity = "critical" if _affects_legal_status(source) else "warning"
+    title, message = _source_user_copy(
+        source,
+        "failed",
+        False,
+        "Required source data is missing from the latest report.",
+    )
+    return SourceWarning(
+        source=source,
+        severity=severity,
+        user_title=title,
+        user_message=message,
+        affects_score=_affects_score(source),
+        affects_legal_status=_affects_legal_status(source),
+    )
+
+
+def _source_warning_for_stale(source: str) -> SourceWarning:
+    title, message = _source_user_copy(source, "degraded", True, "Source data is stale.")
+    return SourceWarning(
+        source=source,
+        severity="warning",
+        user_title=title,
+        user_message=message,
+        affects_score=_affects_score(source),
+        affects_legal_status=_affects_legal_status(source),
+    )
+
+
+def _affects_legal_status(source: str) -> bool:
+    return source in {"adfg_emergency_orders", "baseline_regulations"}
+
+
+def _affects_score(source: str) -> bool:
+    return source in REQUIRED_SCORE_SOURCES or source == "baseline_regulations"
+
+
+def _stale_required_sources(
+    generated_at: datetime,
+    source_health: list[SourceHealth],
+) -> list[str]:
+    stale_sources: list[str] = []
+    for health in source_health:
+        if health.source not in REQUIRED_SCORE_SOURCES or health.status == "failed":
+            continue
+        checked_at = health.last_checked_at
+        if checked_at.tzinfo is None:
+            checked_at = checked_at.replace(tzinfo=UTC)
+        limit_hours = FRESHNESS_LIMIT_HOURS.get(health.source, 24)
+        age_hours = (generated_at - checked_at).total_seconds() / 3600
+        if age_hours > limit_hours:
+            stale_sources.append(health.source)
+    return sorted(stale_sources)
+
+
+def _prefix_source_warning(summary: str, source_warning: str) -> str:
+    if not source_warning:
+        return summary
+    return f"{source_warning} {summary}"
+
+
+def _default_source_health(
+    generated_at: datetime,
+    observations: list[UsgsObservation],
+    active_regulations: list[Regulation],
+    active_fish_counts: list[FishCount],
+    active_alerts: list[Alert],
+    usgs_observations: list[UsgsObservation] | None,
+    regulations: list[Regulation] | None,
+    fish_counts: list[FishCount] | None,
+    alerts: list[Alert] | None,
+) -> list[SourceHealth]:
+    return _enrich_source_health(
+        generated_at,
+        [
             _source_health(
                 "usgs",
                 len(observations),
@@ -115,58 +1013,6 @@ def build_placeholder_report(
     )
 
 
-def write_latest_report(output_dir: Path, report: Report | None = None) -> Path:
-    """Write `latest.json` and return its path."""
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-    latest_path = output_dir / "latest.json"
-    report_to_write = report or build_placeholder_report()
-    latest_path.write_text(
-        json.dumps(report_to_write.model_dump(mode="json"), indent=2) + "\n",
-        encoding="utf-8",
-    )
-    return latest_path
-
-
-def load_report(path: Path) -> Report:
-    """Load and validate a report JSON file."""
-
-    return Report.model_validate_json(path.read_text(encoding="utf-8"))
-
-
-def _score_input_from_regulations(regulations: list[Regulation]) -> ScoreInput:
-    return ScoreInput(
-        active_closure=any(regulation.status == "closed" for regulation in regulations),
-        active_restriction=any(regulation.status == "restricted" for regulation in regulations),
-    )
-
-
-def _format_usgs_note(observation: UsgsObservation) -> str:
-    return (
-        f"USGS {observation.parameter_code} at {observation.site_name}: "
-        f"{observation.value:g} {observation.unit}"
-    )
-
-
-def _build_summary(
-    status: str,
-    usgs_observations: list[UsgsObservation],
-    alerts: list[Alert],
-) -> str:
-    real_alerts = [alert for alert in alerts if alert.source != "kenai-condition-engine"]
-    if status == "closed":
-        return "Active emergency order indicates a closure. Check official ADFG sources."
-    if status == "restricted":
-        return "Active emergency order indicates restrictions. Check official ADFG sources."
-    if usgs_observations and real_alerts:
-        return "MVP report with normalized USGS readings and source alerts."
-    if usgs_observations:
-        return "MVP report with normalized USGS readings."
-    if real_alerts:
-        return "MVP report with source alerts."
-    return "Placeholder MVP report. Production source fetching is not implemented yet."
-
-
 def _source_health(
     source: str,
     record_count: int,
@@ -175,13 +1021,15 @@ def _source_health(
     *,
     zero_records_are_normalized: bool = False,
 ) -> SourceHealth:
+    has_normalized_data = bool(record_count or zero_records_are_normalized)
     return SourceHealth(
         source=source,
-        status="ok" if record_count or zero_records_are_normalized else "placeholder",
+        status="ok" if has_normalized_data else "degraded",
+        severity="info" if has_normalized_data else "watch",
         last_checked_at=generated_at,
         message=(
             f"{record_count} {label} available."
-            if record_count or zero_records_are_normalized
+            if has_normalized_data
             else f"Adapter available; no {label} are available yet."
         ),
     )
