@@ -1,0 +1,37 @@
+# Fishing Prediction Methods for the Kenai River
+
+This engine should predict legal, fishable opportunity rather than generic angler optimism. The safest MVP method is a deterministic score with hard legal overrides, official-source freshness checks, and transparent factor explanations.
+
+## Core Prediction Factors
+
+| Factor | Source basis | How it improves prediction | Reliability | Risks and limits |
+|---|---|---|---|---|
+| Flow/discharge | USGS Water Data APIs provide machine-readable continuous and daily water data, including streamflow and gage data: https://api.waterdata.usgs.gov/ | Normal flow windows improve bank access, boat handling, fish lane predictability, and clarity. High or rapidly rising flow lowers safety and catchability. | Very high | USGS real-time values are provisional; a gauge represents its reach, not every tributary or tidal section. |
+| Gage height/stage | USGS Cooper Landing `15258000` and Soldotna `15266300` current pages list water temperature, discharge, and gage height: https://waterdata.usgs.gov/nwis/uv?legacy=1&site_no=15258000 and https://waterdata.usgs.gov/nwis/uv?legacy=1&site_no=15266300 | Stage and 24-hour stage trend help flag dangerous access, shallow launches, bank crowd displacement, and high-water changes to fish travel lanes. | Very high | Needs reach-specific thresholds; stage alone is not a fish-abundance signal. |
+| Water temperature | USGS Cooper Landing and Soldotna gauges expose water temperature. | Salmonid movement and feeding are temperature-sensitive. MVP should reward moderate 45-58 F water and penalize very cold or warm water. | High | A single gauge misses tributary refuges, lake influence, and microclimates. |
+| Clarity/turbidity | USGS explains turbidity as water clarity and notes high flow/rain can suspend material: https://www.usgs.gov/water-science-school/science/turbidity-and-water. ADF&G says the Kenai can be very turbid below the Killey River: https://www.adfg.alaska.gov/index.cfm?adfg=sonar.site_info&site=3 | Clearer water improves visual presentation and wading confidence. Turbidity proxies can explain why score drops after rain/rising stage. | Medium for inferred MVP; high if a live turbidity source appears | No dependable live Kenai turbidity feed was found. Mark clarity as inferred from rain, flow/stage trend, cameras, and manual reports. |
+| Recent rain | NWS API provides JSON forecast/alert/weather data: https://weather-gov.github.io/api/general-faqs | Rain can raise flows, reduce clarity, and alter crowd/boat safety. | High | Rainfall at Kenai/Soldotna may not describe upstream watershed or glacial inputs. |
+| Barometric pressure | NOAA CO-OPS API supports air pressure where station data exists: https://api.tidesandcurrents.noaa.gov/api/prod/ | Useful only as a weak secondary catchability feature; steady/rising pressure can be a small positive, falling pressure a small negative. | Medium | Evidence is weaker than counts, legality, flow, temperature, and tides; do not let it dominate. |
+| Wind | NWS and NOAA CO-OPS provide wind data. | Wind affects casting, boat handling, lower-river safety, and exposed launch decisions. | High | More about access/safety than fish presence. |
+| Tide influence | NOAA CO-OPS API provides tide predictions, water levels, meteorological products, and intervals: https://api.tidesandcurrents.noaa.gov/api/prod/. NOAA tide predictions are available at https://tidesandcurrents.noaa.gov/tide_predictions | Incoming/high tide can improve lower-river ingress timing for fresh salmon and affects City Dock/river-mouth access. | High | ADF&G notes the RM19 sockeye sonar is above Cook Inlet tide influence, so tide should only affect lower river scoring. |
+| Run timing | ADF&G RM19 says late-run sockeye enter the lower river in early July, peak in late July, and end mid-to-late August: https://www.adfg.alaska.gov/index.cfm?adfg=sonar.site_fish&site=3 | Seasonal priors prevent nonsense scores before/after the run and help explain expected species windows. | High | Fixed calendar windows must yield to actual counts, EOs, and abnormal hydrology. |
+| Fish counts/escapement | ADF&G fish counts expose Kenai late-run sockeye sonar with JSON/Excel export: https://www.adfg.alaska.gov/sf/FishCounts/index.cfm?ADFG=main.displayResults&COUNTLOCATIONID=40&SpeciesID=420 | Best objective fish-movement signal for sockeye. Use 3-day average, trend, and percentile versus historical day-of-year. | Very high | Current counts are preliminary; sockeye RM19 is late-run only; coho coverage is weak. |
+| Closures and emergency orders | ADF&G EONR pages list official sport-fish emergency orders: https://www.adfg.alaska.gov/sf/EONR/ | Legal status must override environmental quality. Closed species/location gets score 0; restricted fisheries cap score and explain rule. | Very high | Scraping PDFs/HTML is brittle; stale EO data is dangerous and must reduce confidence. |
+| Access and launch status | Alaska DNR KRSMA pages describe access, motor restrictions, and hazards: https://dnr.alaska.gov/parks/aspunits/kenai/krsma.htm. City of Kenai dipnet/camera pages expose seasonal services and live cameras: https://www.kenai.city/dipnet and https://www.kenai.city/dipnet/page/dipnet-cameras | Access determines whether good fish conditions are usable by bank anglers or boats. | High for official pages; medium for live visual interpretation | Most access pages are static or seasonal; cameras are visual/manual unless computer vision is added later. |
+| Crowd pressure | DNR KRSMA reports 4,000-6,000 bank anglers daily at peak sockeye: https://dnr.alaska.gov/parks/aspunits/kenai/krsma.htm. City of Kenai dipnet season is July 10-31. | Crowd pressure affects practical catchability, parking, launch wait, and angler experience. | Medium | Direct live crowd data is limited. MVP should use calendar/count/weekend/dipnet proxies and camera/manual review. |
+
+## Species-Specific Use
+
+Sockeye: Weight ADF&G RM19 counts, 3-day trend, run timing, and bank-access conditions most heavily. Early Russian River sockeye should be handled as a separate upper-river/Russian signal.
+
+Chinook/king: Regulation-gated first. If closed, score is 0 regardless of fish or water signals. If open in a future season, use ADF&G king sonar/EOs, lower-river tide timing, flow, and temperature conservatively.
+
+Coho: Use lower-river tide windows, late July through September seasonal priors, cooling/rain cues, and official/local reports. Treat fish-count confidence as lower because a dedicated Kenai coho sonar source was not found.
+
+Rainbow trout: Use legal season, water temperature, flow/clarity, and salmon spawning/egg availability. Trout scores should not be boosted merely because sockeye are entering the lower river; boost after spawning activity is likely in upper/middle reaches.
+
+Dolly Varden: Similar to rainbow trout, with emphasis on egg/flesh availability, clear-water windows, and upper/middle river seasonal feeding opportunities.
+
+## Kenai-Specific Conclusions
+
+The Kenai is reach-dependent. Cooper Landing/upper river should be driven by the Cooper Landing gauge, Russian River counts/status, drift-only rules, and clarity/cold-water safety. Middle Kenai and Soldotna should use Soldotna USGS, ADF&G RM19 sockeye, and KRSMA access rules. Lower Kenai should add tides, City Dock/dipnet status, and river-mouth cameras. Clarity remains the largest data gap, so MVP must label it inferred instead of measured.

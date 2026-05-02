@@ -1,0 +1,62 @@
+[
+  {
+    "schema_version": "prediction-prototype-0.1",
+    "generated_at": "2026-07-22T12:00:00Z",
+    "spot_id": "soldotna",
+    "spot_name": "Soldotna",
+    "target_species": "sockeye",
+    "window_start": "2026-07-22T12:00:00Z",
+    "window_end": "2026-07-22T18:00:00Z",
+    "score_band": "fair",
+    "condition_score": 55,
+    "confidence": "medium",
+    "freshness": "fresh",
+    "legal_status": "unknown",
+    "safety_status": "caution",
+    "feature_contributions": [
+      {
+        "feature": "spatial_relevance",
+        "value": 0.7,
+        "weight": 1.0,
+        "direction": "positive",
+        "contribution": 0.7,
+        "explanation": "Soldotna has a primary USGS source mapping for this prototype.",
+        "source_ids": [
+          "usgs:15266300"
+        ]
+      }
+    ],
+    "legal_cautions": [
+      "No active closure or restriction was found in prototype inputs, but baseline regulations are not fully evaluated here."
+    ],
+    "safety_cautions": [
+      "Prototype prediction separates condition quality from legal permission and safety."
+    ],
+    "provenance": [
+      {
+        "source_id": "usgs:15266300",
+        "agency": "USGS",
+        "dataset": "Kenai River gage relevance",
+        "retrieved_at": null,
+        "observed_at": null,
+        "expires_at": null,
+        "freshness": "fresh",
+        "confidence": 0.7,
+        "url": null,
+        "notes": "primary source mapping from spatial catalog"
+      },
+      {
+        "source_id": "adfg_emergency_orders",
+        "agency": "ADF&G",
+        "dataset": "Emergency orders source health",
+        "retrieved_at": "2026-07-22T12:00:00Z",
+        "observed_at": null,
+        "expires_at": "2026-07-23T12:00:00Z",
+        "freshness": "fresh",
+        "confidence": 0.8,
+        "url": "https://www.adfg.alaska.gov/sf/EONR/",
+        "notes": "Source health status: ok"
+      }
+    ]
+  }
+]

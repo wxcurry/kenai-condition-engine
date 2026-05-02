@@ -1,6 +1,8 @@
 import json
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
-from kenai_engine.cli import build_report, normalize
+from kenai_engine.cli import build_report, normalize, validate
 from kenai_engine.config import Settings
 from kenai_engine.db import connect, initialize_database
 from kenai_engine.storage.normalized_records import list_normalized_records
@@ -40,6 +42,29 @@ def test_build_report_includes_latest_usgs_observation_note(tmp_path) -> None:
     report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
 
     assert "USGS 00060" in report["locations"][0]["notes"][0]
+    assert (settings.public_dir / "v1" / "latest.json").exists()
+
+
+def test_validate_regenerates_invalid_existing_latest_json(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    settings.output_dir.mkdir(parents=True)
+    (settings.output_dir / "latest.json").write_text(
+        json.dumps({"schema_version": "1.0.0", "overall_status": "caution"}),
+        encoding="utf-8",
+    )
+
+    validate(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+    assert report["overall_status"] in {
+        "poor",
+        "fair",
+        "good",
+        "excellent",
+        "restricted",
+        "closed",
+        "unknown",
+    }
 
 
 def test_normalize_and_build_report_use_regulations_fish_counts_and_alerts(tmp_path) -> None:
@@ -124,14 +149,113 @@ def test_build_report_uses_latest_persisted_source_health(tmp_path) -> None:
     assert report["regulations"] == []
     assert report["fish_counts"] == []
     assert report["alerts"] == []
-    assert report["source_health"] == [
-        {
-            "source": "adfg_emergency_orders",
-            "status": "error",
-            "last_checked_at": "2026-05-02T12:00:00Z",
-            "message": "Fetch timed out.",
-        }
-    ]
+    assert report["source_health"][0]["source"] == "adfg_emergency_orders"
+    assert report["source_health"][0]["status"] == "failed"
+    assert report["source_health"][0]["severity"] == "critical"
+    assert report["source_health"][0]["user_title"] == "Regulation source unavailable"
+    assert report["warnings"][0]["source"] == "adfg_emergency_orders"
+
+
+def test_normalize_and_build_report_use_weather_tide_and_flow_statistics(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    now = datetime.now(UTC)
+    low_tide = (now - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M")
+    high_tide = (now + timedelta(hours=3)).strftime("%Y-%m-%d %H:%M")
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_raw_snapshot(
+            connection,
+            "usgs",
+            _fixture("usgs_kenai_gages.json"),
+            "2026-07-22T12:00:00+00:00",
+        )
+        save_raw_snapshot(
+            connection,
+            "usgs_statistics",
+            json.dumps(
+                {
+                    "value": {
+                        "timeSeries": [
+                            {
+                                "sourceInfo": {"siteCode": [{"value": "15266300"}]},
+                                "variable": {"variableCode": [{"value": "00060"}]},
+                                "values": [
+                                    {
+                                        "value": [
+                                            {
+                                                "month_nu": str(now.month),
+                                                "day_nu": str(now.day),
+                                                "p25_va": "2500",
+                                                "p50_va": "4000",
+                                                "p75_va": "6000",
+                                                "p90_va": "7500",
+                                                "p95_va": "8300",
+                                            }
+                                        ]
+                                    }
+                                ],
+                            }
+                        ]
+                    }
+                }
+            ),
+            "2026-07-22T12:00:00+00:00",
+        )
+        save_raw_snapshot(
+            connection,
+            "nws",
+            json.dumps(
+                {
+                    "locations": [
+                        {
+                            "location": "Kenai,AK",
+                            "alerts": {"features": []},
+                            "forecast_grid": {
+                                "properties": {
+                                    "quantitativePrecipitation": {
+                                        "values": [{"value": 2.54}]
+                                    },
+                                    "windSpeed": {"values": [{"value": 16.0934}]},
+                                }
+                            },
+                        }
+                    ]
+                }
+            ),
+            "2026-07-22T12:00:00+00:00",
+        )
+        save_raw_snapshot(
+            connection,
+            "noaa_tides",
+            json.dumps(
+                {
+                    "predictions": [
+                        {"t": low_tide, "v": "2.1", "type": "L"},
+                        {"t": high_tide, "v": "20.4", "type": "H"},
+                    ]
+                }
+            ),
+            "2026-07-22T12:00:00+00:00",
+        )
+        for source in ("usgs", "usgs_statistics", "nws", "noaa_tides"):
+            save_source_health(
+                connection,
+                source=source,
+                checked_at="2026-07-22T12:00:00+00:00",
+                status="ok",
+                message=f"Fetched {source}.",
+            )
+
+    normalize(settings)
+    build_report(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+    notes = " ".join(report["locations"][0]["notes"])
+
+    assert "USGS flow percentile" in notes
+    assert "NWS forecast rain" in notes
+    assert "NWS wind" in notes
+    assert "NOAA tide stage" in notes
 
 
 def _settings(tmp_path) -> Settings:
@@ -139,6 +263,7 @@ def _settings(tmp_path) -> Settings:
         user_agent="test-agent",
         db_path=tmp_path / "db.sqlite3",
         output_dir=tmp_path / "reports",
+        public_dir=tmp_path / "public",
         raw_dir=tmp_path / "raw",
         usgs_site_ids=["15266300"],
         nws_locations=["Kenai,AK"],
@@ -177,3 +302,7 @@ def _usgs_payload() -> str:
       }
     }
     """
+
+
+def _fixture(name: str) -> str:
+    return (Path(__file__).parent / "fixtures" / name).read_text(encoding="utf-8")

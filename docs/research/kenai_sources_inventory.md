@@ -1,0 +1,56 @@
+# Kenai River Source Inventory
+
+Access mode values: `machine-readable`, `scrape`, `manual-review`, or `excluded`.
+
+| Priority | Source | URL | Category | Data provided | Update frequency | Access mode | Reliability | Prediction value | Risks/limitations |
+|---|---|---|---|---|---|---|---|---|---|
+| P0 | USGS Water Data API | https://api.waterdata.usgs.gov/ | Hydrology | Continuous values, daily values, monitoring locations, statistics, water quality, flood impacts | Near real-time for continuous values; daily/historical products | machine-readable | Very high | Core flow, stage, temperature, and historical percentiles | Provisional real-time data can revise |
+| P0 | USGS Kenai at Cooper Landing `15258000` | https://waterdata.usgs.gov/nwis/uv?legacy=1&site_no=15258000 | Hydrology | Water temperature, discharge, gage height | Hourly-ish/provisional current data | machine-readable via USGS API | Very high | Upper river and early watershed signal | Not representative of lower/tidal river |
+| P0 | USGS Kenai at Soldotna `15266300` | https://waterdata.usgs.gov/nwis/uv?legacy=1&site_no=15266300 | Hydrology | Water temperature, discharge, gage height | Hourly-ish/provisional current data | machine-readable via USGS API | Very high | Middle/lower non-tidal condition signal | Downstream tide effects not captured |
+| P0 | ADF&G Kenai late-run sockeye count | https://www.adfg.alaska.gov/sf/FishCounts/index.cfm?ADFG=main.displayResults&COUNTLOCATIONID=40&SpeciesID=420 | Fish counts | RM19 daily/cumulative sockeye sonar counts, goals, notes, JSON/Excel export | In season, daily when active | machine-readable/export plus scrape | Very high | Best objective sockeye run signal | Late-run sockeye only; preliminary counts |
+| P0 | ADF&G Russian River early sockeye count | https://www.adfg.alaska.gov/sf/FishCounts/index.cfm?ADFG=main.displayResults&COUNTLOCATIONID=13&SpeciesID=421 | Fish counts | Russian River weir counts | In season, daily-ish | machine-readable/export plus scrape | High | Upper river/Russian timing | Tributary-specific; delayed from lower river entry |
+| P0 | ADF&G Emergency Orders | https://www.adfg.alaska.gov/sf/EONR/ | Regulations | Closures, restrictions, openings, effective dates, PDFs/news releases | Event-driven; updated frequently | scrape/manual PDF parse | Very high | Legal hard gate | Stale EO parsing is high risk |
+| P0 | ADF&G Northern Kenai EOs | https://newsrelease.adfg.alaska.gov/sf/EONR/index.cfm?ADFG=area.list&AreaID=5&Year=2026 | Regulations | Area-filtered emergency orders | Event-driven | scrape | Very high | Relevant Kenai legal status | Must also catch related Cook Inlet/area orders |
+| P0 | ADF&G Southcentral/Kenai regulations PDF | https://www.adfg.alaska.gov/static/regulations/fishregulations/PDFs/southcentral/2026sc_sfregs_kenai_river.pdf | Regulations | Annual seasons, limits, gear, maps, river sections | Annual; superseded by EOs | manual-review/PDF parse | Very high | Static legal baseline | PDF extraction brittle; EOs override |
+| P0 | ADF&G fishing reports | https://www.adfg.alaska.gov/sf/FishingReports | Fishing reports | Biologist reports, species notes, access reminders | Weekly-ish in peak season | scrape | High | Official qualitative context | Narrative, not always timely |
+| P0 | NWS Weather API | https://weather-gov.github.io/api/general-faqs | Weather | Forecasts, alerts, observations, gridpoints | Forecast/alert lifecycle | machine-readable | Very high | Wind, rain, weather alerts, pressure inputs | Point forecasts may miss microclimates |
+| P0 | NOAA CO-OPS Tides API | https://api.tidesandcurrents.noaa.gov/api/prod/ | Tides/weather | Tide predictions, water levels, wind, pressure, visibility where supported | Predictions queried on demand; live products as available | machine-readable | Very high | Lower Kenai tide windows and launch timing | Need exact station mapping; tide not useful upstream |
+| P0 | NOAA Tide Predictions | https://tidesandcurrents.noaa.gov/tide_predictions | Tides | Station tide prediction lookup | Predictive | machine-readable through CO-OPS/API or scrape | High | River mouth/lower river timing | Subordinate stations can have limited intervals |
+| P0 | City of Kenai dipnet | https://www.kenai.city/dipnet | Access/dipnet | Season dates, fees, services, dock/parking/camping | Seasonal/manual | scrape/manual-review | High | Lower river/dipnet operations and crowd proxy | Mostly personal-use fishery scope |
+| P0 | City of Kenai dipnet cameras | https://www.kenai.city/dipnet/page/dipnet-cameras and https://stream.kenai.city/ | Webcams/access | City Dock, river, boat launch, beaches, parking cameras | Live/near-live | manual-review; future computer vision | High for visual truth | Feed URLs and availability can change |
+| P1 | NOAA NWPS API | https://water.noaa.gov/about/api | Flood/river forecast | NWS streamflow forecasts, observations, NWM output, flood categories, impacts | Operational forecast cycles | machine-readable | High | Flood/high-water risk and source redundancy | Site coverage and identifiers need discovery |
+| P1 | NOAA National Water Model | https://water.noaa.gov/about/nwm | Hydrologic forecast | Alaska streamflow analysis/short/medium-range forecasts | Alaska short-range every 3 hours; medium-range 4x/day | machine-readable/model products | High | Multi-day high/low flow risk | More complex than MVP source adapters |
+| P1 | Alaska DNR KRSMA | https://dnr.alaska.gov/parks/aspunits/kenai/krsma.htm | Access/rules | Managed area, access, hazards, motor restrictions, crowd context | Mostly static | scrape/manual-review | High | Reach rules and access context | Not a real-time status feed |
+| P1 | Alaska DNR Cooper Landing Boat Launch | https://dnr.alaska.gov/parks/aspunits/kenai/cooperlandingbl.htm | Access | Facilities, launch, parking, limited bank fishing | Static/occasional | scrape | High | Upper river access | No live status/crowd |
+| P1 | Alaska DNR Eagle Rock Boat Launch | https://dnr.alaska.gov/parks/aspunits/kenai/eaglerock.htm | Access | Lower/middle launch facilities and fees | Static/occasional | scrape | High | Lower river boat access | No live status/crowd |
+| P1 | Recreation.gov Russian River | https://www.recreation.gov/camping/campgrounds/232213 | Access | Campground/ferry-area closure and reservation status | Reservation/status driven | scrape/manual-review | High | Russian River access disruption | Not a fish condition source |
+| P1 | City of Kenai City Dock | https://www.kenai.city/dipnet/page/city-dock | Access | Ramp count, parking capacity, fees, seasonal closure info | Seasonal/manual | scrape/manual-review | High | Lower river launch feasibility | Tide closure tables may be seasonal |
+| P1 | KPB Maps | https://www.kpb.us/local-governance-and-permitting/borough-information/reference-library/kpb-maps | GIS | Parcels, roads, imagery, floodplain/public GIS apps | Layer-specific | machine-readable ArcGIS/manual | High | Access geofencing and spatial enrichment | Layer licensing/update cadence varies |
+| P1 | KPB Rivers/Streams FeatureServer | https://services.arcgis.com/ba4DH9pIcqkXJVfl/ArcGIS/rest/services/KPB_Rivers_Streams/FeatureServer | GIS | Hydrography features | Layer-specific | machine-readable | High | River/reach mapping | Not live conditions |
+| P1 | KRSA Fish Central Kenai | https://krsa.com/fish-central/kenai/ | Aggregator | Counts and links to fishery info | Seasonal | scrape/manual-review | Medium-high | Convenience cross-check | Advocacy/aggregator; verify against official |
+| P2 | NOAA Cook Inlet OFS | https://tidesandcurrents.noaa.gov/ofs/ciofs/ciofs.html | Marine model | Cook Inlet water level/current/salinity/temp model | Operational model cycles | machine-readable/model | High | Advanced lower-river/mouth context | Marine model complexity; not MVP |
+| P2 | NWS Marine Anchorage zones | https://www.weather.gov/marine/afcmz | Marine weather | Cook Inlet wind/wave/marine warnings | Forecast cycles | scrape/API-adjacent | High | Boat safety near mouth | Broad zone forecast |
+| P2 | ADF&G RM19 sonar background | https://www.adfg.alaska.gov/index.cfm?adfg=sonar.site_fish&site=3 | Fish biology | Run timing, goals, sonar methodology | Static/reference | scrape/manual-review | High | Model calibration and explanation | Not live count table |
+| P2 | ADF&G RM14 king sonar background | https://www.adfg.alaska.gov/index.cfm?adfg=sonar.kenai | Fish passage | King sonar/history/methods | Static/reference | scrape/manual-review | High | Future Chinook model context | Kings may be closed; not a current score source |
+| P2 | Alaska DEC Kenai water quality | https://dec.alaska.gov/water/water-quality/nonpoint-source-control/waters-in-the-spotlight/kenai-river-water-quality-monitoring-activities/ | Water quality | Monitoring reports and environmental context | Project/biennial | manual-review/PDF | High | Health/environment context | Not day-of fishing |
+| P2 | Kenai Watershed Forum baseline water quality | https://catalog.epscor.alaska.edu/dataset/kenai-river-baseline-water-quality-monitoring | Water quality | Long-term samples, nutrients/metals/bacteria | Historical/twice yearly | manual-review | Medium-high | Long-term context | Not live; access may require guest login |
+| P2 | Guide reports: Kenai Fly Fish | https://kenaiflyfish.com/ | Local report | Forecasts and local narrative | Irregular | manual-review | Medium | Context and source-gap clues | Commercial; verify official data |
+| P2 | Guide reports: Marlow's | https://marlowsonthekenai.com/blog/kenai-river-fishing-report-2026/ | Local report | Seasonal guide narrative | Irregular | manual-review | Medium | Local context | Commercial; may lag or promote services |
+| P2 | Fish Alaska magazine report | https://www.fishalaskamagazine.com/kenai-river-fishing-report/ | Local report | Magazine/guide-style updates | Irregular/seasonal | manual-review | Medium | Secondary qualitative report | Not official |
+| Manual | Kenai Fishing dashboard | https://app.kenai-fishing.com/ | Aggregator | Counts, flow, temp, score, guide context | Claims live | manual-review | Low until validated | UX/model inspiration | Suspect/future-looking values; do not ingest MVP |
+| Manual | AlaskaFishCounts charts | https://alaskafishcounts.com/charts/adfg-sport/kenai-river-late-run-sockeye/sockeye/ | Aggregator | ADF&G-derived charts/API links | Seasonal | manual-review | Medium until validated | Possible convenience layer | Validate against ADF&G before use |
+| Excluded | Facebook groups/posts | https://www.facebook.com/groups/kenaipeninsulafishingupdate/ | Social reports | Anecdotal reports | Irregular | excluded/manual-review | Low | Crowd/local observations | Login/social scraping risk |
+| Excluded | Forums/trip reports | https://www.norcalkayakanglers.com/ | Forums | Anecdotal trip reports | Sporadic | excluded | Low | Historical color only | Not operational or reliable |
+
+## MVP Source Ranking
+
+1. ADF&G Emergency Orders
+2. ADF&G Kenai late-run sockeye fish counts
+3. USGS Soldotna gauge
+4. USGS Cooper Landing gauge
+5. NWS Weather API alerts/forecast
+6. NOAA CO-OPS tides for Kenai/lower Cook Inlet station mapping
+7. ADF&G Southcentral/Kenai regulations PDF
+8. ADF&G fishing reports
+9. City of Kenai dipnet/camera/City Dock pages
+10. Alaska DNR KRSMA/access rules

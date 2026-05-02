@@ -1,7 +1,13 @@
+from pathlib import Path
+
 import httpx
 
 from kenai_engine.config import Settings
-from kenai_engine.sources.adfg_fish_counts import AdfgFishCountsAdapter, parse_fish_counts
+from kenai_engine.sources.adfg_fish_counts import (
+    AdfgFishCountsAdapter,
+    default_fish_count_urls,
+    parse_fish_counts,
+)
 
 
 def _settings(tmp_path) -> Settings:
@@ -34,6 +40,86 @@ def test_adfg_fish_counts_adapter_fetches_configured_page(tmp_path) -> None:
     assert snapshot.source == "adfg_fish_counts"
     assert snapshot.payload == "<html><body>fish counts</body></html>"
     assert seen_urls == [httpx.URL("https://example.test/adfg/counts")]
+
+
+def test_adfg_fish_counts_adapter_fetches_all_configured_count_pages(tmp_path) -> None:
+    seen_urls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen_urls.append(str(request.url))
+        return httpx.Response(200, text=f"<html>{request.url.path}</html>")
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+
+    snapshot = AdfgFishCountsAdapter(
+        _settings(tmp_path),
+        source_url=[
+            "https://example.test/adfg/kenai",
+            "https://example.test/adfg/russian",
+        ],
+        client=client,
+    ).fetch()
+
+    assert seen_urls == [
+        "https://example.test/adfg/kenai",
+        "https://example.test/adfg/russian",
+    ]
+    assert "https://example.test/adfg/kenai" in snapshot.payload
+    assert "https://example.test/adfg/russian" in snapshot.payload
+
+
+def test_default_fish_count_urls_use_json_exports_for_kenai_sources() -> None:
+    urls = default_fish_count_urls(year=2026)
+
+    assert (
+        "https://www.adfg.alaska.gov/sf/FishCounts/index.cfm?"
+        "ADFG=export.JSON&countLocationID=72&year=2026,2025,2024,2023,2022&speciesID=411"
+    ) in urls
+    assert (
+        "https://www.adfg.alaska.gov/sf/FishCounts/index.cfm?"
+        "ADFG=export.JSON&countLocationID=72&year=2026,2025,2024,2023,2022&speciesID=412"
+    ) in urls
+    assert (
+        "https://www.adfg.alaska.gov/sf/FishCounts/index.cfm?"
+        "ADFG=export.JSON&countLocationID=40&year=2026,2025,2024,2023,2022&speciesID=420"
+    ) in urls
+    assert all("ADFG=export.JSON" in url for url in urls)
+
+
+def test_parse_fish_counts_reads_fixture_records() -> None:
+    payload = _fixture("adfg_kenai_sockeye_counts.html")
+
+    counts = parse_fish_counts(payload)
+
+    assert [count["count"] for count in counts] == [35000, 31000, 25000]
+    assert all(count["location"] == "Kenai River late-run sockeye" for count in counts)
+
+
+def test_parse_fish_counts_extracts_actualish_adfg_display_page() -> None:
+    payload = _fixture("adfg_actualish_fish_count_page.html")
+
+    counts = parse_fish_counts(payload)
+
+    assert counts[:3] == [
+        {
+            "species": "Sockeye",
+            "location": "Kenai River (late-run sockeye)",
+            "count": 35000,
+            "observation_date": "2026-07-22",
+        },
+        {
+            "species": "Sockeye",
+            "location": "Kenai River (late-run sockeye)",
+            "count": 31000,
+            "observation_date": "2026-07-21",
+        },
+        {
+            "species": "Sockeye",
+            "location": "Kenai River (late-run sockeye)",
+            "count": 25000,
+            "observation_date": "2026-07-20",
+        },
+    ]
 
 
 def test_parse_fish_counts_extracts_simple_html_table_records() -> None:
@@ -183,6 +269,97 @@ def test_parse_fish_counts_extracts_json_payload_records() -> None:
     ]
 
 
+def test_parse_fish_counts_extracts_adfg_columns_data_payload() -> None:
+    payload = """
+    {
+      "COLUMNS": [
+        "YEAR",
+        "COUNTDATE",
+        "FISHCOUNT",
+        "SPECIESID",
+        "COUNTLOCATIONID",
+        "COUNTLOCATION",
+        "SPECIES"
+      ],
+      "DATA": [
+        [2026, "07/22/2026", 35000, 420, 40, "Kenai River late-run sockeye", "Sockeye"]
+      ]
+    }
+    """
+
+    counts = parse_fish_counts(payload)
+
+    assert counts == [
+        {
+            "species": "Sockeye",
+            "location": "Kenai River late-run sockeye",
+            "count": 35000,
+            "observation_date": "2026-07-22",
+            "count_location_id": "40",
+            "species_id": "420",
+            "year": "2026",
+        }
+    ]
+
+
+def test_parse_fish_counts_extracts_all_concatenated_adfg_json_exports() -> None:
+    payload = """
+    <!-- source_url: https://example.test/chinook -->
+    {
+      "COLUMNS": [
+        "YEAR",
+        "COUNTDATE",
+        "FISHCOUNT",
+        "SPECIESID",
+        "COUNTLOCATIONID",
+        "COUNTLOCATION",
+        "SPECIES"
+      ],
+      "DATA": [
+        [2025, "May, 16 2025 00:00:00", 0, 411, 72, "Kenai River (Chinook)", "Chinook - Early Run"]
+      ]
+    }
+    <!-- source_url: https://example.test/sockeye -->
+    {
+      "COLUMNS": [
+        "YEAR",
+        "COUNTDATE",
+        "FISHCOUNT",
+        "SPECIESID",
+        "COUNTLOCATIONID",
+        "COUNTLOCATION",
+        "SPECIES"
+      ],
+      "DATA": [
+        [2025, "July, 01 2025 00:00:00", 1200, 420, 40, "Kenai River (late-run sockeye)", "Sockeye"]
+      ]
+    }
+    """
+
+    counts = parse_fish_counts(payload)
+
+    assert counts == [
+        {
+            "species": "Chinook - Early Run",
+            "location": "Kenai River (Chinook)",
+            "count": 0,
+            "observation_date": "2025-05-16",
+            "count_location_id": "72",
+            "species_id": "411",
+            "year": "2025",
+        },
+        {
+            "species": "Sockeye",
+            "location": "Kenai River (late-run sockeye)",
+            "count": 1200,
+            "observation_date": "2025-07-01",
+            "count_location_id": "40",
+            "species_id": "420",
+            "year": "2025",
+        },
+    ]
+
+
 def test_parse_fish_counts_extracts_embedded_json_records() -> None:
     payload = """
     <html>
@@ -217,3 +394,7 @@ def test_parse_fish_counts_extracts_embedded_json_records() -> None:
             "observation_date": "2026-07-01",
         }
     ]
+
+
+def _fixture(name: str) -> str:
+    return (Path(__file__).parent / "fixtures" / name).read_text(encoding="utf-8")
