@@ -101,6 +101,7 @@ def normalize(settings: Settings) -> None:
                 observations = parse_usgs_payload(snapshot["payload"])
             except Exception as exc:
                 LOGGER.warning("could not normalize latest USGS snapshot: %s", exc)
+                _save_normalize_failure(connection, "usgs", snapshot["fetched_at"], "USGS", exc)
             else:
                 for observation in observations:
                     save_normalized_record(
@@ -232,6 +233,13 @@ def _normalize_adfg_emergency_orders(connection) -> None:
         orders = parse_emergency_orders(snapshot["payload"])
     except Exception as exc:
         LOGGER.warning("could not normalize latest ADFG emergency orders snapshot: %s", exc)
+        _save_normalize_failure(
+            connection,
+            "adfg_emergency_orders",
+            snapshot["fetched_at"],
+            "ADF&G emergency orders",
+            exc,
+        )
         return
 
     normalized = [_regulation_from_order(order) for order in orders]
@@ -257,6 +265,13 @@ def _normalize_adfg_fish_counts(connection) -> None:
         parsed_counts = parse_fish_counts(snapshot["payload"])
     except Exception as exc:
         LOGGER.warning("could not normalize latest ADFG fish counts snapshot: %s", exc)
+        _save_normalize_failure(
+            connection,
+            "adfg_fish_counts",
+            snapshot["fetched_at"],
+            "ADF&G fish counts",
+            exc,
+        )
         return
 
     normalized = [
@@ -284,6 +299,7 @@ def _normalize_nws_alerts(connection) -> None:
         alerts = parse_nws_alerts(snapshot["payload"])
     except Exception as exc:
         LOGGER.warning("could not normalize latest NWS snapshot: %s", exc)
+        _save_normalize_failure(connection, "nws", snapshot["fetched_at"], "NWS alerts", exc)
         return
 
     for alert in alerts:
@@ -301,6 +317,7 @@ def _normalize_nws_weather(connection) -> None:
         weather_observations = parse_nws_weather(snapshot["payload"])
     except Exception as exc:
         LOGGER.warning("could not normalize latest NWS weather snapshot: %s", exc)
+        _save_normalize_failure(connection, "nws", snapshot["fetched_at"], "NWS weather", exc)
         return
 
     for weather in weather_observations:
@@ -323,6 +340,13 @@ def _normalize_usgs_statistics(connection) -> None:
         statistics = parse_usgs_statistics_payload(snapshot["payload"])
     except Exception as exc:
         LOGGER.warning("could not normalize latest USGS statistics snapshot: %s", exc)
+        _save_normalize_failure(
+            connection,
+            "usgs_statistics",
+            snapshot["fetched_at"],
+            "USGS statistics",
+            exc,
+        )
         return
 
     for statistic in statistics:
@@ -345,6 +369,13 @@ def _normalize_noaa_tides(connection) -> None:
         predictions = parse_tide_predictions(snapshot["payload"])
     except Exception as exc:
         LOGGER.warning("could not normalize latest NOAA tides snapshot: %s", exc)
+        _save_normalize_failure(
+            connection,
+            "noaa_tides",
+            snapshot["fetched_at"],
+            "NOAA tides",
+            exc,
+        )
         return
 
     for prediction in predictions:
@@ -431,6 +462,22 @@ def _report_source_status(stored_status: str) -> str:
     if stored_status == "placeholder":
         return "degraded"
     return "ok"
+
+
+def _save_normalize_failure(
+    connection,
+    source: str,
+    checked_at: str,
+    label: str,
+    exc: Exception,
+) -> None:
+    save_source_health(
+        connection,
+        source,
+        checked_at,
+        "error",
+        f"Could not normalize latest {label} snapshot: {exc}",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:

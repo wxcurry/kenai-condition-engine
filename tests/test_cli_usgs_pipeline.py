@@ -7,7 +7,7 @@ from kenai_engine.config import Settings
 from kenai_engine.db import connect, initialize_database
 from kenai_engine.storage.normalized_records import list_normalized_records
 from kenai_engine.storage.raw_snapshots import save_raw_snapshot
-from kenai_engine.storage.source_health import save_source_health
+from kenai_engine.storage.source_health import list_latest_source_health, save_source_health
 
 
 def test_normalize_converts_latest_usgs_snapshot_to_records(tmp_path) -> None:
@@ -154,6 +154,30 @@ def test_build_report_uses_latest_persisted_source_health(tmp_path) -> None:
     assert report["source_health"][0]["severity"] == "critical"
     assert report["source_health"][0]["user_title"] == "Regulation source unavailable"
     assert report["warnings"][0]["source"] == "adfg_emergency_orders"
+
+
+def test_normalize_parser_failure_updates_source_health(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    checked_at = "2026-05-02T12:00:00+00:00"
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_raw_snapshot(connection, "usgs", "{not valid json", checked_at)
+        save_source_health(
+            connection,
+            source="usgs",
+            checked_at=checked_at,
+            status="ok",
+            message="Fetched USGS.",
+        )
+
+    normalize(settings)
+
+    with connect(settings.db_path) as connection:
+        latest_health = list_latest_source_health(connection)
+
+    usgs_health = next(row for row in latest_health if row["source"] == "usgs")
+    assert usgs_health["status"] == "error"
+    assert "Could not normalize latest USGS snapshot" in usgs_health["message"]
 
 
 def test_normalize_and_build_report_use_weather_tide_and_flow_statistics(tmp_path) -> None:
