@@ -17,6 +17,19 @@ def _semicolon_env(name: str, default: str) -> list[str]:
     return [value.strip() for value in raw_value.split(";") if value.strip()]
 
 
+def _required_values(name: str, values: list[str], label: str) -> list[str]:
+    if not values:
+        raise ValueError(f"{name} must include at least one {label}.")
+    return values
+
+
+def _positive_float_env(name: str, default: str) -> float:
+    value = float(os.getenv(name, default))
+    if value <= 0:
+        raise ValueError(f"{name} must be greater than 0.")
+    return value
+
+
 @dataclass(frozen=True)
 class Settings:
     """Runtime settings for the engine."""
@@ -42,8 +55,16 @@ class Settings:
             output_dir=Path(os.getenv("KENAI_ENGINE_OUTPUT_DIR", "data/reports")),
             public_dir=Path(os.getenv("KENAI_ENGINE_PUBLIC_DIR", "data/public")),
             raw_dir=Path(os.getenv("KENAI_ENGINE_RAW_DIR", "data/raw")),
-            usgs_site_ids=_csv_env("USGS_SITE_IDS", "15258000,15266010,15266110,15266300"),
-            nws_locations=_semicolon_env("NWS_LOCATIONS", "Kenai,AK"),
-            fetch_timeout_seconds=float(os.getenv("FETCH_TIMEOUT_SECONDS", "20")),
+            usgs_site_ids=_required_values(
+                "USGS_SITE_IDS",
+                _csv_env("USGS_SITE_IDS", "15258000,15266010,15266110,15266300"),
+                "site id",
+            ),
+            nws_locations=_required_values(
+                "NWS_LOCATIONS",
+                _semicolon_env("NWS_LOCATIONS", "Kenai,AK"),
+                "location",
+            ),
+            fetch_timeout_seconds=_positive_float_env("FETCH_TIMEOUT_SECONDS", "20"),
             noaa_tide_station_id=os.getenv("NOAA_TIDE_STATION_ID", "9455742"),
         )
