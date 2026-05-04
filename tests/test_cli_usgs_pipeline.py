@@ -5,9 +5,9 @@ from pathlib import Path
 from kenai_engine.cli import build_report, normalize, validate
 from kenai_engine.config import Settings
 from kenai_engine.db import connect, initialize_database
-from kenai_engine.storage.normalized_records import list_normalized_records
+from kenai_engine.storage.normalized_records import list_normalized_records, save_normalized_record
 from kenai_engine.storage.raw_snapshots import save_raw_snapshot
-from kenai_engine.storage.source_health import save_source_health
+from kenai_engine.storage.source_health import list_latest_source_health, save_source_health
 
 
 def test_normalize_converts_latest_usgs_snapshot_to_records(tmp_path) -> None:
@@ -154,6 +154,66 @@ def test_build_report_uses_latest_persisted_source_health(tmp_path) -> None:
     assert report["source_health"][0]["severity"] == "critical"
     assert report["source_health"][0]["user_title"] == "Regulation source unavailable"
     assert report["warnings"][0]["source"] == "adfg_emergency_orders"
+
+
+def test_normalize_parser_failure_updates_source_health(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    checked_at = "2026-05-02T12:00:00+00:00"
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_raw_snapshot(connection, "usgs", "{not valid json", checked_at)
+        save_source_health(
+            connection,
+            source="usgs",
+            checked_at=checked_at,
+            status="ok",
+            message="Fetched USGS.",
+        )
+
+    normalize(settings)
+
+    with connect(settings.db_path) as connection:
+        latest_health = list_latest_source_health(connection)
+
+    usgs_health = next(row for row in latest_health if row["source"] == "usgs")
+    assert usgs_health["status"] == "error"
+    assert "Could not normalize latest USGS snapshot" in usgs_health["message"]
+
+
+def test_build_report_ignores_records_for_failed_latest_source_health(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_normalized_record(
+            connection,
+            "fish_count",
+            "2026-05-01",
+            json.dumps(
+                {
+                    "species": "Sockeye",
+                    "location": "Kenai sonar",
+                    "count": 12345,
+                    "observation_date": "2026-05-01",
+                }
+            ),
+        )
+        save_source_health(
+            connection,
+            source="adfg_fish_counts",
+            checked_at="2026-05-02T12:00:00+00:00",
+            status="error",
+            message="Could not normalize latest ADF&G fish counts snapshot.",
+        )
+
+    build_report(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+
+    assert report["fish_counts"] == []
+    fish_count_health = next(
+        health for health in report["source_health"] if health["source"] == "adfg_fish_counts"
+    )
+    assert fish_count_health["status"] == "failed"
 
 
 def test_normalize_and_build_report_use_weather_tide_and_flow_statistics(tmp_path) -> None:
