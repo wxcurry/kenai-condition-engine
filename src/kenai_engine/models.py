@@ -15,6 +15,9 @@ ConditionStatus = Literal["poor", "fair", "good", "excellent", "restricted", "cl
 RegulationStatus = Literal["open", "restricted", "closed", "unknown"]
 SourceStatus = Literal["ok", "degraded", "failed"]
 WarningSeverity = Literal["info", "watch", "warning", "critical"]
+ReportStatus = Literal["ok", "degraded", "failed"]
+ConfidenceBand = Literal["low", "medium", "high"]
+SourceFreshnessStatus = Literal["current", "stale", "missing"]
 BarometricTrend = Literal["rising", "steady", "falling"]
 FloodAlertSeverity = Literal["info", "watch", "warning"]
 FishCountTrend = Literal["rising", "steady", "falling", "unknown"]
@@ -201,6 +204,7 @@ class SourceHealth(BaseModel):
     last_checked_at: datetime
     last_success_at: datetime | None = None
     freshness_minutes: int | None = None
+    freshness_status: SourceFreshnessStatus = "missing"
     last_error: str | None = None
     affects_score: bool = False
     affects_legal_status: bool = False
@@ -357,10 +361,13 @@ class Report(BaseModel):
     generated_by: str = ENGINE_NAME
     report_date: date
     generated_at: datetime
+    expires_at: datetime
+    report_status: ReportStatus
     river: str
     overall_score: int = Field(ge=0, le=100)
     overall_status: ConditionStatus
     confidence: float = Field(ge=0, le=1)
+    confidence_band: ConfidenceBand
     summary: str
     locations: list[LocationCondition]
     species_scores: list[SpeciesScore] = Field(default_factory=list)

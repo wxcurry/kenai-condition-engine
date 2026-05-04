@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from kenai_engine.models import (
@@ -37,6 +37,7 @@ REQUIRED_SCORE_SOURCES = {
     "nws",
     "noaa_tides",
 }
+REPORT_TTL = timedelta(hours=6)
 
 DEFAULT_LOCATIONS = [
     {
@@ -244,10 +245,13 @@ def build_placeholder_report(
         generated_by=ENGINE_NAME,
         report_date=today,
         generated_at=generated_at,
+        expires_at=generated_at + REPORT_TTL,
+        report_status=_report_status(active_source_health),
         river="Kenai River",
         overall_score=score.overall_score,
         overall_status=score.overall_status,
         confidence=report_confidence,
+        confidence_band=_confidence_band(report_confidence),
         summary=_build_summary(
             score.overall_status,
             usable_observations,
@@ -697,6 +701,24 @@ def _source_freshness_hours(
     return freshness
 
 
+def _report_status(source_health: list[SourceHealth]) -> str:
+    if not source_health:
+        return "degraded"
+    if all(health.status == "failed" for health in source_health):
+        return "failed"
+    if any(health.status != "ok" for health in source_health):
+        return "degraded"
+    return "ok"
+
+
+def _confidence_band(confidence: float) -> str:
+    if confidence >= 0.7:
+        return "high"
+    if confidence >= 0.4:
+        return "medium"
+    return "low"
+
+
 def _missing_score_sources(source_health: list[SourceHealth]) -> list[str]:
     if not source_health:
         return []
@@ -861,6 +883,9 @@ def _enriched_health(generated_at: datetime, health: SourceHealth) -> SourceHeal
         severity = "critical" if _affects_legal_status(health.source) else "warning"
     elif status == "degraded" and severity == "info":
         severity = "watch"
+    freshness_status = "stale" if stale else "current"
+    if status == "failed" and health.last_success_at is None:
+        freshness_status = "missing"
     user_title, user_message = _source_user_copy(health.source, status, stale, health.message)
     return SourceHealth(
         source=health.source,
@@ -872,6 +897,7 @@ def _enriched_health(generated_at: datetime, health: SourceHealth) -> SourceHeal
         last_success_at=health.last_success_at
         or (health.last_checked_at if status != "failed" else None),
         freshness_minutes=freshness_minutes,
+        freshness_status=freshness_status,
         last_error=health.last_error or (health.message if status == "failed" else None),
         affects_score=_affects_score(health.source),
         affects_legal_status=_affects_legal_status(health.source),

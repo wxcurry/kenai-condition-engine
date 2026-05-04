@@ -26,10 +26,13 @@ def test_placeholder_report_has_app_contract_shape() -> None:
         "generated_by",
         "report_date",
         "generated_at",
+        "expires_at",
+        "report_status",
         "river",
         "overall_score",
         "overall_status",
         "confidence",
+        "confidence_band",
         "summary",
         "locations",
         "species_scores",
@@ -44,8 +47,12 @@ def test_placeholder_report_has_app_contract_shape() -> None:
     assert dumped["schema_version"] == "1.0.0"
     assert dumped["engine_version"] == "0.1.0"
     assert dumped["generated_by"] == "kenai-condition-engine"
+    assert dumped["expires_at"] == "2026-05-02T18:00:00Z"
+    assert dumped["report_status"] == "degraded"
+    assert dumped["confidence_band"] in {"low", "medium", "high"}
     assert dumped["river"] == "Kenai River"
     assert dumped["source_health"]
+    assert all("freshness_status" in health for health in dumped["source_health"])
 
 
 def test_report_schema_version_is_required() -> None:
