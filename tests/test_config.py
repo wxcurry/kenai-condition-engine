@@ -23,3 +23,25 @@ def test_default_usgs_site_ids_include_validated_kenai_gages(monkeypatch) -> Non
     settings = Settings.from_env()
 
     assert settings.usgs_site_ids == ["15258000", "15266010", "15266110", "15266300"]
+
+
+def test_empty_usgs_site_ids_are_rejected(monkeypatch) -> None:
+    monkeypatch.setenv("USGS_SITE_IDS", " , ")
+
+    try:
+        Settings.from_env()
+    except ValueError as error:
+        assert str(error) == "USGS_SITE_IDS must include at least one site id."
+    else:
+        raise AssertionError("Expected empty USGS_SITE_IDS to be rejected.")
+
+
+def test_non_positive_fetch_timeout_is_rejected(monkeypatch) -> None:
+    monkeypatch.setenv("FETCH_TIMEOUT_SECONDS", "0")
+
+    try:
+        Settings.from_env()
+    except ValueError as error:
+        assert str(error) == "FETCH_TIMEOUT_SECONDS must be greater than 0."
+    else:
+        raise AssertionError("Expected non-positive FETCH_TIMEOUT_SECONDS to be rejected.")
