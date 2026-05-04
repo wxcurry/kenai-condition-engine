@@ -127,36 +127,72 @@ def build_report(settings: Settings) -> None:
 
     with connect(settings.db_path) as connection:
         initialize_database(connection)
+        source_health = _source_health_from_rows(list_latest_source_health(connection))
         observations = _latest_unique_usgs_observations(
             UsgsObservation.model_validate_json(row["payload"])
-            for row in list_normalized_records(connection, "usgs_observation", limit=800)
+            for row in _source_records(
+                connection,
+                "usgs_observation",
+                "usgs",
+                source_health,
+                limit=800,
+            )
             if json.loads(row["payload"]).get("site_id") in set(settings.usgs_site_ids)
         )
         regulations = [
             Regulation.model_validate_json(row["payload"])
-            for row in list_normalized_records(connection, "regulation", limit=20)
+            for row in _source_records(
+                connection,
+                "regulation",
+                "adfg_emergency_orders",
+                source_health,
+                limit=20,
+            )
         ]
         fish_counts = [
             FishCount.model_validate_json(row["payload"])
-            for row in list_normalized_records(connection, "fish_count", limit=20)
+            for row in _source_records(
+                connection,
+                "fish_count",
+                "adfg_fish_counts",
+                source_health,
+                limit=20,
+            )
         ]
         alerts = [
             Alert.model_validate_json(row["payload"])
-            for row in list_normalized_records(connection, "alert", limit=20)
+            for row in _source_records(connection, "alert", "nws", source_health, limit=20)
         ]
         weather = [
             WeatherObservation.model_validate_json(row["payload"])
-            for row in list_normalized_records(connection, "weather_observation", limit=10)
+            for row in _source_records(
+                connection,
+                "weather_observation",
+                "nws",
+                source_health,
+                limit=10,
+            )
         ]
         tides = [
             TidePrediction.model_validate_json(row["payload"])
-            for row in list_normalized_records(connection, "tide_prediction", limit=20)
+            for row in _source_records(
+                connection,
+                "tide_prediction",
+                "noaa_tides",
+                source_health,
+                limit=20,
+            )
         ]
         flow_statistics = [
             UsgsFlowStatistic.model_validate_json(row["payload"])
-            for row in list_normalized_records(connection, "usgs_flow_statistic", limit=400)
+            for row in _source_records(
+                connection,
+                "usgs_flow_statistic",
+                "usgs_statistics",
+                source_health,
+                limit=400,
+            )
         ]
-    source_health = _source_health_from_rows(list_latest_source_health(connection))
     baseline_regulations = load_baseline_regulations()
     report = build_placeholder_report(
         usgs_observations=observations,
@@ -462,6 +498,23 @@ def _report_source_status(stored_status: str) -> str:
     if stored_status == "placeholder":
         return "degraded"
     return "ok"
+
+
+def _source_records(
+    connection,
+    record_type: str,
+    source: str,
+    source_health: list[SourceHealth],
+    *,
+    limit: int,
+):
+    if _source_has_failed(source_health, source):
+        return []
+    return list_normalized_records(connection, record_type, limit=limit)
+
+
+def _source_has_failed(source_health: list[SourceHealth], source: str) -> bool:
+    return any(health.source == source and health.status == "failed" for health in source_health)
 
 
 def _save_normalize_failure(
