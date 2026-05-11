@@ -2,6 +2,7 @@ import sqlite3
 from pathlib import Path
 
 from kenai_engine.condition_variables import (
+    CONDITION_VARIABLES,
     KENAI_RIVER_VARIABLE_NAMES,
     REQUESTED_TP_VARIABLE_NAMES,
 )
@@ -188,6 +189,13 @@ def test_kenai_river_variable_reference_file_includes_all_requested_variables() 
     assert "# Kenai River Condition Calculation Variable References" in reference
     for variable_name in KENAI_RIVER_VARIABLE_NAMES:
         assert f"`{variable_name}`" in reference
+
+
+def test_variable_reference_file_includes_all_seeded_condition_variables() -> None:
+    reference = Path("docs/VARIABLE_REFERENCES.md").read_text(encoding="utf-8")
+
+    for variable in CONDITION_VARIABLES:
+        assert f"`{variable.name}`" in reference
 
 
 def test_save_normalized_record_is_idempotent_for_duplicate_record() -> None:
