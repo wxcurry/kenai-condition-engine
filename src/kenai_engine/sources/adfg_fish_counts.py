@@ -12,6 +12,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from kenai_engine.config import Settings
+from kenai_engine.seasonal_sources import active_fish_count_runs
 from kenai_engine.sources.usgs import RawSnapshot
 from kenai_engine.utils.http import build_http_client
 from kenai_engine.utils.time import utc_now
@@ -26,12 +27,8 @@ KENAI_LATE_RUN_SOCKEYE_SPECIES_ID = 420
 RUSSIAN_RIVER_SOCKEYE_COUNT_LOCATION_ID = 13
 RUSSIAN_RIVER_EARLY_SOCKEYE_SPECIES_ID = 421
 RUSSIAN_RIVER_LATE_SOCKEYE_SPECIES_ID = 422
-DEFAULT_FISH_COUNT_SOURCES = (
-    (KENAI_CHINOOK_COUNT_LOCATION_ID, KENAI_CHINOOK_EARLY_RUN_SPECIES_ID),
-    (KENAI_CHINOOK_COUNT_LOCATION_ID, KENAI_CHINOOK_LATE_RUN_SPECIES_ID),
-    (KENAI_LATE_RUN_SOCKEYE_COUNT_LOCATION_ID, KENAI_LATE_RUN_SOCKEYE_SPECIES_ID),
-    (RUSSIAN_RIVER_SOCKEYE_COUNT_LOCATION_ID, RUSSIAN_RIVER_EARLY_SOCKEYE_SPECIES_ID),
-    (RUSSIAN_RIVER_SOCKEYE_COUNT_LOCATION_ID, RUSSIAN_RIVER_LATE_SOCKEYE_SPECIES_ID),
+DEFAULT_FISH_COUNT_SOURCES = tuple(
+    (run.count_location_id, run.species_id) for run in active_fish_count_runs(None)
 )
 KENAI_RELEVANT_TERMS = ("kenai", "russian", "kasilof")
 
@@ -46,11 +43,12 @@ class AdfgFishCountsAdapter:
         settings: Settings,
         *,
         source_url: str | list[str] | tuple[str, ...] | None = None,
+        active_on: date | None = None,
         client: httpx.Client | None = None,
     ) -> None:
         self._settings = settings
         if source_url is None:
-            self._source_urls = default_fish_count_urls()
+            self._source_urls = default_fish_count_urls(active_on=active_on or utc_now().date())
         elif isinstance(source_url, str):
             self._source_urls = (source_url,)
         else:
@@ -81,12 +79,16 @@ class AdfgFishCountsAdapter:
         )
 
 
-def default_fish_count_urls(*, year: int | None = None) -> tuple[str, ...]:
+def default_fish_count_urls(
+    *,
+    year: int | None = None,
+    active_on: date | None = None,
+) -> tuple[str, ...]:
     """Build default ADFG JSON export URLs for Kenai-relevant fish count sources."""
 
     return tuple(
-        fish_count_export_url(count_location_id, species_id, year=year)
-        for count_location_id, species_id in DEFAULT_FISH_COUNT_SOURCES
+        fish_count_export_url(run.count_location_id, run.species_id, year=year)
+        for run in active_fish_count_runs(active_on)
     )
 
 

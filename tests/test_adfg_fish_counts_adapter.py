@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 
 import httpx
@@ -84,6 +85,21 @@ def test_default_fish_count_urls_use_json_exports_for_kenai_sources() -> None:
         "ADFG=export.JSON&countLocationID=40&year=2026,2025,2024,2023,2022&speciesID=420"
     ) in urls
     assert all("ADFG=export.JSON" in url for url in urls)
+
+
+def test_default_fish_count_urls_skip_inactive_seasonal_sources() -> None:
+    urls = default_fish_count_urls(year=2026, active_on=date(2026, 5, 5))
+
+    assert urls == ()
+
+
+def test_default_fish_count_urls_include_only_active_seasonal_sources() -> None:
+    urls = default_fish_count_urls(year=2026, active_on=date(2026, 7, 22))
+
+    assert all("ADFG=export.JSON" in url for url in urls)
+    assert any("countLocationID=40" in url and "speciesID=420" in url for url in urls)
+    assert any("countLocationID=13" in url and "speciesID=422" in url for url in urls)
+    assert not any("speciesID=411" in url for url in urls)
 
 
 def test_parse_fish_counts_reads_fixture_records() -> None:

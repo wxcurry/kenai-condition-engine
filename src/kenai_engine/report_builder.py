@@ -26,6 +26,7 @@ from kenai_engine.models import (
     WeatherObservation,
 )
 from kenai_engine.scoring import FRESHNESS_LIMIT_HOURS, score_conditions
+from kenai_engine.seasonal_sources import is_score_source_active
 from kenai_engine.sources.noaa_tides import determine_tide_stage
 from kenai_engine.sources.usgs import calculate_flow_percentile, classify_usgs_trend
 
@@ -356,7 +357,7 @@ def _score_input_from_records(
         if any(alert.severity == "warning" for alert in flood_alerts)
         else "watch",
         source_freshness_hours=_source_freshness_hours(generated_at, source_health),
-        missing_sources=_missing_score_sources(source_health),
+        missing_sources=_missing_score_sources_for_date(generated_at, source_health),
     )
 
 
@@ -719,11 +720,15 @@ def _confidence_band(confidence: float) -> str:
     return "low"
 
 
-def _missing_score_sources(source_health: list[SourceHealth]) -> list[str]:
+def _missing_score_sources_for_date(
+    generated_at: datetime,
+    source_health: list[SourceHealth],
+) -> list[str]:
     if not source_health:
         return []
     available = {health.source for health in source_health if health.status != "failed"}
-    return sorted(REQUIRED_SCORE_SOURCES - available)
+    required_sources = _required_score_sources_for_date(generated_at)
+    return sorted(required_sources - available)
 
 
 def _build_summary(
@@ -761,7 +766,7 @@ def _source_warning_summary(
     if not source_health:
         return ""
 
-    missing_sources = _missing_score_sources(source_health)
+    missing_sources = _missing_score_sources_for_date(generated_at, source_health)
     if missing_sources:
         return f"Source warning: missing required sources ({', '.join(missing_sources)})."
 
@@ -794,7 +799,7 @@ def _build_warnings(
                     affects_legal_status=health.affects_legal_status,
                 )
             )
-    for source in _missing_score_sources(source_health):
+    for source in _missing_score_sources_for_date(generated_at, source_health):
         warnings.append(_source_warning_for_missing(source))
     for source in _stale_required_sources(generated_at, source_health):
         if not any(warning.source == source for warning in warnings):
@@ -975,7 +980,9 @@ def _stale_required_sources(
 ) -> list[str]:
     stale_sources: list[str] = []
     for health in source_health:
-        if health.source not in REQUIRED_SCORE_SOURCES or health.status == "failed":
+        if health.source not in _required_score_sources_for_date(generated_at):
+            continue
+        if health.status == "failed":
             continue
         checked_at = health.last_checked_at
         if checked_at.tzinfo is None:
@@ -1021,11 +1028,9 @@ def _default_source_health(
                 generated_at,
                 zero_records_are_normalized=regulations is not None,
             ),
-            _source_health(
-                "adfg_fish_counts",
-                len(active_fish_counts) if fish_counts is not None else 0,
-                "normalized ADFG fish count records",
+            _fish_count_source_health(
                 generated_at,
+                len(active_fish_counts) if fish_counts is not None else 0,
                 zero_records_are_normalized=fish_counts is not None,
             ),
             _source_health(
@@ -1036,6 +1041,37 @@ def _default_source_health(
                 zero_records_are_normalized=alerts is not None,
             ),
         ],
+    )
+
+
+def _required_score_sources_for_date(generated_at: datetime) -> set[str]:
+    return {
+        source
+        for source in REQUIRED_SCORE_SOURCES
+        if is_score_source_active(source, generated_at.date())
+    }
+
+
+def _fish_count_source_health(
+    generated_at: datetime,
+    record_count: int,
+    *,
+    zero_records_are_normalized: bool,
+) -> SourceHealth:
+    if is_score_source_active("adfg_fish_counts", generated_at.date()):
+        return _source_health(
+            "adfg_fish_counts",
+            record_count,
+            "normalized ADFG fish count records",
+            generated_at,
+            zero_records_are_normalized=zero_records_are_normalized,
+        )
+    return SourceHealth(
+        source="adfg_fish_counts",
+        status="ok",
+        severity="info",
+        last_checked_at=generated_at,
+        message="ADF&G fish count source is outside its active run window.",
     )
 
 
