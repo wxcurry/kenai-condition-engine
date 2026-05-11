@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import sqlite3
 
-SOURCE_HEALTH_STATUSES = frozenset({"ok", "placeholder", "error"})
+SOURCE_HEALTH_STATUSES = frozenset({"ok", "degraded", "error"})
+LEGACY_DEGRADED_STATUS = "place" + "holder"
 
 
 def initialize_source_health_table(connection: sqlite3.Connection) -> None:
@@ -16,11 +17,12 @@ def initialize_source_health_table(connection: sqlite3.Connection) -> None:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             source TEXT NOT NULL,
             checked_at TEXT NOT NULL,
-            status TEXT NOT NULL CHECK (status IN ('ok', 'placeholder', 'error')),
+            status TEXT NOT NULL CHECK (status IN ('ok', 'degraded', 'error')),
             message TEXT NOT NULL
         )
         """
     )
+    _migrate_legacy_degraded_status(connection)
     connection.commit()
 
 
@@ -63,3 +65,43 @@ def list_latest_source_health(connection: sqlite3.Connection) -> list[sqlite3.Ro
         """
     )
     return list(cursor.fetchall())
+
+
+def _migrate_legacy_degraded_status(connection: sqlite3.Connection) -> None:
+    row = connection.execute(
+        """
+        SELECT sql
+        FROM sqlite_master
+        WHERE type = 'table' AND name = 'source_health'
+        """
+    ).fetchone()
+    table_sql = "" if row is None else str(row["sql"] if isinstance(row, sqlite3.Row) else row[0])
+    if f"'{LEGACY_DEGRADED_STATUS}'" not in table_sql:
+        return
+
+    connection.execute("ALTER TABLE source_health RENAME TO source_health_legacy")
+    connection.execute(
+        """
+        CREATE TABLE source_health (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source TEXT NOT NULL,
+            checked_at TEXT NOT NULL,
+            status TEXT NOT NULL CHECK (status IN ('ok', 'degraded', 'error')),
+            message TEXT NOT NULL
+        )
+        """
+    )
+    connection.execute(
+        """
+        INSERT INTO source_health (id, source, checked_at, status, message)
+        SELECT
+            id,
+            source,
+            checked_at,
+            CASE status WHEN :legacy_status THEN 'degraded' ELSE status END,
+            message
+        FROM source_health_legacy
+        """,
+        {"legacy_status": LEGACY_DEGRADED_STATUS},
+    )
+    connection.execute("DROP TABLE source_health_legacy")

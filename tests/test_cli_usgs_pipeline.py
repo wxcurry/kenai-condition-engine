@@ -130,6 +130,163 @@ def test_normalize_and_build_report_use_regulations_fish_counts_and_alerts(tmp_p
     assert report["alerts"][0]["severity"] == "warning"
 
 
+def test_normalize_adds_adfg_fishing_reports_as_information_alerts(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_raw_snapshot(
+            connection,
+            "adfg_fishing_reports",
+            _fixture("adfg_fishing_reports.html"),
+            "2026-07-22T12:00:00+00:00",
+        )
+
+    normalize(settings)
+
+    with connect(settings.db_path) as connection:
+        rows = list_normalized_records(connection, "alert")
+
+    alerts = [json.loads(row["payload"]) for row in rows]
+    fishing_report_alert = next(
+        alert for alert in alerts if alert["source"] == "adfg_fishing_reports"
+    )
+    assert fishing_report_alert["severity"] == "info"
+    assert fishing_report_alert["title"] == "Northern Kenai Fishing Report"
+
+
+def test_build_report_filters_stale_irrelevant_fishing_report_alerts(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_normalized_record(
+            connection,
+            "alert",
+            "2026-07-22T12:00:00+00:00",
+            json.dumps(
+                {
+                    "title": "Southeast Fishing Reports",
+                    "severity": "info",
+                    "summary": "Old parser artifact mentioning Kenai in page navigation.",
+                    "source": "adfg_fishing_reports",
+                }
+            ),
+        )
+        save_normalized_record(
+            connection,
+            "alert",
+            "2026-07-22T12:01:00+00:00",
+            json.dumps(
+                {
+                    "title": "Kenai River / Northern Kenai",
+                    "severity": "info",
+                    "summary": "Current Kenai report.",
+                    "source": "adfg_fishing_reports",
+                }
+            ),
+        )
+
+    build_report(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+    titles = [alert["title"] for alert in report["alerts"]]
+    assert "Kenai River / Northern Kenai" in titles
+    assert "Southeast Fishing Reports" not in titles
+
+
+def test_build_report_filters_alert_limit_per_source(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_normalized_record(
+            connection,
+            "alert",
+            "2026-07-22T12:00:00+00:00",
+            json.dumps(
+                {
+                    "title": "Kenai River / Northern Kenai",
+                    "severity": "info",
+                    "summary": "Current Kenai report.",
+                    "source": "adfg_fishing_reports",
+                }
+            ),
+        )
+        for index in range(20):
+            save_normalized_record(
+                connection,
+                "alert",
+                f"2026-07-22T12:{index + 1:02d}:00+00:00",
+                json.dumps(
+                    {
+                        "title": f"Flood Watch {index}",
+                        "severity": "watch",
+                        "summary": "NWS alert should not crowd out fishing reports.",
+                        "source": "NWS Anchorage",
+                    }
+                ),
+            )
+
+    build_report(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+    titles = [alert["title"] for alert in report["alerts"]]
+    assert "Kenai River / Northern Kenai" in titles
+
+
+def test_build_report_gates_fishing_report_alerts_by_fishing_report_source_health(
+    tmp_path,
+) -> None:
+    settings = _settings(tmp_path)
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_normalized_record(
+            connection,
+            "alert",
+            "2026-07-22T12:00:00+00:00",
+            json.dumps(
+                {
+                    "title": "Kenai River / Northern Kenai",
+                    "severity": "info",
+                    "summary": "Current Kenai report.",
+                    "source": "adfg_fishing_reports",
+                }
+            ),
+        )
+        save_normalized_record(
+            connection,
+            "alert",
+            "2026-07-22T12:01:00+00:00",
+            json.dumps(
+                {
+                    "title": "Flood Warning",
+                    "severity": "warning",
+                    "summary": "NWS alert should remain available.",
+                    "source": "NWS Anchorage",
+                }
+            ),
+        )
+        save_source_health(
+            connection,
+            source="nws",
+            checked_at="2026-07-22T12:02:00+00:00",
+            status="ok",
+            message="Fetched NWS.",
+        )
+        save_source_health(
+            connection,
+            source="adfg_fishing_reports",
+            checked_at="2026-07-22T12:02:00+00:00",
+            status="error",
+            message="Could not normalize latest ADF&G fishing reports snapshot.",
+        )
+
+    build_report(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+    titles = [alert["title"] for alert in report["alerts"]]
+    assert "Flood Warning" in titles
+    assert "Kenai River / Northern Kenai" not in titles
+
+
 def test_build_report_uses_latest_persisted_source_health(tmp_path) -> None:
     settings = _settings(tmp_path)
     with connect(settings.db_path) as connection:

@@ -1,6 +1,6 @@
-# Deterministic MVP Prediction Model
+# Deterministic Production Prediction Model
 
-The MVP uses a transparent deterministic model. It does not ask an LLM to invent scores. Every score is a weighted combination of known inputs with legal overrides applied first.
+The production engine uses a transparent deterministic model. It does not ask an LLM to invent scores. Every score is a weighted combination of known inputs with legal overrides applied first.
 
 ## Outputs
 
@@ -42,7 +42,7 @@ overall_score =
 
 All intermediate scores are clamped to 0-100.
 
-## MVP Weights and Rules
+## Production Weights and Rules
 
 | Signal | Rule | Modifier |
 |---|---:|---:|
@@ -74,7 +74,7 @@ Locations use the environmental score as the base, then apply reach-specific mod
 - Soldotna: use Soldotna gauge, ADF&G RM19 counts, bank/boat access and crowd proxies.
 - Lower Kenai / tide-influenced: use Soldotna gauge plus NOAA tides, City Dock status/cameras, and dipnet/crowd windows.
 
-Current MVP code applies:
+Current production code applies:
 
 ```
 if tide_stage == incoming: lower_kenai += 8
@@ -105,7 +105,7 @@ Chinook/king:
 Coho:
 
 - Use late-summer seasonal prior, incoming tide in lower river, cooling/rain cues, and ADF&G reports.
-- Current MVP gives a small rising-count/tide boost but marks confidence lower if no direct coho source exists.
+- Current production code gives a small rising-count/tide boost but marks confidence lower if no direct coho source exists.
 
 Rainbow trout and Dolly Varden:
 
@@ -151,9 +151,9 @@ The improved method is safer but can still mislead if RM19 counts are applied to
 - Display reasons and freshness next to every score.
 - Keep manual/social reports out of automated scoring until reviewed.
 
-## Final MVP Simplification
+## Production Source Scope
 
-MVP should ship with official machine-readable sources only:
+The production engine ships with official machine-readable sources only:
 
 - USGS Cooper Landing/Soldotna
 - ADF&G fish counts

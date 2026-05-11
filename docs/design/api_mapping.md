@@ -4,7 +4,7 @@ Last reviewed: 2026-05-02
 
 ## USGS NWIS IV
 
-MVP endpoint:
+Production endpoint:
 
 ```text
 https://waterservices.usgs.gov/nwis/iv/?format=json&sites={SITE_IDS}&parameterCd=00060,00065,00010,63680,00095,00300,00400&siteStatus=all
@@ -43,7 +43,7 @@ Candidate endpoints:
 - https://api.waterdata.usgs.gov/ogcapi/v0/collections/latest-continuous
 - https://api.waterdata.usgs.gov/ogcapi/v0/collections/continuous
 
-These remain documented candidates. NWIS IV stays the MVP adapter because the current code and tests
+These remain documented candidates. NWIS IV stays the production adapter because the current code and tests
 already parse WaterML JSON and support parameter-code mapping.
 
 ## National Weather Service

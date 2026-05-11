@@ -25,12 +25,16 @@ from kenai_engine.models import (
     UsgsObservation,
     WeatherObservation,
 )
-from kenai_engine.report_builder import build_placeholder_report, load_report, write_latest_report
+from kenai_engine.report_builder import build_condition_report, load_report, write_latest_report
 from kenai_engine.sources.adfg_emergency_orders import (
     AdfgEmergencyOrdersAdapter,
     parse_emergency_orders,
 )
 from kenai_engine.sources.adfg_fish_counts import AdfgFishCountsAdapter, parse_fish_counts
+from kenai_engine.sources.adfg_fishing_reports import (
+    AdfgFishingReportsAdapter,
+    parse_fishing_reports,
+)
 from kenai_engine.sources.noaa_tides import NoaaTidesAdapter, parse_tide_predictions
 from kenai_engine.sources.nws import NwsAdapter, parse_nws_alerts, parse_nws_weather
 from kenai_engine.sources.usgs import (
@@ -53,7 +57,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def fetch(settings: Settings) -> None:
-    """Run placeholder source fetches and store raw snapshots."""
+    """Fetch production source payloads and store raw snapshots."""
 
     settings.raw_dir.mkdir(parents=True, exist_ok=True)
     with connect(settings.db_path) as connection:
@@ -63,6 +67,7 @@ def fetch(settings: Settings) -> None:
             UsgsStatisticsAdapter(settings),
             AdfgEmergencyOrdersAdapter(settings),
             AdfgFishCountsAdapter(settings),
+            AdfgFishingReportsAdapter(settings),
             NwsAdapter(settings),
             NoaaTidesAdapter(settings),
         ]
@@ -75,7 +80,7 @@ def fetch(settings: Settings) -> None:
                 snapshot = RawSnapshot(
                     source=adapter.source_name,
                     fetched_at=checked_at,
-                    payload=json.dumps({"error": str(exc), "placeholder": True}),
+                    payload=json.dumps({"error": str(exc), "degraded": True}),
                 )
                 save_source_health(connection, adapter.source_name, checked_at, "error", str(exc))
             else:
@@ -116,6 +121,7 @@ def normalize(settings: Settings) -> None:
 
         _normalize_adfg_emergency_orders(connection)
         _normalize_adfg_fish_counts(connection)
+        _normalize_adfg_fishing_reports(connection)
         _normalize_nws_alerts(connection)
         _normalize_nws_weather(connection)
         _normalize_usgs_statistics(connection)
@@ -160,8 +166,13 @@ def build_report(settings: Settings) -> None:
             )
         ]
         alerts = [
-            Alert.model_validate_json(row["payload"])
-            for row in _source_records(connection, "alert", "nws", source_health, limit=20)
+            *_alert_records_for_source(connection, "nws", source_health, limit=20),
+            *_alert_records_for_source(
+                connection,
+                "adfg_fishing_reports",
+                source_health,
+                limit=20,
+            ),
         ]
         weather = [
             WeatherObservation.model_validate_json(row["payload"])
@@ -194,7 +205,7 @@ def build_report(settings: Settings) -> None:
             )
         ]
     baseline_regulations = load_baseline_regulations()
-    report = build_placeholder_report(
+    report = build_condition_report(
         usgs_observations=observations,
         regulations=regulations,
         fish_counts=fish_counts,
@@ -216,7 +227,7 @@ def validate(settings: Settings) -> None:
 
     path = settings.output_dir / "latest.json"
     if not path.exists():
-        LOGGER.warning("%s does not exist; writing placeholder report first", path)
+        LOGGER.warning("%s does not exist; writing condition report first", path)
         write_latest_report(settings.output_dir)
     try:
         report = load_report(path)
@@ -228,7 +239,7 @@ def validate(settings: Settings) -> None:
 
 
 def run_daily(settings: Settings) -> None:
-    """Run the current MVP daily pipeline."""
+    """Run the production daily pipeline."""
 
     fetch(settings)
     normalize(settings)
@@ -323,6 +334,30 @@ def _normalize_adfg_fish_counts(connection) -> None:
             fish_count.model_dump_json(),
         )
     LOGGER.info("normalized %s ADFG fish counts", len(normalized))
+
+
+def _normalize_adfg_fishing_reports(connection) -> None:
+    snapshot = get_latest_raw_snapshot(connection, "adfg_fishing_reports")
+    if snapshot is None:
+        LOGGER.info("no ADFG fishing reports snapshot available to normalize")
+        return
+
+    try:
+        alerts = parse_fishing_reports(snapshot["payload"])
+    except Exception as exc:
+        LOGGER.warning("could not normalize latest ADFG fishing reports snapshot: %s", exc)
+        _save_normalize_failure(
+            connection,
+            "adfg_fishing_reports",
+            snapshot["fetched_at"],
+            "ADF&G fishing reports",
+            exc,
+        )
+        return
+
+    for alert in alerts:
+        save_normalized_record(connection, "alert", snapshot["fetched_at"], alert.model_dump_json())
+    LOGGER.info("normalized %s ADFG fishing report alerts", len(alerts))
 
 
 def _normalize_nws_alerts(connection) -> None:
@@ -495,7 +530,7 @@ def _source_health_from_rows(rows) -> list[SourceHealth]:
 def _report_source_status(stored_status: str) -> str:
     if stored_status == "error":
         return "failed"
-    if stored_status == "placeholder":
+    if stored_status == "degraded":
         return "degraded"
     return "ok"
 
@@ -513,8 +548,41 @@ def _source_records(
     return list_normalized_records(connection, record_type, limit=limit)
 
 
+def _alert_records_for_source(
+    connection,
+    source: str,
+    source_health: list[SourceHealth],
+    *,
+    limit: int,
+) -> list[Alert]:
+    if _source_has_failed(source_health, source):
+        return []
+    fetch_limit = max(limit * 10, 200)
+    return [
+        alert
+        for row in list_normalized_records(connection, "alert", limit=fetch_limit)
+        if _alert_matches_source(alert := Alert.model_validate_json(row["payload"]), source)
+        and _alert_is_report_relevant(alert)
+    ][:limit]
+
+
+def _alert_matches_source(alert: Alert, source: str) -> bool:
+    if source == "adfg_fishing_reports":
+        return alert.source == "adfg_fishing_reports"
+    if source == "nws":
+        return alert.source != "adfg_fishing_reports"
+    return alert.source == source
+
+
 def _source_has_failed(source_health: list[SourceHealth], source: str) -> bool:
     return any(health.source == source and health.status == "failed" for health in source_health)
+
+
+def _alert_is_report_relevant(alert: Alert) -> bool:
+    if alert.source != "adfg_fishing_reports":
+        return True
+    title = alert.title.lower()
+    return any(term in title for term in ("kenai", "russian", "soldotna", "kasilof", "homer"))
 
 
 def _save_normalize_failure(

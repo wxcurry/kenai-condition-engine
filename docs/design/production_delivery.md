@@ -1,4 +1,4 @@
-# Production Delivery MVP
+# Production Delivery
 
 ## Static JSON Delivery
 
@@ -20,7 +20,7 @@ Local URL: `http://127.0.0.1:8765/v1/latest.json`.
 
 This can later be hosted by uploading `data/public` to GitHub Pages, Cloudflare
 Pages, S3, Firebase Hosting, or any static host. No cloud deployment is required
-for the MVP.
+for production delivery.
 
 ## Schema Versioning
 
@@ -79,7 +79,7 @@ or watch severity and reduce confidence through deterministic scoring.
 
 ## Baseline Regulation Limitations
 
-Emergency orders are overrides, not the complete legal rule set. The MVP adds
+Emergency orders are overrides, not the complete legal rule set. The production engine includes
 `data/config/baseline_regulations.json` for structured baseline context, but the
 included records are explicitly marked `manual-review` unless fully verified.
 The app must not present baseline fields as complete legal advice.
@@ -94,7 +94,7 @@ Legal status order:
 
 ## PDF And Manual-Review Limitations
 
-ADF&G emergency orders may link only to PDFs. The MVP detects PDF URLs, stores
+ADF&G emergency orders may link only to PDFs. The production engine detects PDF URLs, stores
 the URL/title/metadata, and marks the order with `manual_review_required`. The
 report adds a visible warning and alert when this happens.
 

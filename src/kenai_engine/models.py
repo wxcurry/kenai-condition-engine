@@ -59,6 +59,8 @@ class LocationCondition(BaseModel):
     confidence_explanation: str = ""
     legal_explanation: str = ""
     recommended_user_action: str = ""
+    component_scores: dict[str, int] = Field(default_factory=dict)
+    source_provenance: list[dict[str, object | None]] = Field(default_factory=list)
 
 
 class SpeciesScore(BaseModel):

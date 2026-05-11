@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "kenai-condition-engine"
 version = "0.1.0"
-description = "Backend data engine skeleton for Kenai River condition reports."
+description = "Production backend data engine for Kenai River condition reports."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
