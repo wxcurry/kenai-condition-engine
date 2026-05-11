@@ -73,8 +73,8 @@ def test_list_latest_source_health_returns_newest_record_per_source() -> None:
         connection,
         source="adfg_fish_counts",
         checked_at="2026-05-02T12:03:00+00:00",
-        status="placeholder",
-        message="Using fixture content.",
+        status="degraded",
+        message="Using cached source content.",
     )
 
     rows = list_latest_source_health(connection)
@@ -82,7 +82,7 @@ def test_list_latest_source_health_returns_newest_record_per_source() -> None:
     assert [row["id"] for row in rows] == [latest_usgs_id, fish_counts_id]
     assert [row["source"] for row in rows] == ["usgs", "adfg_fish_counts"]
     assert rows[0]["status"] == "ok"
-    assert rows[1]["status"] == "placeholder"
+    assert rows[1]["status"] == "degraded"
 
 
 def test_save_source_health_rejects_unknown_status() -> None:
