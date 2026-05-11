@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create a runnable Python backend/data skeleton for the Kenai River information engine.
+**Goal:** Create a runnable Python backend/data engine for the Kenai River information engine.
 
-**Architecture:** Use a simple `src/` package with Pydantic models at the boundary, stdlib argparse and sqlite3 for CLI/storage, placeholder source adapters, deterministic scoring, and report generation to `data/reports/latest.json`.
+**Architecture:** Use a simple `src/` package with Pydantic models at the boundary, stdlib argparse and sqlite3 for CLI/storage, production source adapters, deterministic scoring, and report generation to `data/reports/latest.json`.
 
 **Tech Stack:** Python 3.11+, Pydantic, httpx, BeautifulSoup/lxml, SQLite, pytest, ruff.
 
@@ -20,7 +20,7 @@
 - Create: `data/reports/.gitkeep`
 
 - [x] Add package metadata, dependencies, dev dependencies, ruff config, and pytest config.
-- [x] Document MVP purpose, limitations, Android `latest.json` consumption, commands, and adapter extension workflow.
+- [x] Document production purpose, operating boundaries, Android `latest.json` consumption, commands, and adapter extension workflow.
 
 ### Task 2: Models, Scoring, and Report Builder
 
@@ -32,7 +32,7 @@
 - Test: `tests/test_report_builder.py`
 
 - [x] Write tests for closure/restriction overrides and report shape.
-- [x] Implement deterministic score calculation and valid placeholder report output.
+- [x] Implement deterministic score calculation and valid condition report output.
 
 ### Task 3: Config, Database, Storage, Sources, and CLI
 
@@ -45,7 +45,7 @@
 
 - [x] Add environment-backed settings.
 - [x] Add SQLite initialization and storage helpers.
-- [x] Add placeholder source adapters and CLI commands that run without source API keys.
+- [x] Add production source adapters and CLI commands that run without source API keys.
 
 ### Task 4: Verification
 

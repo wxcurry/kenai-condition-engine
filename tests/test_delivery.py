@@ -2,11 +2,11 @@ import json
 from datetime import UTC, datetime
 
 from kenai_engine.delivery import prepare_public_report
-from kenai_engine.report_builder import build_placeholder_report
+from kenai_engine.report_builder import build_condition_report
 
 
 def test_prepare_public_report_writes_versioned_latest_json(tmp_path) -> None:
-    report = build_placeholder_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
+    report = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
 
     path = prepare_public_report(report, tmp_path / "public")
 

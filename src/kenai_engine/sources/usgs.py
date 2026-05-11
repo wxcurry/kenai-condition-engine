@@ -17,7 +17,7 @@ USGS_LATEST_CONTINUOUS_URL = (
     "https://api.waterdata.usgs.gov/ogcapi/v0/collections/latest-continuous/items"
 )
 USGS_STATISTICS_URL = "https://waterservices.usgs.gov/nwis/stat/"
-MVP_USGS_PARAMETER_CODES = ("00060", "00065", "00010", "63680")
+CORE_USGS_PARAMETER_CODES = ("00060", "00065", "00010", "63680")
 EXPANDED_USGS_PARAMETER_CODES = (
     "00060",
     "00065",

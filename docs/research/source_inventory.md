@@ -4,7 +4,7 @@ Last reviewed: 2026-05-02
 
 Access modes: `machine_readable`, `scrape`, `manual_review`, `unsuitable`.
 
-| Source | URL | Category | Access | Freshness | Reliability | Prediction value | MVP priority | Limitations |
+| Source | URL | Category | Access | Freshness | Reliability | Prediction value | Production priority | Limitations |
 |---|---|---|---|---|---|---|---|---|
 | USGS NWIS IV | https://waterservices.usgs.gov/nwis/iv/ | river conditions | machine_readable | ~15 minute readings, often hourly transmission | high, provisional | flow, stage, temperature, turbidity, trend | P0 | Some parameters unavailable by site; invalid site/parameter combos can return 404. |
 | USGS Water Data OGC latest-continuous | https://api.waterdata.usgs.gov/ogcapi/v0/collections/latest-continuous | river conditions | machine_readable | near real time | high | future adapter path | P2 | Needs field mapping before replacing NWIS IV. |
@@ -15,11 +15,11 @@ Access modes: `machine_readable`, `scrape`, `manual_review`, `unsuitable`.
 | ADF&G Fishing Reports | https://www.adfg.alaska.gov/sf/FishingReports/ | official narrative | scrape | report cadence varies | official narrative | explanation/context | P2 | Narrative should not drive numeric scores without explicit rules. |
 | Baseline sport regulations | https://www.adfg.alaska.gov/index.cfm?adfg=fishingSportFishingInfo.scregs | legal baseline | manual_review | annual/seasonal | official when reviewed | legal context and confidence | P0 | JSON config is not legally complete. |
 | Alaska DNR KRSMA pages | https://dnr.alaska.gov/parks/aspunits/kenai/krsma.htm | access/boating | scrape | static/occasional | official | boat/access warnings | P2 | No stable machine status feed found. |
-| City of Kenai dipnet pages/cameras | https://www.kenai.city/ | lower-river access | scrape/manual_review | seasonal/varies | official local | dipnet, fees, parking, visibility metadata | P2 | Webcam metadata only for MVP; no computer vision. |
+| City of Kenai dipnet pages/cameras | https://www.kenai.city/ | lower-river access | scrape/manual_review | seasonal/varies | official local | dipnet, fees, parking, visibility metadata | P2 | Webcam metadata only for production; no computer vision. |
 | Guide/tackle reports/forums/social | varies | anecdotal | manual_review/unsuitable | variable | mixed | color only | P3 | Do not automate into scores without permission and validation. |
 | Academic and hydrology papers | varies | research | manual_review | static | high when peer-reviewed | future model calibration | P3 | Not operational live data. |
 
-## Current MVP Source List
+## Current Production Source List
 
 - `usgs`: official NWIS IV JSON for parameters `00060,00065,00010,63680,00095,00300,00400`.
 - `usgs_statistics`: official NWIS statistics RDB/JSON for flow percentile context.

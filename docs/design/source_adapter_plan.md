@@ -18,7 +18,7 @@ Build adapters in order of legality and predictive value. Avoid paid APIs, secre
 | Adapter | Source URLs | Access | Use | Reason to wait |
 |---|---|---|---|---|
 | `city_kenai_access` | https://www.kenai.city/dipnet, https://www.kenai.city/dipnet/page/city-dock | scrape/manual | Dipnet season, dock services, lower launch status | Seasonal pages and tables need parser design |
-| `city_kenai_cameras` | https://www.kenai.city/dipnet/page/dipnet-cameras, https://stream.kenai.city/ | manual-review/future CV | Visual crowd/clarity/access confirmation | Video/image URLs can change; no need for MVP scoring |
+| `city_kenai_cameras` | https://www.kenai.city/dipnet/page/dipnet-cameras, https://stream.kenai.city/ | manual-review/future CV | Visual crowd/clarity/access confirmation | Video/image URLs can change; not required for current production scoring |
 | `dnr_krsma_access` | https://dnr.alaska.gov/parks/aspunits/kenai/krsma.htm | scrape/manual | Reach rules, motor restrictions, static access context | Mostly static; can be curated |
 | `recreation_russian_river` | https://www.recreation.gov/camping/campgrounds/232213 | scrape/manual | Russian River access closures/reservations | Useful for access, not core scoring |
 | `nwps_flood_forecast` | https://water.noaa.gov/about/api | machine-readable | Flood stages, forecasts, impacts | Needs identifier mapping and more model work |
@@ -33,13 +33,13 @@ Build adapters in order of legality and predictive value. Avoid paid APIs, secre
 | AlaskaFishCounts | https://alaskafishcounts.com/ | Convenience layer but must validate against official ADF&G |
 | Kenai Fishing dashboard | https://app.kenai-fishing.com/ | Interesting UX, but values need validation before trust |
 
-## Excluded From MVP Automation
+## Excluded From Production Automation
 
 | Source | Reason |
 |---|---|
 | Facebook groups/posts | Login/social scraping risk and low repeatability |
 | Forum trip reports | Anecdotal, stale, and not operational |
-| Paid weather/fishing APIs | User explicitly requested no paid APIs unless optional; official free APIs cover MVP |
+| Paid weather/fishing APIs | User explicitly requested no paid APIs unless optional; official free APIs cover production |
 
 ## Adapter Contract
 

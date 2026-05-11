@@ -18,7 +18,7 @@ def connect(db_path: Path) -> sqlite3.Connection:
 
 
 def initialize_database(connection: sqlite3.Connection) -> None:
-    """Create MVP tables if they do not exist."""
+    """Create production tables if they do not exist."""
 
     connection.executescript(
         """

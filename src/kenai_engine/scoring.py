@@ -1,4 +1,4 @@
-"""Deterministic MVP scoring rules."""
+"""Deterministic production scoring rules."""
 
 from __future__ import annotations
 

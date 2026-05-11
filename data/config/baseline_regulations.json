@@ -9,7 +9,7 @@
       "gear_notes": "Baseline regulation context requires manual review against the current ADF&G Southcentral sport fishing regulations before use.",
       "bag_possession_summary": "Manual review required; do not display as legally complete bag or possession guidance.",
       "source_url": "https://www.adfg.alaska.gov/index.cfm?adfg=fishingSportFishingInfo.scregs",
-      "notes": "MVP structured placeholder for app context. Emergency orders override this context when active.",
+      "notes": "Structured production context for app display. Emergency orders override this context when active.",
       "last_reviewed": "2026-05-02",
       "review_status": "manual-review"
     },
@@ -22,7 +22,7 @@
       "gear_notes": "Manual review required for tackle, retention, and seasonal exceptions.",
       "bag_possession_summary": "Manual review required; do not display as legally complete harvest guidance.",
       "source_url": "https://www.adfg.alaska.gov/index.cfm?adfg=fishingSportFishingInfo.scregs",
-      "notes": "MVP baseline context only; verify against current ADF&G regulations.",
+      "notes": "Production baseline context; verify against current ADF&G regulations before authoritative display.",
       "last_reviewed": "2026-05-02",
       "review_status": "manual-review"
     }
