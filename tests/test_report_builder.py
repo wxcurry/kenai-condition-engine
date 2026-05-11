@@ -9,14 +9,19 @@ from kenai_engine.models import (
     SourceHealth,
     TidePrediction,
     UsgsFlowStatistic,
+    UsgsObservation,
     WeatherObservation,
 )
-from kenai_engine.report_builder import build_placeholder_report, write_latest_report
+from kenai_engine.report_builder import (
+    build_condition_report,
+    build_placeholder_report,
+    write_latest_report,
+)
 from kenai_engine.sources.usgs import parse_usgs_payload
 
 
-def test_placeholder_report_has_app_contract_shape() -> None:
-    report = build_placeholder_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
+def test_condition_report_has_app_contract_shape() -> None:
+    report = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
 
     dumped = report.model_dump(mode="json")
 
@@ -55,8 +60,38 @@ def test_placeholder_report_has_app_contract_shape() -> None:
     assert all("freshness_status" in health for health in dumped["source_health"])
 
 
+def test_condition_report_uses_production_copy() -> None:
+    report = build_condition_report(
+        datetime(2026, 5, 2, 12, 0, tzinfo=UTC),
+        regulations=[],
+        fish_counts=[],
+        alerts=[],
+    )
+
+    combined_text = " ".join(
+        [
+            report.summary,
+            *[alert.summary for alert in report.alerts],
+            *[health.message for health in report.source_health],
+        ]
+    ).lower()
+
+    banned_copy = [
+        "mvp",
+        "place" + "holder",
+        "skele" + "ton",
+        "production source " + "fetching is not " + "implemented",
+    ]
+    assert all(copy not in combined_text for copy in banned_copy)
+    assert "condition report" in report.summary.lower()
+
+
+def test_placeholder_report_alias_preserves_existing_import_contract() -> None:
+    assert build_placeholder_report is build_condition_report
+
+
 def test_report_schema_version_is_required() -> None:
-    payload = build_placeholder_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC)).model_dump(
+    payload = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC)).model_dump(
         mode="json"
     )
     del payload["schema_version"]
@@ -77,7 +112,7 @@ def test_write_latest_report_creates_json_file(tmp_path) -> None:
 
 
 def test_report_includes_all_default_locations_when_data_is_missing() -> None:
-    report = build_placeholder_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
+    report = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
 
     assert [location.id for location in report.locations] == [
         "cooper_landing_upper_kenai",
@@ -95,7 +130,7 @@ def test_report_includes_all_default_locations_when_data_is_missing() -> None:
 
 
 def test_location_contract_includes_water_weather_and_explanation_fields() -> None:
-    report = build_placeholder_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
+    report = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
     location = report.model_dump(mode="json")["locations"][0]
 
     assert location["status"] in {
@@ -140,7 +175,7 @@ def test_location_contract_includes_water_weather_and_explanation_fields() -> No
 
 
 def test_report_species_scores_are_supported_or_unknown_with_explanation() -> None:
-    report = build_placeholder_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
+    report = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
 
     dumped = report.model_dump(mode="json")
 
@@ -161,11 +196,11 @@ def test_baseline_regulation_appears_in_report() -> None:
         gear_notes="Artificial fly or lure unless official regulations say otherwise.",
         bag_possession_summary="Manual review required before relying on this summary.",
         source_url="https://www.adfg.alaska.gov/",
-        notes="MVP manual-review baseline.",
+        notes="Production baseline regulation context.",
         last_reviewed=datetime(2026, 5, 1, tzinfo=UTC).date(),
     )
 
-    report = build_placeholder_report(
+    report = build_condition_report(
         datetime(2026, 6, 20, 12, 0, tzinfo=UTC),
         regulations=[],
         fish_counts=[],
@@ -178,7 +213,7 @@ def test_baseline_regulation_appears_in_report() -> None:
 
 
 def test_missing_baseline_regulation_creates_warning_and_lowers_confidence() -> None:
-    report = build_placeholder_report(
+    report = build_condition_report(
         datetime(2026, 6, 20, 12, 0, tzinfo=UTC),
         regulations=[],
         fish_counts=[],
@@ -190,8 +225,8 @@ def test_missing_baseline_regulation_creates_warning_and_lowers_confidence() -> 
     assert report.confidence < 0.35
 
 
-def test_explicit_empty_inputs_do_not_insert_placeholder_records() -> None:
-    report = build_placeholder_report(
+def test_explicit_empty_inputs_do_not_insert_default_records() -> None:
+    report = build_condition_report(
         datetime(2026, 5, 2, 12, 0, tzinfo=UTC),
         regulations=[],
         fish_counts=[],
@@ -210,8 +245,8 @@ def test_explicit_empty_inputs_do_not_insert_placeholder_records() -> None:
     assert _source_health_message(report, "nws") == "0 normalized NWS alerts available."
 
 
-def test_real_closed_regulation_overrides_placeholder_status() -> None:
-    report = build_placeholder_report(
+def test_real_closed_regulation_overrides_default_status() -> None:
+    report = build_condition_report(
         datetime(2026, 5, 2, 12, 0, tzinfo=UTC),
         regulations=[
             Regulation(
@@ -234,8 +269,8 @@ def test_real_closed_regulation_overrides_placeholder_status() -> None:
     )
 
 
-def test_real_restricted_regulation_overrides_placeholder_status() -> None:
-    report = build_placeholder_report(
+def test_real_restricted_regulation_overrides_default_status() -> None:
+    report = build_condition_report(
         datetime(2026, 5, 2, 12, 0, tzinfo=UTC),
         regulations=[
             Regulation(
@@ -261,7 +296,7 @@ def test_real_restricted_regulation_overrides_placeholder_status() -> None:
 def test_report_summary_warns_when_required_sources_are_missing() -> None:
     generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
 
-    report = build_placeholder_report(
+    report = build_condition_report(
         generated_at,
         regulations=[],
         fish_counts=[],
@@ -284,7 +319,7 @@ def test_report_summary_warns_when_required_sources_are_missing() -> None:
 def test_report_does_not_require_inactive_seasonal_fish_counts() -> None:
     generated_at = datetime(2026, 5, 5, 12, 0, tzinfo=UTC)
 
-    report = build_placeholder_report(
+    report = build_condition_report(
         generated_at,
         regulations=[],
         fish_counts=[],
@@ -332,7 +367,7 @@ def test_report_summary_warns_when_required_sources_are_stale() -> None:
     generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
     stale_time = datetime(2026, 7, 20, 22, 0, tzinfo=UTC)
 
-    report = build_placeholder_report(
+    report = build_condition_report(
         generated_at,
         regulations=[],
         fish_counts=[],
@@ -388,7 +423,7 @@ def test_report_summary_warns_when_required_sources_are_stale() -> None:
 def test_failed_source_health_maps_to_user_visible_fields() -> None:
     generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
 
-    report = build_placeholder_report(
+    report = build_condition_report(
         generated_at,
         regulations=[],
         fish_counts=[],
@@ -417,7 +452,7 @@ def test_failed_source_health_maps_to_user_visible_fields() -> None:
 def test_failed_usgs_source_suppresses_active_water_values_and_notes_cached_data() -> None:
     generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
 
-    report = build_placeholder_report(
+    report = build_condition_report(
         generated_at,
         usgs_observations=parse_usgs_payload(_fixture("usgs_kenai_gages.json")),
         regulations=[],
@@ -472,7 +507,7 @@ def test_failed_usgs_source_suppresses_active_water_values_and_notes_cached_data
 
 
 def test_pdf_only_emergency_order_creates_manual_review_warning_and_alert() -> None:
-    report = build_placeholder_report(
+    report = build_condition_report(
         datetime(2026, 7, 22, 22, 0, tzinfo=UTC),
         regulations=[
             Regulation(
@@ -497,7 +532,7 @@ def test_pdf_only_emergency_order_creates_manual_review_warning_and_alert() -> N
 
 def test_unknown_manual_review_order_caps_v1_report_and_avoids_open_legal_copy() -> None:
     generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
-    report = build_placeholder_report(
+    report = build_condition_report(
         generated_at,
         regulations=[
             Regulation(
@@ -591,7 +626,7 @@ def test_report_score_uses_usgs_and_sockeye_count_signals() -> None:
             source_url="https://www.adfg.alaska.gov/sf/FishCounts/",
         ),
     ]
-    report = build_placeholder_report(
+    report = build_condition_report(
         datetime(2026, 7, 22, 22, 0, tzinfo=UTC),
         usgs_observations=observations,
         fish_counts=fish_counts,
@@ -644,9 +679,132 @@ def test_report_score_uses_usgs_and_sockeye_count_signals() -> None:
     assert any("Sockeye 3-day average" in note for note in report.locations[0].notes)
 
 
+def test_location_scores_use_each_locations_mapped_gauge() -> None:
+    generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
+    observations = [
+        _usgs_observation("15258000", "00060", 120, "ft3/s", generated_at),
+        _usgs_observation("15258000", "00010", 1.0, "deg C", generated_at),
+        _usgs_observation("15266300", "00060", 4200, "ft3/s", generated_at),
+        _usgs_observation("15266300", "00010", 11.0, "deg C", generated_at),
+    ]
+    statistics = [
+        UsgsFlowStatistic(
+            site_id="15258000",
+            month=7,
+            day=22,
+            parameter_code="00060",
+            unit="ft3/s",
+            p25=500,
+            p50=900,
+            p75=1400,
+            p90=1800,
+            p95=2200,
+        ),
+        UsgsFlowStatistic(
+            site_id="15266300",
+            month=7,
+            day=22,
+            parameter_code="00060",
+            unit="ft3/s",
+            p25=2500,
+            p50=4000,
+            p75=6000,
+            p90=7500,
+            p95=8300,
+        ),
+    ]
+
+    report = build_condition_report(
+        generated_at,
+        usgs_observations=observations,
+        fish_counts=[],
+        regulations=[],
+        alerts=[],
+        usgs_flow_statistics=statistics,
+    )
+
+    upper = next(
+        location for location in report.locations if location.id == "cooper_landing_upper_kenai"
+    )
+    soldotna = next(location for location in report.locations if location.id == "soldotna")
+
+    assert upper.condition_score < soldotna.condition_score
+    assert "Cold water can slow fish movement and feeding." in upper.limiting_factors
+    assert "Cold water can slow fish movement and feeding." not in soldotna.limiting_factors
+
+
+def test_location_contract_exposes_component_scores_and_source_provenance() -> None:
+    observations = parse_usgs_payload(_fixture("usgs_kenai_gages.json"))
+    report = build_condition_report(
+        datetime(2026, 7, 22, 9, 0, tzinfo=UTC),
+        usgs_observations=observations,
+        fish_counts=[],
+        regulations=[],
+        alerts=[],
+        tide_predictions=[
+            TidePrediction(
+                station_id="9455742",
+                predicted_at=datetime(2026, 7, 22, 6, 0, tzinfo=UTC),
+                height_ft=2.1,
+                tide_type="L",
+            ),
+            TidePrediction(
+                station_id="9455742",
+                predicted_at=datetime(2026, 7, 22, 12, 0, tzinfo=UTC),
+                height_ft=20.4,
+                tide_type="H",
+            ),
+        ],
+    )
+
+    lower = next(location for location in report.locations if location.id == "kenai_river_mouth")
+    dumped = lower.model_dump(mode="json")
+
+    assert dumped["component_scores"]["environmental"] >= 0
+    assert dumped["component_scores"]["location"] >= 0
+    assert dumped["component_scores"]["species"] >= 0
+    assert any(source["source"] == "usgs" for source in dumped["source_provenance"])
+    assert any(source["source"] == "noaa_tides" for source in dumped["source_provenance"])
+
+
+def test_kenai_rm19_sockeye_counts_apply_only_to_lower_relevant_locations() -> None:
+    report = build_condition_report(
+        datetime(2026, 7, 22, 9, 0, tzinfo=UTC),
+        usgs_observations=parse_usgs_payload(_fixture("usgs_kenai_gages.json")),
+        fish_counts=[
+            FishCount(
+                species="Sockeye salmon",
+                location="Kenai River RM19 sonar",
+                count=35_000,
+                observation_date=datetime(2026, 7, 22, tzinfo=UTC).date(),
+                count_location_id="40",
+                species_id="420",
+                source_url="https://www.adfg.alaska.gov/sf/FishCounts/",
+            )
+        ],
+        regulations=[],
+        alerts=[],
+    )
+
+    upper = next(
+        location for location in report.locations if location.id == "cooper_landing_upper_kenai"
+    )
+    middle = next(
+        location for location in report.locations if location.id == "middle_kenai_skilak_outlet"
+    )
+    soldotna = next(location for location in report.locations if location.id == "soldotna")
+
+    assert upper.sockeye_score is None
+    assert middle.sockeye_score is None
+    assert all(source["source"] != "adfg_fish_counts" for source in upper.source_provenance)
+    assert all(source["source"] != "adfg_fish_counts" for source in middle.source_provenance)
+    assert soldotna.sockeye_score is not None
+    assert any(source["source"] == "adfg_fish_counts" for source in soldotna.source_provenance)
+
+
 def test_report_notes_explain_weather_tide_and_flow_percentile_changes() -> None:
     observations = parse_usgs_payload(_fixture("usgs_kenai_gages.json"))
-    report = build_placeholder_report(
+    report = build_condition_report(
         datetime(2026, 7, 22, 9, 0, tzinfo=UTC),
         usgs_observations=observations,
         fish_counts=[],
@@ -700,6 +858,25 @@ def test_report_notes_explain_weather_tide_and_flow_percentile_changes() -> None
 
 def _source_health_message(report, source: str) -> str:
     return next(health.message for health in report.source_health if health.source == source)
+
+
+def _usgs_observation(
+    site_id: str,
+    parameter_code: str,
+    value: float,
+    unit: str,
+    observed_at: datetime,
+) -> UsgsObservation:
+    return UsgsObservation(
+        site_id=site_id,
+        monitoring_location_id=f"USGS-{site_id}",
+        site_name=f"USGS {site_id}",
+        parameter_code=parameter_code,
+        parameter_name=parameter_code,
+        value=value,
+        unit=unit,
+        observed_at=observed_at,
+    )
 
 
 def _fixture(name: str) -> str:
