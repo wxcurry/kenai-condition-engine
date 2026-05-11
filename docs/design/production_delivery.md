@@ -18,9 +18,20 @@ python -m kenai_engine.cli serve
 
 Local URL: `http://127.0.0.1:8765/v1/latest.json`.
 
-This can later be hosted by uploading `data/public` to GitHub Pages, Cloudflare
-Pages, S3, Firebase Hosting, or any static host. No cloud deployment is required
-for production delivery.
+The live Kenai Pulse source is published from this repository with GitHub Pages.
+The scheduled workflow at `.github/workflows/publish-live-report.yml` runs the
+full `run-daily` pipeline every three hours, uploads `data/public`, and deploys
+that artifact with GitHub Pages.
+
+Production URL:
+
+```text
+https://wxcurry.github.io/kenai-condition-engine/v1/latest.json
+```
+
+GitHub repository settings must use **Pages > Build and deployment > Source:
+GitHub Actions**. The workflow can also be run manually from the Actions tab when
+Kenai Pulse needs an immediate refresh.
 
 ## Schema Versioning
 
@@ -49,10 +60,15 @@ validation.
 
 ## Android Consumption Path
 
-Android should consume `data/public/v1/latest.json` in development or the hosted
-equivalent in production. Each location record is deterministic and remains
-present even when some source data is missing. Location confidence and warning
-fields tell the UI when data is incomplete.
+Android should consume `data/public/v1/latest.json` in development and
+`https://wxcurry.github.io/kenai-condition-engine/v1/latest.json` in production.
+Each location record is deterministic and remains present even when some source
+data is missing. Location confidence and warning fields tell the UI when data is
+incomplete.
+
+The report includes `generated_at` and `expires_at`. Kenai Pulse should treat
+responses past `expires_at` as stale and surface the report `warnings` or
+`source_health` details instead of implying current conditions.
 
 Location records include `id`, `name`, `segment`, `lat`, `lon`,
 `fishing_context`, `condition_score`, `status`, `confidence`, `water`,
@@ -107,9 +123,8 @@ Future production options:
 
 ## Next Steps
 
-1. Add hosted deployment for `data/public`.
-2. Add Android model classes for schema `1.0.0`.
-3. Add baseline regulation admin review workflow.
-4. Add PDF extraction and checksum/change detection.
-5. Split scoring into true per-location source matching when more gauges and
+1. Add Android model classes for schema `1.0.0`.
+2. Add baseline regulation admin review workflow.
+3. Add PDF extraction and checksum/change detection.
+4. Split scoring into true per-location source matching when more gauges and
    location-specific signals are available.

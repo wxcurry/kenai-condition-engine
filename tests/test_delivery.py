@@ -14,3 +14,11 @@ def test_prepare_public_report_writes_versioned_latest_json(tmp_path) -> None:
     payload = json.loads(path.read_text(encoding="utf-8"))
     assert payload["schema_version"] == "1.0.0"
     assert payload["generated_by"] == "kenai-condition-engine"
+
+
+def test_prepare_public_report_marks_pages_artifact_as_static_site(tmp_path) -> None:
+    report = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
+
+    prepare_public_report(report, tmp_path / "public")
+
+    assert (tmp_path / "public" / ".nojekyll").read_text(encoding="utf-8") == ""

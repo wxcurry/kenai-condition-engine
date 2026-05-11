@@ -78,9 +78,17 @@ python -m kenai_engine.cli serve
 Then point the app at `http://127.0.0.1:8765/v1/latest.json` from the host
 machine, or the Android emulator equivalent host address.
 
-In production, `data/public` can be uploaded to GitHub Pages, Cloudflare Pages,
-S3, Firebase Hosting, or another static host. See
-`docs/design/production_delivery.md`.
+In production, Kenai Pulse should consume the GitHub Pages endpoint published by
+this repository:
+
+```text
+https://wxcurry.github.io/kenai-condition-engine/v1/latest.json
+```
+
+The `Publish Live Report` GitHub Actions workflow refreshes that endpoint every
+three hours by running `kenai-engine run-daily` and deploying `data/public`.
+GitHub Pages must be configured to use GitHub Actions as its deployment source.
+See `docs/design/production_delivery.md`.
 
 ## Add A Source Adapter
 
@@ -96,7 +104,7 @@ S3, Firebase Hosting, or another static host. See
 - Baseline regulation records are structured production context, but records marked `manual-review` must be reviewed against current ADF&G regulations before being presented as authoritative.
 - PDF-only ADF&G emergency orders are detected and marked for manual review so the app can warn users when automated classification is incomplete.
 - Scoring is deterministic and source-backed; source freshness and parser health directly affect confidence and warnings.
-- Scheduling is external by design; use cron, launchd, GitHub Actions, or your deployment scheduler to run `kenai-engine run-daily`.
+- GitHub Actions is the production scheduler for the Kenai Pulse live source.
 
 ## Quality Checks
 
