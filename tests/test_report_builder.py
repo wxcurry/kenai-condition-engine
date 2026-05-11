@@ -205,7 +205,7 @@ def test_explicit_empty_inputs_do_not_insert_placeholder_records() -> None:
         "0 normalized ADFG emergency orders available."
     )
     assert _source_health_message(report, "adfg_fish_counts") == (
-        "0 normalized ADFG fish count records available."
+        "ADF&G fish count source is outside its active run window."
     )
     assert _source_health_message(report, "nws") == "0 normalized NWS alerts available."
 
@@ -279,6 +279,53 @@ def test_report_summary_warns_when_required_sources_are_missing() -> None:
     assert report.summary.startswith("Source warning: missing required sources")
     assert "adfg_emergency_orders" in report.summary
     assert any(warning.source == "adfg_emergency_orders" for warning in report.warnings)
+
+
+def test_report_does_not_require_inactive_seasonal_fish_counts() -> None:
+    generated_at = datetime(2026, 5, 5, 12, 0, tzinfo=UTC)
+
+    report = build_placeholder_report(
+        generated_at,
+        regulations=[],
+        fish_counts=[],
+        alerts=[],
+        source_health=[
+            SourceHealth(
+                source="usgs",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched USGS.",
+            ),
+            SourceHealth(
+                source="usgs_statistics",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched USGS statistics.",
+            ),
+            SourceHealth(
+                source="adfg_emergency_orders",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched ADF&G emergency orders.",
+            ),
+            SourceHealth(
+                source="nws",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched NWS.",
+            ),
+            SourceHealth(
+                source="noaa_tides",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched NOAA tides.",
+            ),
+        ],
+    )
+
+    assert "adfg_fish_counts" not in report.summary
+    assert not any(warning.source == "adfg_fish_counts" for warning in report.warnings)
+    assert "adfg_fish_counts" not in report.locations[0].confidence_explanation
 
 
 def test_report_summary_warns_when_required_sources_are_stale() -> None:
