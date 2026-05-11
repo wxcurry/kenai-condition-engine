@@ -729,6 +729,7 @@ def test_location_scores_use_each_locations_mapped_gauge() -> None:
     soldotna = next(location for location in report.locations if location.id == "soldotna")
 
     assert upper.condition_score < soldotna.condition_score
+    assert upper.status == "fair"
     assert "Cold water can slow fish movement and feeding." in upper.limiting_factors
     assert "Cold water can slow fish movement and feeding." not in soldotna.limiting_factors
 

@@ -470,7 +470,7 @@ def _build_locations(
                 fishing_context=str(location["fishing_context"]),
                 condition_score=condition_score,
                 score=condition_score,
-                status=score.overall_status,
+                status=local_score.overall_status,
                 confidence=base_confidence,
                 water={
                     "monitoring_location_id": location.get("monitoring_location_id")

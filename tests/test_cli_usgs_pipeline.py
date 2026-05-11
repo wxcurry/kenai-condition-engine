@@ -193,6 +193,45 @@ def test_build_report_filters_stale_irrelevant_fishing_report_alerts(tmp_path) -
     assert "Southeast Fishing Reports" not in titles
 
 
+def test_build_report_filters_alert_limit_per_source(tmp_path) -> None:
+    settings = _settings(tmp_path)
+    with connect(settings.db_path) as connection:
+        initialize_database(connection)
+        save_normalized_record(
+            connection,
+            "alert",
+            "2026-07-22T12:00:00+00:00",
+            json.dumps(
+                {
+                    "title": "Kenai River / Northern Kenai",
+                    "severity": "info",
+                    "summary": "Current Kenai report.",
+                    "source": "adfg_fishing_reports",
+                }
+            ),
+        )
+        for index in range(20):
+            save_normalized_record(
+                connection,
+                "alert",
+                f"2026-07-22T12:{index + 1:02d}:00+00:00",
+                json.dumps(
+                    {
+                        "title": f"Flood Watch {index}",
+                        "severity": "watch",
+                        "summary": "NWS alert should not crowd out fishing reports.",
+                        "source": "NWS Anchorage",
+                    }
+                ),
+            )
+
+    build_report(settings)
+
+    report = json.loads((settings.output_dir / "latest.json").read_text(encoding="utf-8"))
+    titles = [alert["title"] for alert in report["alerts"]]
+    assert "Kenai River / Northern Kenai" in titles
+
+
 def test_build_report_gates_fishing_report_alerts_by_fishing_report_source_health(
     tmp_path,
 ) -> None:

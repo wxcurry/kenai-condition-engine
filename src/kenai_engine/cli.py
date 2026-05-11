@@ -557,12 +557,13 @@ def _alert_records_for_source(
 ) -> list[Alert]:
     if _source_has_failed(source_health, source):
         return []
+    fetch_limit = max(limit * 10, 200)
     return [
         alert
-        for row in list_normalized_records(connection, "alert", limit=limit)
+        for row in list_normalized_records(connection, "alert", limit=fetch_limit)
         if _alert_matches_source(alert := Alert.model_validate_json(row["payload"]), source)
         and _alert_is_report_relevant(alert)
-    ]
+    ][:limit]
 
 
 def _alert_matches_source(alert: Alert, source: str) -> bool:
