@@ -174,6 +174,60 @@ def test_location_contract_includes_water_weather_and_explanation_fields() -> No
     }
 
 
+def test_location_weather_includes_pulse_display_fields() -> None:
+    generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
+    report = build_condition_report(
+        generated_at,
+        usgs_observations=[
+            UsgsObservation(
+                site_id="15266300",
+                monitoring_location_id="USGS-15266300",
+                site_name="KENAI RIVER AT SOLDOTNA AK",
+                parameter_code="00060",
+                parameter_name="Discharge",
+                value=5400,
+                unit="ft3/s",
+                observed_at=generated_at,
+            ),
+            UsgsObservation(
+                site_id="15266300",
+                monitoring_location_id="USGS-15266300",
+                site_name="KENAI RIVER AT SOLDOTNA AK",
+                parameter_code="63680",
+                parameter_name="Turbidity",
+                value=4.2,
+                unit="FNU",
+                observed_at=generated_at,
+            ),
+        ],
+        regulations=[],
+        fish_counts=[],
+        alerts=[],
+        weather_observations=[
+            WeatherObservation(
+                location="Kenai,AK",
+                observed_at=generated_at,
+                recent_rain_inches_24h=0.12,
+                wind_mph=14,
+                wind_direction="S",
+                temperature_f=54,
+                short_forecast="Light rain",
+                precipitation_probability=60,
+                detailed_forecast="Rain likely before midnight.",
+                source="nws",
+            )
+        ],
+    )
+
+    soldotna = next(location for location in report.locations if location.id == "soldotna")
+
+    assert soldotna.weather["weather_summary"] == "Light rain"
+    assert soldotna.weather["wind"] == "14 mph S"
+    assert soldotna.weather["rain_chance"] == "60%"
+    assert soldotna.weather["clarity"] == "clear"
+    assert soldotna.weather["clarity_source"] == "measured_turbidity"
+
+
 def test_report_species_scores_are_supported_or_unknown_with_explanation() -> None:
     report = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC))
 
