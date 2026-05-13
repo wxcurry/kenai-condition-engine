@@ -914,6 +914,35 @@ def test_adfg_count_signals_support_all_species_and_mapped_locations() -> None:
     )
 
 
+def test_chinook_only_adfg_signal_influences_overall_score() -> None:
+    generated_at = datetime(2026, 7, 22, 9, 0, tzinfo=UTC)
+    base_report = build_condition_report(
+        generated_at,
+        usgs_observations=parse_usgs_payload(_fixture("usgs_kenai_gages.json")),
+        fish_counts=[],
+        regulations=[],
+        alerts=[],
+    )
+    chinook_report = build_condition_report(
+        generated_at,
+        usgs_observations=parse_usgs_payload(_fixture("usgs_kenai_gages.json")),
+        fish_counts=[
+            FishCount(
+                species="Chinook - Late Run",
+                location="Kenai River (Chinook)",
+                count=125,
+                observation_date=generated_at.date(),
+                count_location_id="72",
+                species_id="412",
+            )
+        ],
+        regulations=[],
+        alerts=[],
+    )
+
+    assert chinook_report.overall_score > base_report.overall_score
+
+
 def test_report_notes_explain_weather_tide_and_flow_percentile_changes() -> None:
     observations = parse_usgs_payload(_fixture("usgs_kenai_gages.json"))
     report = build_condition_report(

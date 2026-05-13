@@ -344,7 +344,9 @@ def _score_input_from_records(
         for count in fish_counts
         if "sockeye" in count.species.lower() and "kenai" in count.location.lower()
     ]
-    signals = _best_signals_by_species(_fish_count_signals(fish_counts))
+    all_signals = _fish_count_signals(fish_counts)
+    signals = _best_signals_by_species(all_signals)
+    primary_signal = _primary_fish_count_signal(all_signals)
     fish_count_3day_avg = _three_day_average(sockeye_counts)
     weather = _latest_weather(weather_observations)
     flow_percentile = _current_flow_percentile(
@@ -368,8 +370,12 @@ def _score_input_from_records(
             regulation.status == "unknown" or regulation.manual_review_required
             for regulation in _active_regulations_for_date(regulations, generated_at)
         ),
-        location="lower_kenai" if sockeye_counts else "soldotna",
-        species="sockeye" if sockeye_counts else None,
+        location=_score_location_for_signal(primary_signal) or (
+            "lower_kenai" if sockeye_counts else "soldotna"
+        ),
+        species=primary_signal.species_key
+        if primary_signal
+        else ("sockeye" if sockeye_counts else None),
         water_temperature_f=water_temperature_f,
         flow_percentile=flow_percentile,
         recent_rain_inches_24h=weather.recent_rain_inches_24h if weather else None,
@@ -713,8 +719,22 @@ def _best_signals_by_species(signals: list[FishCountSignal]) -> dict[str, FishCo
     return best
 
 
+def _primary_fish_count_signal(signals: list[FishCountSignal]) -> FishCountSignal | None:
+    return max(signals, key=_signal_rank, default=None)
+
+
 def _signal_rank(signal: FishCountSignal) -> tuple[date, int]:
     return signal.latest_observation_date, signal.recent_avg
+
+
+def _score_location_for_signal(signal: FishCountSignal | None) -> str | None:
+    if signal is None:
+        return None
+    if signal.location_key == "kenai":
+        return "lower_kenai"
+    if signal.location_key == "russian":
+        return "upper_kenai"
+    return None
 
 
 def _species_key(species: str) -> str | None:
