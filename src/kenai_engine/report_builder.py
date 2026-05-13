@@ -492,19 +492,7 @@ def _build_locations(
                     "data_status": water_data_status,
                     "tide_stage": tide_stage if location["score_key"] == "lower_kenai" else None,
                 },
-                weather={
-                    "recent_rain_inches_24h": weather.recent_rain_inches_24h
-                    if weather
-                    else None,
-                    "wind_mph": weather.wind_mph if weather else None,
-                    "wind_direction": weather.wind_direction if weather else None,
-                    "temperature_f": weather.temperature_f if weather else None,
-                    "short_forecast": weather.short_forecast if weather else None,
-                    "precipitation_probability": weather.precipitation_probability
-                    if weather
-                    else None,
-                    "detailed_forecast": weather.detailed_forecast if weather else None,
-                },
+                weather=_location_weather_payload(weather, turbidity, trend),
                 alerts=[alert.title for alert in alerts],
                 notes=location_notes,
                 bank_fishing_score=max(
@@ -774,6 +762,79 @@ def _weather_notes(weather_observations: list[WeatherObservation]) -> list[str]:
     if weather.wind_mph is not None:
         notes.append(f"NWS wind: {weather.wind_mph:g} mph.")
     return notes
+
+
+def _location_weather_payload(
+    weather: WeatherObservation | None,
+    turbidity: UsgsObservation | None,
+    trend: dict[str, object],
+) -> dict[str, object | None]:
+    return {
+        "recent_rain_inches_24h": weather.recent_rain_inches_24h if weather else None,
+        "wind_mph": weather.wind_mph if weather else None,
+        "wind_direction": weather.wind_direction if weather else None,
+        "temperature_f": weather.temperature_f if weather else None,
+        "short_forecast": weather.short_forecast if weather else None,
+        "precipitation_probability": weather.precipitation_probability if weather else None,
+        "detailed_forecast": weather.detailed_forecast if weather else None,
+        "weather_summary": weather.short_forecast if weather else None,
+        "wind": _format_wind(weather),
+        "rain_chance": _format_rain_chance(weather),
+        "clarity": _clarity_label(turbidity, weather, trend),
+        "clarity_source": _clarity_source(turbidity, weather, trend),
+    }
+
+
+def _format_wind(weather: WeatherObservation | None) -> str | None:
+    if weather is None or weather.wind_mph is None:
+        return None
+    wind = f"{weather.wind_mph:g} mph"
+    if weather.wind_direction:
+        return f"{wind} {weather.wind_direction}"
+    return wind
+
+
+def _format_rain_chance(weather: WeatherObservation | None) -> str | None:
+    if weather is None or weather.precipitation_probability is None:
+        return None
+    return f"{weather.precipitation_probability}%"
+
+
+def _clarity_label(
+    turbidity: UsgsObservation | None,
+    weather: WeatherObservation | None,
+    trend: dict[str, object],
+) -> str:
+    if turbidity is not None:
+        if turbidity.value <= 5:
+            return "clear"
+        if turbidity.value <= 10:
+            return "slightly_stained"
+        if turbidity.value <= 20:
+            return "stained"
+        return "muddy"
+
+    recent_rain = weather.recent_rain_inches_24h if weather else None
+    trend_classification = str(trend.get("classification", "unknown"))
+    if recent_rain is not None and recent_rain >= 0.75:
+        return "reduced_estimated"
+    if trend_classification == "rising":
+        return "reduced_estimated"
+    return "unknown"
+
+
+def _clarity_source(
+    turbidity: UsgsObservation | None,
+    weather: WeatherObservation | None,
+    trend: dict[str, object],
+) -> str | None:
+    if turbidity is not None:
+        return "measured_turbidity"
+    if (weather and weather.recent_rain_inches_24h is not None) or trend.get(
+        "classification"
+    ) not in {None, "unknown"}:
+        return "flow_rain_estimate"
+    return None
 
 
 def _tide_notes(tide_predictions: list[TidePrediction], generated_at: datetime) -> list[str]:
