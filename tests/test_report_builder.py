@@ -857,6 +857,92 @@ def test_kenai_rm19_sockeye_counts_apply_only_to_lower_relevant_locations() -> N
     assert any(source["source"] == "adfg_fish_counts" for source in soldotna.source_provenance)
 
 
+def test_adfg_count_signals_support_all_species_and_mapped_locations() -> None:
+    generated_at = datetime(2026, 7, 22, 9, 0, tzinfo=UTC)
+    report = build_condition_report(
+        generated_at,
+        usgs_observations=parse_usgs_payload(_fixture("usgs_kenai_gages.json")),
+        fish_counts=[
+            FishCount(
+                species="Sockeye",
+                location="Kenai River (late-run sockeye)",
+                count=35_000,
+                observation_date=generated_at.date(),
+                count_location_id="40",
+                species_id="420",
+            ),
+            FishCount(
+                species="Chinook - Late Run",
+                location="Kenai River (Chinook)",
+                count=125,
+                observation_date=generated_at.date(),
+                count_location_id="72",
+                species_id="412",
+            ),
+            FishCount(
+                species="Sockeye - Late Run",
+                location="Russian River",
+                count=2_800,
+                observation_date=generated_at.date(),
+                count_location_id="13",
+                species_id="422",
+            ),
+        ],
+        regulations=[],
+        alerts=[],
+    )
+
+    russian = next(
+        location for location in report.locations if location.id == "russian_river_confluence"
+    )
+    soldotna = next(location for location in report.locations if location.id == "soldotna")
+    chinook = next(score for score in report.species_scores if score.species == "Chinook salmon")
+
+    assert russian.sockeye_score is not None
+    assert soldotna.chinook_score is not None
+    assert soldotna.rainbow_trout_score is not None
+    assert soldotna.chinook_score > soldotna.rainbow_trout_score
+    assert chinook.score is not None
+    assert chinook.status != "unknown"
+    assert any(
+        source["source"] == "adfg_fish_counts" and source["source_id"] == "13"
+        for source in russian.source_provenance
+    )
+    assert any(
+        source["source"] == "adfg_fish_counts" and source["source_id"] == "40"
+        for source in soldotna.source_provenance
+    )
+
+
+def test_chinook_only_adfg_signal_influences_overall_score() -> None:
+    generated_at = datetime(2026, 7, 22, 9, 0, tzinfo=UTC)
+    base_report = build_condition_report(
+        generated_at,
+        usgs_observations=parse_usgs_payload(_fixture("usgs_kenai_gages.json")),
+        fish_counts=[],
+        regulations=[],
+        alerts=[],
+    )
+    chinook_report = build_condition_report(
+        generated_at,
+        usgs_observations=parse_usgs_payload(_fixture("usgs_kenai_gages.json")),
+        fish_counts=[
+            FishCount(
+                species="Chinook - Late Run",
+                location="Kenai River (Chinook)",
+                count=125,
+                observation_date=generated_at.date(),
+                count_location_id="72",
+                species_id="412",
+            )
+        ],
+        regulations=[],
+        alerts=[],
+    )
+
+    assert chinook_report.overall_score > base_report.overall_score
+
+
 def test_report_notes_explain_weather_tide_and_flow_percentile_changes() -> None:
     observations = parse_usgs_payload(_fixture("usgs_kenai_gages.json"))
     report = build_condition_report(

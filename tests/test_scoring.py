@@ -156,6 +156,29 @@ def test_species_and_location_scores_are_reported() -> None:
     assert result.overall_score >= 75
 
 
+def test_chinook_count_signal_uses_lower_volume_thresholds() -> None:
+    result = score_conditions(
+        ScoreInput(
+            species="chinook",
+            fish_count_3day_avg_by_species={"chinook": 125},
+            fish_count_trend_by_species={"chinook": "rising"},
+        )
+    )
+
+    assert result.species_scores["chinook"] > result.species_scores["sockeye"]
+
+
+def test_location_fish_count_adjustment_nudges_selected_location() -> None:
+    result = score_conditions(
+        ScoreInput(
+            location="lower_kenai",
+            fish_count_location_adjustments={"lower_kenai": 6},
+        )
+    )
+
+    assert result.location_scores["lower_kenai"] > result.location_scores["upper_kenai"]
+
+
 def test_score_result_explains_change_confidence_legal_status_and_user_action() -> None:
     result = score_conditions(
         ScoreInput(
