@@ -330,6 +330,9 @@ class ScoreInput(BaseModel):
     tide_stage: TideStage | None = None
     fish_count_3day_avg: int | None = Field(default=None, ge=0)
     fish_count_trend: FishCountTrend = "unknown"
+    fish_count_3day_avg_by_species: dict[str, int] = Field(default_factory=dict)
+    fish_count_trend_by_species: dict[str, FishCountTrend] = Field(default_factory=dict)
+    fish_count_location_adjustments: dict[str, int] = Field(default_factory=dict)
     flood_alert_active: bool = False
     flood_alert_severity: FloodAlertSeverity = "info"
     source_freshness_hours: dict[str, float] = Field(default_factory=dict)

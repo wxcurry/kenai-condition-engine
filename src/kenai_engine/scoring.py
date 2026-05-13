@@ -263,26 +263,32 @@ def _location_scores(score_input: ScoreInput, environmental_score: int) -> dict[
         scores["soldotna"] -= 10
         scores["lower_kenai"] -= 8
 
+    for location, adjustment in score_input.fish_count_location_adjustments.items():
+        if location in scores:
+            scores[location] += max(-10, min(10, adjustment))
+
     return {key: max(0, min(100, round(value))) for key, value in scores.items()}
 
 
 def _species_scores(score_input: ScoreInput, environmental_score: int) -> dict[str, int]:
     scores = {species: environmental_score for species in KNOWN_SPECIES}
 
+    avg_by_species = dict(score_input.fish_count_3day_avg_by_species)
+    trend_by_species = dict(score_input.fish_count_trend_by_species)
     if score_input.fish_count_3day_avg is not None:
-        avg = score_input.fish_count_3day_avg
-        if avg >= 30_000:
-            scores["sockeye"] += 15
-        elif avg >= 10_000:
-            scores["sockeye"] += 8
-        elif avg < 2_000:
-            scores["sockeye"] -= 10
+        avg_by_species.setdefault("sockeye", score_input.fish_count_3day_avg)
+    if score_input.fish_count_trend != "unknown":
+        trend_by_species.setdefault("sockeye", score_input.fish_count_trend)
 
-    if score_input.fish_count_trend == "rising":
-        scores["sockeye"] += 6
-        scores["coho"] += 3
-    elif score_input.fish_count_trend == "falling":
-        scores["sockeye"] -= 6
+    for species, avg in avg_by_species.items():
+        if species not in scores:
+            continue
+        scores[species] += _fish_count_average_adjustment(species, avg)
+
+    for species, trend in trend_by_species.items():
+        if species not in scores:
+            continue
+        scores[species] += _fish_count_trend_adjustment(species, trend)
 
     if score_input.tide_stage == "incoming":
         scores["coho"] += 6
@@ -293,6 +299,41 @@ def _species_scores(score_input: ScoreInput, environmental_score: int) -> dict[s
         scores["dolly_varden"] -= 6
 
     return {key: max(0, min(100, round(value))) for key, value in scores.items()}
+
+
+def _fish_count_average_adjustment(species: str, avg: int) -> int:
+    if species == "sockeye":
+        if avg >= 30_000:
+            return 15
+        if avg >= 10_000:
+            return 8
+        if avg < 2_000:
+            return -10
+        return 0
+    if species == "chinook":
+        if avg >= 100:
+            return 10
+        if avg >= 25:
+            return 5
+        if avg == 0:
+            return -6
+        return 0
+    if species == "coho":
+        if avg >= 1_000:
+            return 10
+        if avg >= 250:
+            return 5
+        if avg == 0:
+            return -5
+    return 0
+
+
+def _fish_count_trend_adjustment(species: str, trend: str) -> int:
+    if trend == "rising":
+        return 6 if species == "sockeye" else 5
+    if trend == "falling":
+        return -6 if species == "sockeye" else -4
+    return 0
 
 
 def _score_confidence(score_input: ScoreInput, reasons: list[str]) -> tuple[float, str]:

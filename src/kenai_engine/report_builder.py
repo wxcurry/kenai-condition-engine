@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime, timedelta
+from dataclasses import dataclass
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 from kenai_engine.models import (
@@ -13,6 +14,7 @@ from kenai_engine.models import (
     Alert,
     BaselineRegulation,
     FishCount,
+    FishCountTrend,
     LocationCondition,
     Regulation,
     Report,
@@ -39,6 +41,21 @@ REQUIRED_SCORE_SOURCES = {
     "noaa_tides",
 }
 REPORT_TTL = timedelta(hours=6)
+
+
+@dataclass(frozen=True)
+class FishCountSignal:
+    """Derived recent fish-count signal for a species and count location."""
+
+    species_key: str
+    location_key: str
+    recent_avg: int
+    latest_count: int
+    trend: FishCountTrend
+    latest_observation_date: date
+    count_location_id: str | None = None
+    species_id: str | None = None
+
 
 DEFAULT_LOCATIONS = [
     {
@@ -327,6 +344,7 @@ def _score_input_from_records(
         for count in fish_counts
         if "sockeye" in count.species.lower() and "kenai" in count.location.lower()
     ]
+    signals = _best_signals_by_species(_fish_count_signals(fish_counts))
     fish_count_3day_avg = _three_day_average(sockeye_counts)
     weather = _latest_weather(weather_observations)
     flow_percentile = _current_flow_percentile(
@@ -361,6 +379,10 @@ def _score_input_from_records(
         tide_stage=tide_stage,
         fish_count_3day_avg=fish_count_3day_avg,
         fish_count_trend=_fish_count_trend(sockeye_counts),
+        fish_count_3day_avg_by_species={
+            species: signal.recent_avg for species, signal in signals.items()
+        },
+        fish_count_trend_by_species={species: signal.trend for species, signal in signals.items()},
         flood_alert_active=any(alert.severity in {"watch", "warning"} for alert in flood_alerts),
         flood_alert_severity="warning"
         if any(alert.severity == "warning" for alert in flood_alerts)
@@ -548,6 +570,8 @@ def _score_input_from_location_records(
     trend: dict[str, object],
 ) -> ScoreInput:
     relevant_fish_counts = _fish_counts_for_location(location, fish_counts)
+    relevant_signals = _fish_count_signals_for_location(location, fish_counts)
+    best_signals = _best_signals_by_species(relevant_signals)
     tide_stage = (
         determine_tide_stage(tide_predictions, generated_at)
         if location.get("score_key") == "lower_kenai" and tide_predictions
@@ -584,6 +608,17 @@ def _score_input_from_location_records(
         tide_stage=tide_stage,
         fish_count_3day_avg=_three_day_average(relevant_fish_counts),
         fish_count_trend=_fish_count_trend(relevant_fish_counts),
+        fish_count_3day_avg_by_species={
+            species: signal.recent_avg for species, signal in best_signals.items()
+        },
+        fish_count_trend_by_species={
+            species: signal.trend for species, signal in best_signals.items()
+        },
+        fish_count_location_adjustments={
+            str(location["score_key"]): _location_signal_adjustment(relevant_signals)
+        }
+        if relevant_signals
+        else {},
         flood_alert_active=any(
             "flood" in alert.title.lower() and alert.severity in {"watch", "warning"}
             for alert in alerts
@@ -600,20 +635,141 @@ def _fish_counts_for_location(
     location: dict[str, object],
     fish_counts: list[FishCount],
 ) -> list[FishCount]:
-    location_text = f"{location.get('id', '')} {location.get('name', '')}".lower()
-    if "russian" in location_text:
+    location_keys = _count_location_keys_for_report_location(location)
+    if location_keys:
         return [
             count
             for count in fish_counts
-            if "sockeye" in count.species.lower() and "russian" in count.location.lower()
+            if _species_key(count.species) == "sockeye"
+            and _count_location_key(count.location) in location_keys
         ]
-    if not _location_supports_kenai_rm19_counts(location):
+
+    return []
+
+
+def _fish_count_signals_for_location(
+    location: dict[str, object],
+    fish_counts: list[FishCount],
+) -> list[FishCountSignal]:
+    location_keys = _count_location_keys_for_report_location(location)
+    if not location_keys:
         return []
     return [
-        count
-        for count in fish_counts
-        if "sockeye" in count.species.lower() and "kenai" in count.location.lower()
+        signal
+        for signal in _fish_count_signals(fish_counts)
+        if signal.location_key in location_keys
     ]
+
+
+def _count_location_keys_for_report_location(location: dict[str, object]) -> set[str]:
+    location_text = f"{location.get('id', '')} {location.get('name', '')}".lower()
+    if "russian" in location_text:
+        return {"russian"}
+    if not _location_supports_kenai_rm19_counts(location):
+        return set()
+    return {"kenai"}
+
+
+def _fish_count_signals(fish_counts: list[FishCount]) -> list[FishCountSignal]:
+    groups: dict[tuple[str, str], list[FishCount]] = {}
+    for fish_count in fish_counts:
+        species_key = _species_key(fish_count.species)
+        location_key = _count_location_key(fish_count.location)
+        if species_key is None or location_key is None:
+            continue
+        groups.setdefault((species_key, location_key), []).append(fish_count)
+
+    return [
+        _fish_count_signal_from_group(species_key, location_key, group)
+        for (species_key, location_key), group in groups.items()
+    ]
+
+
+def _fish_count_signal_from_group(
+    species_key: str,
+    location_key: str,
+    fish_counts: list[FishCount],
+) -> FishCountSignal:
+    latest_counts = sorted(fish_counts, key=lambda count: count.observation_date, reverse=True)[:3]
+    latest = latest_counts[0]
+    return FishCountSignal(
+        species_key=species_key,
+        location_key=location_key,
+        recent_avg=_three_day_average(latest_counts) or 0,
+        latest_count=latest.count,
+        trend=_fish_count_trend(latest_counts),
+        latest_observation_date=latest.observation_date,
+        count_location_id=latest.count_location_id,
+        species_id=latest.species_id,
+    )
+
+
+def _best_signals_by_species(signals: list[FishCountSignal]) -> dict[str, FishCountSignal]:
+    best: dict[str, FishCountSignal] = {}
+    for signal in signals:
+        current = best.get(signal.species_key)
+        if current is None or _signal_rank(signal) > _signal_rank(current):
+            best[signal.species_key] = signal
+    return best
+
+
+def _signal_rank(signal: FishCountSignal) -> tuple[date, int]:
+    return signal.latest_observation_date, signal.recent_avg
+
+
+def _species_key(species: str) -> str | None:
+    normalized = species.lower()
+    if "sockeye" in normalized:
+        return "sockeye"
+    if "chinook" in normalized or "king" in normalized:
+        return "chinook"
+    if "coho" in normalized or "silver" in normalized:
+        return "coho"
+    return None
+
+
+def _count_location_key(location: str) -> str | None:
+    normalized = location.lower()
+    if "russian" in normalized:
+        return "russian"
+    if "kenai" in normalized:
+        return "kenai"
+    if "kasilof" in normalized:
+        return "kasilof"
+    return None
+
+
+def _location_signal_adjustment(signals: list[FishCountSignal]) -> int:
+    if not signals:
+        return 0
+    return max(_signal_location_adjustment(signal) for signal in signals)
+
+
+def _signal_location_adjustment(signal: FishCountSignal) -> int:
+    adjustment = 0
+    if signal.trend == "rising":
+        adjustment += 4
+    elif signal.trend == "falling":
+        adjustment -= 3
+
+    if signal.species_key == "sockeye":
+        if signal.recent_avg >= 30_000:
+            adjustment += 6
+        elif signal.recent_avg >= 10_000:
+            adjustment += 3
+        elif signal.recent_avg < 2_000:
+            adjustment -= 4
+    elif signal.species_key == "chinook":
+        if signal.recent_avg >= 100:
+            adjustment += 4
+        elif signal.recent_avg == 0:
+            adjustment -= 3
+    elif signal.species_key == "coho":
+        if signal.recent_avg >= 1_000:
+            adjustment += 4
+        elif signal.recent_avg == 0:
+            adjustment -= 3
+    return max(-8, min(8, adjustment))
 
 
 def _location_supports_kenai_rm19_counts(location: dict[str, object]) -> bool:
