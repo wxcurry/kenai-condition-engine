@@ -80,6 +80,53 @@ def test_good_water_and_weather_produces_higher_score() -> None:
     assert good.overall_status == "excellent"
 
 
+def test_salmon_heat_stress_threshold_strongly_lowers_score() -> None:
+    result = score_conditions(ScoreInput(water_temperature_f=65))
+
+    assert result.overall_score == 48
+    assert any("heat-stress" in reason.lower() for reason in result.reasons)
+
+
+def test_heavy_rain_and_strong_wind_have_tiered_penalties() -> None:
+    rough = score_conditions(
+        ScoreInput(
+            recent_rain_inches_24h=1.4,
+            wind_mph=31,
+        )
+    )
+    calm = score_conditions(
+        ScoreInput(
+            recent_rain_inches_24h=0.08,
+            wind_mph=7,
+        )
+    )
+
+    assert rough.overall_score == 40
+    assert calm.overall_score == 78
+    assert any("heavy rain" in reason.lower() for reason in rough.reasons)
+    assert any("strong wind" in reason.lower() for reason in rough.reasons)
+
+
+def test_air_temperature_and_rain_probability_affect_practical_conditions() -> None:
+    cold_wet = score_conditions(
+        ScoreInput(
+            air_temperature_f=20,
+            precipitation_probability=80,
+        )
+    )
+    mild_dry = score_conditions(
+        ScoreInput(
+            air_temperature_f=55,
+            precipitation_probability=20,
+        )
+    )
+
+    assert cold_wet.overall_score == 62
+    assert mild_dry.overall_score == 74
+    assert any("cold air" in reason.lower() for reason in cold_wet.reasons)
+    assert any("high rain probability" in reason.lower() for reason in cold_wet.reasons)
+
+
 def test_dangerous_flow_or_flood_alert_lowers_score() -> None:
     normal = score_conditions(ScoreInput(flow_percentile=55))
     dangerous = score_conditions(

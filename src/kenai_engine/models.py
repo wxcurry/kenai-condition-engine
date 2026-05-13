@@ -323,6 +323,8 @@ class ScoreInput(BaseModel):
     gage_height_trend_ft_24h: float | None = None
     recent_rain_inches_24h: float | None = Field(default=None, ge=0)
     wind_mph: float | None = Field(default=None, ge=0)
+    air_temperature_f: float | None = None
+    precipitation_probability: int | None = Field(default=None, ge=0, le=100)
     barometric_pressure_inhg: float | None = None
     barometric_trend: BarometricTrend | None = None
     tide_stage: TideStage | None = None

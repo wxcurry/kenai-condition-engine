@@ -132,18 +132,64 @@ def _environmental_score(score_input: ScoreInput, reasons: list[str]) -> int:
 
     if score_input.water_temperature_f is not None:
         temp = score_input.water_temperature_f
-        if 45 <= temp <= 58:
+        if 42 <= temp <= 55:
             score += 10
             reasons.append("Water temperature is in the primary salmonid comfort band.")
-        elif 59 <= temp <= 62:
+        elif 38 <= temp < 42:
+            score += 2
+        elif 55 < temp <= 58:
+            score += 4
+        elif 58 < temp <= 62:
             score -= 6
             reasons.append("Water temperature is warm enough to reduce catchability.")
-        elif temp > 62:
-            score -= 16
-            reasons.append("Warm water increases fish stress and lowers catchability.")
+        elif 62 < temp <= 64.4:
+            score -= 12
+            reasons.append("Water temperature is approaching Pacific salmon heat-stress levels.")
+        elif temp > 64.4:
+            score -= 24
+            reasons.append("Water temperature exceeds a Pacific salmon heat-stress threshold.")
         elif temp < 38:
             score -= 8
             reasons.append("Cold water can slow fish movement and feeding.")
+
+    if score_input.air_temperature_f is not None:
+        air_temp = score_input.air_temperature_f
+        if 45 <= air_temp <= 65:
+            score += 2
+        elif 25 <= air_temp < 33:
+            score -= 3
+            reasons.append("Cold air reduces angler comfort and practical fishing quality.")
+        elif air_temp < 25:
+            score -= 6
+            reasons.append("Very cold air reduces angler safety and practical fishing quality.")
+        elif air_temp > 75:
+            score -= 4
+            reasons.append("Hot air can increase fish stress and reduce practical fishing quality.")
+
+    if score_input.precipitation_probability is not None:
+        probability = score_input.precipitation_probability
+        if probability >= 75:
+            score -= 4
+            reasons.append("High rain probability increases weather and clarity risk.")
+        elif probability >= 50:
+            score -= 2
+            reasons.append("Rain probability creates some weather and clarity uncertainty.")
+
+    if score_input.recent_rain_inches_24h is not None:
+        rain = score_input.recent_rain_inches_24h
+        if rain <= 0.10:
+            score += 3
+        elif rain <= 0.35:
+            score += 1
+        elif rain < 0.75:
+            score -= 4
+            reasons.append("Recent rain can reduce clarity and change flows.")
+        elif rain <= 1.25:
+            score -= 10
+            reasons.append("Recent heavy rain can raise flows and reduce clarity.")
+        else:
+            score -= 16
+            reasons.append("Very heavy rain can sharply reduce clarity, access, and safety.")
 
     if score_input.flow_percentile is not None:
         flow = score_input.flow_percentile
@@ -168,26 +214,33 @@ def _environmental_score(score_input: ScoreInput, reasons: list[str]) -> int:
             score -= 8
             reasons.append("Rapidly rising stage can reduce clarity and safe access.")
 
-    if score_input.recent_rain_inches_24h is not None:
-        rain = score_input.recent_rain_inches_24h
-        if rain <= 0.15:
-            score += 3
-        elif rain >= 0.75:
-            score -= 8
-            reasons.append("Recent heavy rain can raise flows and reduce clarity.")
-
     if score_input.wind_mph is not None:
         wind = score_input.wind_mph
-        if wind <= 10:
-            score += 2
-        elif wind >= 20:
-            score -= 6
+        if wind <= 8:
+            score += 3
+        elif wind <= 15:
+            score += 1
+        elif wind < 22:
+            score -= 3
+            reasons.append("Moderate wind can reduce casting and boat control.")
+        elif wind <= 30:
+            score -= 9
             reasons.append("High wind lowers boating and casting quality.")
+        else:
+            score -= 16
+            reasons.append("Strong wind creates poor boating and casting conditions.")
 
     if score_input.barometric_trend == "steady":
         score += 2
     elif score_input.barometric_trend == "falling":
-        score -= 3
+        if score_input.flood_alert_active or (
+            score_input.recent_rain_inches_24h is not None
+            and score_input.recent_rain_inches_24h >= 0.75
+        ):
+            score -= 4
+            reasons.append("Falling pressure paired with heavy rain increases weather risk.")
+        else:
+            score += 2
 
     if score_input.flood_alert_active:
         penalty = 18 if score_input.flood_alert_severity == "warning" else 10
