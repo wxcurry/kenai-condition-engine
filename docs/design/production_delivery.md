@@ -21,7 +21,9 @@ Local URL: `http://127.0.0.1:8765/v1/latest.json`.
 The live Kenai Pulse source is published from this repository with GitHub Pages.
 The scheduled workflow at `.github/workflows/publish-live-report.yml` runs the
 full `run-daily` pipeline every three hours, uploads `data/public`, and deploys
-that artifact with GitHub Pages.
+that artifact with GitHub Pages. The same workflow commits the generated
+`data/public/v1/latest.json` back to `main` so the tracked public report does
+not drift from the deployed artifact.
 
 Production URL:
 

@@ -1362,24 +1362,32 @@ def _source_user_copy(
     stale: bool,
     message: str,
 ) -> tuple[str, str]:
+    source_label = _source_user_label(source)
+    if status == "failed":
+        return f"{source_label} unavailable", message
+    if status == "degraded" or stale:
+        return f"{source_label} needs attention", message
     if source == "adfg_emergency_orders":
-        if status == "failed":
-            return "Regulation source unavailable", message
-        return (
-            "Regulation source needs attention",
-            message if stale else "ADF&G emergency orders checked.",
-        )
+        return f"{source_label} checked", "ADF&G emergency orders checked."
+    return f"{source_label} current", message
+
+
+def _source_user_label(source: str) -> str:
+    if source == "adfg_emergency_orders":
+        return "Regulation source"
     if source == "adfg_fish_counts":
-        return "Fish count data needs attention", message
+        return "Fish count data"
+    if source == "adfg_fishing_reports":
+        return "Fishing report data"
     if source == "usgs":
-        return "Water data needs attention", message
+        return "Water data"
     if source == "nws":
-        return "Weather data needs attention", message
+        return "Weather data"
     if source == "noaa_tides":
-        return "Tide data needs attention", message
+        return "Tide data"
     if source == "usgs_statistics":
-        return "Historical flow data needs attention", message
-    return f"{source} source needs attention", message
+        return "Historical flow data"
+    return f"{source} source"
 
 
 def _source_warning_for_missing(source: str) -> SourceWarning:

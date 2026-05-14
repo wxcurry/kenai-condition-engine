@@ -503,6 +503,131 @@ def test_failed_source_health_maps_to_user_visible_fields() -> None:
     assert any(warning.source == "adfg_emergency_orders" for warning in report.warnings)
 
 
+def test_ok_source_health_copy_reads_as_healthy() -> None:
+    generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
+
+    report = build_condition_report(
+        generated_at,
+        regulations=[],
+        fish_counts=[],
+        alerts=[],
+        source_health=[
+            SourceHealth(
+                source="noaa_tides",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched NOAA tides.",
+            ),
+            SourceHealth(
+                source="usgs",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched USGS water data.",
+            ),
+            SourceHealth(
+                source="adfg_emergency_orders",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched ADF&G orders.",
+            ),
+            SourceHealth(
+                source="adfg_fish_counts",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched ADF&G counts.",
+            ),
+            SourceHealth(
+                source="adfg_fishing_reports",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched ADF&G fishing reports.",
+            ),
+            SourceHealth(
+                source="usgs_statistics",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched USGS statistics.",
+            ),
+            SourceHealth(
+                source="nws",
+                status="ok",
+                last_checked_at=generated_at,
+                message="Fetched NWS.",
+            ),
+        ],
+    )
+
+    titles_by_source = {health.source: health.user_title for health in report.source_health}
+    assert titles_by_source["noaa_tides"] == "Tide data current"
+    assert titles_by_source["usgs"] == "Water data current"
+    assert titles_by_source["adfg_fishing_reports"] == "Fishing report data current"
+    assert "needs attention" not in " ".join(titles_by_source.values()).lower()
+    assert report.warnings == []
+
+
+def test_degraded_source_health_copy_keeps_warning_severity() -> None:
+    generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
+
+    report = build_condition_report(
+        generated_at,
+        regulations=[],
+        fish_counts=[],
+        alerts=[],
+        source_health=[
+            SourceHealth(
+                source="usgs",
+                status="ok",
+                last_checked_at=datetime(2026, 7, 21, 21, 59, tzinfo=UTC),
+                message="Fetched USGS water data.",
+            )
+        ],
+    )
+
+    source = report.source_health[0]
+    assert source.status == "degraded"
+    assert source.severity == "warning"
+    assert source.user_title == "Water data needs attention"
+    assert source.user_message == "Fetched USGS water data."
+    assert any(
+        warning.source == "usgs"
+        and warning.severity == "warning"
+        and warning.user_title == "Water data needs attention"
+        for warning in report.warnings
+    )
+
+
+def test_failed_source_health_copy_reads_as_unavailable_without_losing_warning() -> None:
+    generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
+
+    report = build_condition_report(
+        generated_at,
+        regulations=[],
+        fish_counts=[],
+        alerts=[],
+        source_health=[
+            SourceHealth(
+                source="noaa_tides",
+                status="failed",
+                last_checked_at=generated_at,
+                message="NOAA tide fetch timed out.",
+                last_error="NOAA tide fetch timed out.",
+            )
+        ],
+    )
+
+    source = report.source_health[0]
+    assert source.status == "failed"
+    assert source.severity == "warning"
+    assert source.user_title == "Tide data unavailable"
+    assert source.user_message == "NOAA tide fetch timed out."
+    assert any(
+        warning.source == "noaa_tides"
+        and warning.severity == "warning"
+        and warning.user_title == "Tide data unavailable"
+        for warning in report.warnings
+    )
+
+
 def test_failed_usgs_source_suppresses_active_water_values_and_notes_cached_data() -> None:
     generated_at = datetime(2026, 7, 22, 22, 0, tzinfo=UTC)
 

@@ -86,7 +86,8 @@ https://wxcurry.github.io/kenai-condition-engine/v1/latest.json
 ```
 
 The `Publish Live Report` GitHub Actions workflow refreshes that endpoint every
-three hours by running `kenai-engine run-daily` and deploying `data/public`.
+three hours by running `kenai-engine run-daily`, committing the generated
+`data/public/v1/latest.json` back to `main`, and deploying `data/public`.
 GitHub Pages must be configured to use GitHub Actions as its deployment source.
 See `docs/design/production_delivery.md`.
 
