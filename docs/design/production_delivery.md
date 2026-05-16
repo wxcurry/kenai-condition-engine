@@ -90,6 +90,12 @@ Each `source_health` item includes app-facing fields:
 - `affects_score`
 - `affects_legal_status`
 
+Public source ids include `usgs`, `usgs_statistics`, `adfg_emergency_orders`,
+`adfg_fish_counts`, `adfg_fishing_reports`, `nws`, and `noaa_tides`. The
+`adfg_fishing_reports` entry represents the official ADF&G narrative fishing
+report source; it is exposed separately from NWS alerts so the app can show
+whether that narrative source is current, stale, or unavailable.
+
 The top-level `warnings` array is the Android-friendly list to show visibly.
 Failed legal sources such as ADF&G emergency orders map to critical warnings.
 Stale water, weather, fish count, tide, or historical flow data map to warning

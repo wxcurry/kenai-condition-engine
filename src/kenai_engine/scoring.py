@@ -12,6 +12,7 @@ FRESHNESS_LIMIT_HOURS = {
     "nws": 3,
     "adfg_emergency_orders": 24,
     "adfg_fish_counts": 36,
+    "adfg_fishing_reports": 24,
     "noaa_tides": 24,
 }
 

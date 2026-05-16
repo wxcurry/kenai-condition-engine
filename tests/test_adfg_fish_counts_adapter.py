@@ -318,6 +318,56 @@ def test_parse_fish_counts_extracts_adfg_columns_data_payload() -> None:
     ]
 
 
+def test_parse_fish_counts_skips_negative_adfg_count_rows() -> None:
+    payload = """
+    {
+      "COLUMNS": [
+        "YEAR",
+        "COUNTDATE",
+        "FISHCOUNT",
+        "SPECIESID",
+        "COUNTLOCATIONID",
+        "COUNTLOCATION",
+        "SPECIES"
+      ],
+      "DATA": [
+        [
+          2023,
+          "May, 22 2023 00:00:00",
+          -6,
+          411,
+          72,
+          "Kenai River (Chinook)",
+          "Chinook - Early Run"
+        ],
+        [
+          2023,
+          "May, 23 2023 00:00:00",
+          12,
+          411,
+          72,
+          "Kenai River (Chinook)",
+          "Chinook - Early Run"
+        ]
+      ]
+    }
+    """
+
+    counts = parse_fish_counts(payload)
+
+    assert counts == [
+        {
+            "species": "Chinook - Early Run",
+            "location": "Kenai River (Chinook)",
+            "count": 12,
+            "observation_date": "2023-05-23",
+            "count_location_id": "72",
+            "species_id": "411",
+            "year": "2023",
+        }
+    ]
+
+
 def test_parse_fish_counts_extracts_all_concatenated_adfg_json_exports() -> None:
     payload = """
     <!-- source_url: https://example.test/chinook -->

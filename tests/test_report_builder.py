@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from kenai_engine.models import (
+    Alert,
     BaselineRegulation,
     FishCount,
     Regulation,
@@ -58,6 +59,79 @@ def test_condition_report_has_app_contract_shape() -> None:
     assert dumped["river"] == "Kenai River"
     assert dumped["source_health"]
     assert all("freshness_status" in health for health in dumped["source_health"])
+
+
+def test_default_source_health_exposes_adfg_fishing_reports_separately() -> None:
+    generated_at = datetime(2026, 5, 16, 12, 0, tzinfo=UTC)
+
+    report = build_condition_report(
+        generated_at,
+        alerts=[
+            Alert(
+                title="Northern Kenai Fishing Report",
+                severity="info",
+                summary="Early-run Kenai narrative is available.",
+                source="adfg_fishing_reports",
+            ),
+            Alert(
+                title="Flood Watch",
+                severity="watch",
+                summary="NWS alert is available.",
+                source="NWS Anchorage",
+            ),
+        ],
+    )
+
+    health_by_source = {health.source: health for health in report.source_health}
+    assert health_by_source["adfg_fishing_reports"].status == "ok"
+    assert health_by_source["adfg_fishing_reports"].user_title == "Fishing report data current"
+    assert health_by_source["adfg_fishing_reports"].freshness_status == "current"
+    assert health_by_source["adfg_fishing_reports"].affects_score is False
+    assert health_by_source["nws"].status == "ok"
+
+
+def test_adfg_fishing_report_source_health_exposes_stale_and_failed_states() -> None:
+    generated_at = datetime(2026, 5, 16, 12, 0, tzinfo=UTC)
+
+    stale_report = build_condition_report(
+        generated_at,
+        regulations=[],
+        fish_counts=[],
+        alerts=[],
+        source_health=[
+            SourceHealth(
+                source="adfg_fishing_reports",
+                status="ok",
+                last_checked_at=datetime(2026, 5, 15, 11, 59, tzinfo=UTC),
+                message="Fetched ADF&G fishing reports.",
+            )
+        ],
+    )
+    failed_report = build_condition_report(
+        generated_at,
+        regulations=[],
+        fish_counts=[],
+        alerts=[],
+        source_health=[
+            SourceHealth(
+                source="adfg_fishing_reports",
+                status="failed",
+                last_checked_at=generated_at,
+                message="ADF&G fishing report fetch timed out.",
+                last_error="ADF&G fishing report fetch timed out.",
+            )
+        ],
+    )
+
+    stale_source = stale_report.source_health[0]
+    failed_source = failed_report.source_health[0]
+    assert stale_source.status == "degraded"
+    assert stale_source.freshness_status == "stale"
+    assert stale_source.user_title == "Fishing report data needs attention"
+    assert failed_source.status == "failed"
+    assert failed_source.freshness_status == "missing"
+    assert failed_source.user_title == "Fishing report data unavailable"
+    assert failed_source.last_error == "ADF&G fishing report fetch timed out."
 
 
 def test_condition_report_uses_production_copy() -> None:

@@ -272,7 +272,7 @@ def _normalize_record(row: dict[str, Any]) -> dict[str, object]:
     location = _string_value(normalized_row, "location")
     count = _count_value(normalized_row.get("count"))
     observation_date = _date_value(normalized_row.get("observation_date"))
-    if not species or not location or count is None or observation_date is None:
+    if not species or not location or count is None or count < 0 or observation_date is None:
         return {}
 
     record: dict[str, object] = {
@@ -282,10 +282,10 @@ def _normalize_record(row: dict[str, Any]) -> dict[str, object]:
         "observation_date": observation_date,
     }
     daily_count = _count_value(normalized_row.get("daily_count"))
-    if daily_count is not None:
+    if daily_count is not None and daily_count >= 0:
         record["daily_count"] = daily_count
     cumulative_count = _count_value(normalized_row.get("cumulative_count"))
-    if cumulative_count is not None:
+    if cumulative_count is not None and cumulative_count >= 0:
         record["cumulative_count"] = cumulative_count
     for optional_key in ("count_location_id", "species_id", "method", "year"):
         optional_value = normalized_row.get(optional_key)

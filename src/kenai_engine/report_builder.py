@@ -1488,8 +1488,17 @@ def _default_source_health(
                 zero_records_are_normalized=fish_counts is not None,
             ),
             _source_health(
+                "adfg_fishing_reports",
+                _alert_count_for_source(active_alerts, "adfg_fishing_reports")
+                if alerts is not None
+                else 0,
+                "normalized ADFG fishing reports",
+                generated_at,
+                zero_records_are_normalized=alerts is not None,
+            ),
+            _source_health(
                 "nws",
-                len(active_alerts) if alerts is not None else 0,
+                _alert_count_for_source(active_alerts, "nws") if alerts is not None else 0,
                 "normalized NWS alerts",
                 generated_at,
                 zero_records_are_normalized=alerts is not None,
@@ -1527,6 +1536,14 @@ def _fish_count_source_health(
         last_checked_at=generated_at,
         message="ADF&G fish count source is outside its active run window.",
     )
+
+
+def _alert_count_for_source(alerts: list[Alert], source: str) -> int:
+    if source == "adfg_fishing_reports":
+        return sum(1 for alert in alerts if alert.source == "adfg_fishing_reports")
+    if source == "nws":
+        return sum(1 for alert in alerts if alert.source != "adfg_fishing_reports")
+    return sum(1 for alert in alerts if alert.source == source)
 
 
 def _source_health(
