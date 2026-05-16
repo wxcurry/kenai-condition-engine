@@ -3,15 +3,15 @@
   "engine_version": "0.1.0",
   "generated_by": "kenai-condition-engine",
   "report_date": "2026-05-16",
-  "generated_at": "2026-05-16T12:24:48.832372Z",
-  "expires_at": "2026-05-16T18:24:48.832372Z",
-  "report_status": "ok",
+  "generated_at": "2026-05-16T12:28:19.153249Z",
+  "expires_at": "2026-05-16T18:28:19.153249Z",
+  "report_status": "degraded",
   "river": "Kenai River",
-  "overall_score": 64,
+  "overall_score": 68,
   "overall_status": "fair",
-  "confidence": 0.72,
-  "confidence_band": "high",
-  "summary": "Production condition report with normalized USGS readings and source alerts.",
+  "confidence": 0.52,
+  "confidence_band": "medium",
+  "summary": "Source warning: missing required sources (adfg_emergency_orders, adfg_fish_counts). Production condition report with normalized USGS readings and source alerts.",
   "locations": [
     {
       "id": "cooper_landing_upper_kenai",
@@ -23,7 +23,7 @@
       "condition_score": 68,
       "status": "fair",
       "score": 68,
-      "confidence": 0.72,
+      "confidence": 0.52,
       "water": {
         "monitoring_location_id": "USGS-15258000",
         "nwis_site_id": "15258000",
@@ -57,27 +57,16 @@
         "clarity_source": "flow_rain_estimate"
       },
       "alerts": [
-        "Special Weather Statement",
-        "Special Weather Statement",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai"
+        "Special Weather Statement"
       ],
       "notes": [
         "USGS 00065 at : 6.53 ft",
         "USGS 00010 at : 3 degC",
         "USGS 00060 at : 1030 ft^3/s",
-        "Sockeye 3-day average: 20,827 fish from ADF&G count records.",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 11.5 mph.",
         "NOAA tide stage: high.",
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts.",
         "Cold water can slow fish movement and feeding.",
         "No active regulatory override found; using deterministic condition signals."
       ],
@@ -93,9 +82,10 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts.",
         "Cold water can slow fish movement and feeding."
       ],
-      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
+      "confidence_explanation": "Confidence is 0.52. Missing sources reduce confidence: adfg_emergency_orders, adfg_fish_counts.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Check the limiting factors and choose conservative access or timing.",
       "component_scores": {
@@ -115,7 +105,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-16T12:24:48.813609+00:00",
+          "observed_at": "2026-05-16T12:28:18.048257+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -128,10 +118,10 @@
       "lat": 60.489,
       "lon": -149.969,
       "fishing_context": "Sockeye-focused confluence and sanctuary-area context; check ADF&G orders.",
-      "condition_score": 69,
+      "condition_score": 76,
       "status": "good",
-      "score": 69,
-      "confidence": 0.72,
+      "score": 76,
+      "confidence": 0.52,
       "water": {
         "monitoring_location_id": "USGS-15266010",
         "nwis_site_id": "15266010",
@@ -165,31 +155,20 @@
         "clarity_source": "flow_rain_estimate"
       },
       "alerts": [
-        "Special Weather Statement",
-        "Special Weather Statement",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai"
+        "Special Weather Statement"
       ],
       "notes": [
         "USGS 00060 at : 2740 ft^3/s",
-        "Sockeye 3-day average: 20,827 fish from ADF&G count records.",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 11.5 mph.",
         "NOAA tide stage: high.",
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts.",
         "Cold water can slow fish movement and feeding.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 69,
-      "boat_fishing_score": 69,
-      "sockeye_score": 60,
+      "bank_fishing_score": 76,
+      "boat_fishing_score": 76,
+      "sockeye_score": null,
       "chinook_score": 76,
       "coho_score": 76,
       "rainbow_trout_score": 76,
@@ -199,31 +178,24 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "No major limiting factor identified from current deterministic inputs."
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts."
       ],
-      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
+      "confidence_explanation": "Confidence is 0.52. Missing sources reduce confidence: adfg_emergency_orders, adfg_fish_counts.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
         "environmental": 76,
-        "location": 69,
-        "species": 60,
-        "overall": 70
+        "location": 76,
+        "species": 76,
+        "overall": 76
       },
       "source_provenance": [
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-16T12:24:48.813609+00:00",
+          "observed_at": "2026-05-16T12:28:18.048257+00:00",
           "retrieved_at": null,
           "role": "weather"
-        },
-        {
-          "source": "adfg_fish_counts",
-          "source_id": "13",
-          "observed_at": "2025-09-02",
-          "retrieved_at": null,
-          "role": "species_activity"
         }
       ]
     },
@@ -237,7 +209,7 @@
       "condition_score": 76,
       "status": "good",
       "score": 76,
-      "confidence": 0.72,
+      "confidence": 0.52,
       "water": {
         "monitoring_location_id": "USGS-15266110",
         "nwis_site_id": "15266110",
@@ -271,26 +243,15 @@
         "clarity_source": "flow_rain_estimate"
       },
       "alerts": [
-        "Special Weather Statement",
-        "Special Weather Statement",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai"
+        "Special Weather Statement"
       ],
       "notes": [
         "USGS 00065 at : 6.73 ft",
         "USGS 00060 at : 1630 ft^3/s",
-        "Sockeye 3-day average: 20,827 fish from ADF&G count records.",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 11.5 mph.",
         "NOAA tide stage: high.",
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts.",
         "Cold water can slow fish movement and feeding.",
         "No active regulatory override found; using deterministic condition signals."
       ],
@@ -306,9 +267,9 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "No major limiting factor identified from current deterministic inputs."
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts."
       ],
-      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
+      "confidence_explanation": "Confidence is 0.52. Missing sources reduce confidence: adfg_emergency_orders, adfg_fish_counts.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
@@ -328,7 +289,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-16T12:24:48.813609+00:00",
+          "observed_at": "2026-05-16T12:28:18.048257+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -341,10 +302,10 @@
       "lat": 60.487,
       "lon": -151.058,
       "fishing_context": "High-use bank and boat access near Soldotna.",
-      "condition_score": 98,
+      "condition_score": 94,
       "status": "excellent",
-      "score": 98,
-      "confidence": 0.72,
+      "score": 94,
+      "confidence": 0.52,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
@@ -378,34 +339,23 @@
         "clarity_source": "flow_rain_estimate"
       },
       "alerts": [
-        "Special Weather Statement",
-        "Special Weather Statement",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai"
+        "Special Weather Statement"
       ],
       "notes": [
         "USGS 00060 at : 2740 ft^3/s",
         "USGS 00010 at : 6.4 degC",
         "USGS 00065 at : 6.09 ft",
-        "Sockeye 3-day average: 20,827 fish from ADF&G count records.",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 11.5 mph.",
         "NOAA tide stage: high.",
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts.",
         "Cold water can slow fish movement and feeding.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 98,
-      "boat_fishing_score": 98,
-      "sockeye_score": 100,
-      "chinook_score": 100,
+      "bank_fishing_score": 94,
+      "boat_fishing_score": 94,
+      "sockeye_score": null,
+      "chinook_score": 94,
       "coho_score": 94,
       "rainbow_trout_score": 94,
       "dolly_varden_score": 94,
@@ -416,16 +366,16 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "No major limiting factor identified from current deterministic inputs."
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts."
       ],
-      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
+      "confidence_explanation": "Confidence is 0.52. Missing sources reduce confidence: adfg_emergency_orders, adfg_fish_counts.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
         "environmental": 94,
-        "location": 98,
-        "species": 100,
-        "overall": 96
+        "location": 94,
+        "species": 94,
+        "overall": 94
       },
       "source_provenance": [
         {
@@ -438,16 +388,9 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-16T12:24:48.813609+00:00",
+          "observed_at": "2026-05-16T12:28:18.048257+00:00",
           "retrieved_at": null,
           "role": "weather"
-        },
-        {
-          "source": "adfg_fish_counts",
-          "source_id": "40",
-          "observed_at": "2025-08-19",
-          "retrieved_at": null,
-          "role": "species_activity"
         }
       ]
     },
@@ -458,10 +401,10 @@
       "lat": 60.553,
       "lon": -151.258,
       "fishing_context": "Lower river salmon movement influenced by tide stage and boat access.",
-      "condition_score": 98,
+      "condition_score": 94,
       "status": "excellent",
-      "score": 98,
-      "confidence": 0.72,
+      "score": 94,
+      "confidence": 0.52,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
@@ -495,34 +438,23 @@
         "clarity_source": "flow_rain_estimate"
       },
       "alerts": [
-        "Special Weather Statement",
-        "Special Weather Statement",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai"
+        "Special Weather Statement"
       ],
       "notes": [
         "USGS 00060 at : 2740 ft^3/s",
         "USGS 00010 at : 6.4 degC",
         "USGS 00065 at : 6.09 ft",
-        "Sockeye 3-day average: 20,827 fish from ADF&G count records.",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 11.5 mph.",
         "NOAA tide stage: high.",
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts.",
         "Cold water can slow fish movement and feeding.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 98,
-      "boat_fishing_score": 98,
-      "sockeye_score": 100,
-      "chinook_score": 100,
+      "bank_fishing_score": 94,
+      "boat_fishing_score": 94,
+      "sockeye_score": null,
+      "chinook_score": 94,
       "coho_score": 94,
       "rainbow_trout_score": 94,
       "dolly_varden_score": 94,
@@ -533,16 +465,16 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "No major limiting factor identified from current deterministic inputs."
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts."
       ],
-      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
+      "confidence_explanation": "Confidence is 0.52. Missing sources reduce confidence: adfg_emergency_orders, adfg_fish_counts.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
         "environmental": 94,
-        "location": 98,
-        "species": 100,
-        "overall": 96
+        "location": 94,
+        "species": 94,
+        "overall": 94
       },
       "source_provenance": [
         {
@@ -555,7 +487,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-16T12:24:48.813609+00:00",
+          "observed_at": "2026-05-16T12:28:18.048257+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -563,15 +495,8 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-05-16T12:24:48.832372+00:00",
+          "retrieved_at": "2026-05-16T12:28:19.153249+00:00",
           "role": "tide_stage"
-        },
-        {
-          "source": "adfg_fish_counts",
-          "source_id": "40",
-          "observed_at": "2025-08-19",
-          "retrieved_at": null,
-          "role": "species_activity"
         }
       ]
     },
@@ -582,10 +507,10 @@
       "lat": 60.554,
       "lon": -151.27,
       "fishing_context": "Mouth and dipnet-adjacent context; strongly tide and regulation sensitive.",
-      "condition_score": 98,
+      "condition_score": 94,
       "status": "excellent",
-      "score": 98,
-      "confidence": 0.72,
+      "score": 94,
+      "confidence": 0.52,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
@@ -619,34 +544,23 @@
         "clarity_source": "flow_rain_estimate"
       },
       "alerts": [
-        "Special Weather Statement",
-        "Special Weather Statement",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai",
-        "Kenai River / Northern Kenai",
-        "Homer / Southern Kenai"
+        "Special Weather Statement"
       ],
       "notes": [
         "USGS 00060 at : 2740 ft^3/s",
         "USGS 00010 at : 6.4 degC",
         "USGS 00065 at : 6.09 ft",
-        "Sockeye 3-day average: 20,827 fish from ADF&G count records.",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 11.5 mph.",
         "NOAA tide stage: high.",
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts.",
         "Cold water can slow fish movement and feeding.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 98,
-      "boat_fishing_score": 98,
-      "sockeye_score": 100,
-      "chinook_score": 100,
+      "bank_fishing_score": 94,
+      "boat_fishing_score": 94,
+      "sockeye_score": null,
+      "chinook_score": 94,
       "coho_score": 94,
       "rainbow_trout_score": 94,
       "dolly_varden_score": 94,
@@ -657,16 +571,16 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "No major limiting factor identified from current deterministic inputs."
+        "Missing required source data: adfg_emergency_orders, adfg_fish_counts."
       ],
-      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
+      "confidence_explanation": "Confidence is 0.52. Missing sources reduce confidence: adfg_emergency_orders, adfg_fish_counts.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
         "environmental": 94,
-        "location": 98,
-        "species": 100,
-        "overall": 96
+        "location": 94,
+        "species": 94,
+        "overall": 94
       },
       "source_provenance": [
         {
@@ -679,7 +593,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-16T12:24:48.813609+00:00",
+          "observed_at": "2026-05-16T12:28:18.048257+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -687,15 +601,8 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-05-16T12:24:48.832372+00:00",
+          "retrieved_at": "2026-05-16T12:28:19.153249+00:00",
           "role": "tide_stage"
-        },
-        {
-          "source": "adfg_fish_counts",
-          "source_id": "40",
-          "observed_at": "2025-08-19",
-          "retrieved_at": null,
-          "role": "species_activity"
         }
       ]
     }
@@ -703,25 +610,25 @@
   "species_scores": [
     {
       "species": "Sockeye salmon",
-      "score": 52,
-      "status": "fair",
-      "confidence": 0.72,
-      "explanation": "Score supported by current official fish-count records.",
-      "source": "adfg_fish_counts"
+      "score": null,
+      "status": "unknown",
+      "confidence": 0.27,
+      "explanation": "No current species-specific official count supports a score.",
+      "source": null
     },
     {
       "species": "Chinook salmon",
-      "score": 78,
-      "status": "good",
-      "confidence": 0.72,
-      "explanation": "Score supported by current official fish-count records.",
-      "source": "adfg_fish_counts"
+      "score": null,
+      "status": "unknown",
+      "confidence": 0.27,
+      "explanation": "No current species-specific official count supports a score.",
+      "source": null
     },
     {
       "species": "Coho salmon",
       "score": null,
       "status": "unknown",
-      "confidence": 0.47,
+      "confidence": 0.27,
       "explanation": "No current species-specific official count supports a score.",
       "source": null
     },
@@ -729,7 +636,7 @@
       "species": "Rainbow trout",
       "score": null,
       "status": "unknown",
-      "confidence": 0.47,
+      "confidence": 0.27,
       "explanation": "No current species-specific official count supports a score.",
       "source": null
     },
@@ -737,7 +644,7 @@
       "species": "Dolly Varden",
       "score": null,
       "status": "unknown",
-      "confidence": 0.47,
+      "confidence": 0.27,
       "explanation": "No current species-specific official count supports a score.",
       "source": null
     }
@@ -782,383 +689,57 @@
   ],
   "emergency_orders": [],
   "regulations": [],
-  "fish_counts": [
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 90,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-09-02",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 287,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-09-01",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 233,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-31",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 325,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-30",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 730,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-29",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 270,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-28",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 426,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-27",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 628,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-26",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 1027,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-25",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 1012,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-24",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 1022,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-23",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 1125,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-22",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 1058,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-21",
-      "source_url": null
-    },
-    {
-      "species": "Chinook - Late Run",
-      "location": "Kenai River (Chinook)",
-      "count": 131,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "72",
-      "species_id": "412",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-21",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 1126,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-20",
-      "source_url": null
-    },
-    {
-      "species": "Chinook - Late Run",
-      "location": "Kenai River (Chinook)",
-      "count": 60,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "72",
-      "species_id": "412",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-20",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 855,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-19",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye",
-      "location": "Kenai River (late-run sockeye)",
-      "count": 20827,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "40",
-      "species_id": "420",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-19",
-      "source_url": null
-    },
-    {
-      "species": "Chinook - Late Run",
-      "location": "Kenai River (Chinook)",
-      "count": 102,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "72",
-      "species_id": "412",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-19",
-      "source_url": null
-    },
-    {
-      "species": "Sockeye - Late Run",
-      "location": "Russian River",
-      "count": 635,
-      "daily_count": null,
-      "cumulative_count": null,
-      "count_location_id": "13",
-      "species_id": "422",
-      "method": null,
-      "year": 2025,
-      "parser_degraded": false,
-      "manual_review_required": false,
-      "observation_date": "2025-08-18",
-      "source_url": null
-    }
-  ],
+  "fish_counts": [],
   "alerts": [
     {
       "title": "Special Weather Statement",
       "severity": "watch",
       "summary": "Special Weather Statement issued May 15 at 6:50PM AKDT by NWS Anchorage AK",
       "source": "NWS Anchorage AK"
-    },
-    {
-      "title": "Special Weather Statement",
-      "severity": "watch",
-      "summary": "Special Weather Statement issued May 15 at 6:50PM AKDT by NWS Anchorage AK",
-      "source": "NWS Anchorage AK"
-    },
-    {
-      "title": "Kenai River / Northern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=5",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Homer / Southern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=8",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Kenai River / Northern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=5",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Homer / Southern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=8",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Kenai River / Northern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=5",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Homer / Southern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=8",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Kenai River / Northern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=5",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Homer / Southern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=8",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Kenai River / Northern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=5",
-      "source": "adfg_fishing_reports"
-    },
-    {
-      "title": "Homer / Southern Kenai",
-      "severity": "info",
-      "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=8",
-      "source": "adfg_fishing_reports"
     }
   ],
-  "warnings": [],
+  "warnings": [
+    {
+      "source": "adfg_fishing_reports",
+      "severity": "warning",
+      "user_title": "Fishing report data unavailable",
+      "user_message": "timed out",
+      "affects_score": false,
+      "affects_legal_status": false
+    },
+    {
+      "source": "adfg_fish_counts",
+      "severity": "warning",
+      "user_title": "Fish count data unavailable",
+      "user_message": "timed out",
+      "affects_score": true,
+      "affects_legal_status": false
+    },
+    {
+      "source": "adfg_emergency_orders",
+      "severity": "critical",
+      "user_title": "Regulation source unavailable",
+      "user_message": "timed out",
+      "affects_score": true,
+      "affects_legal_status": true
+    },
+    {
+      "source": "adfg_emergency_orders",
+      "severity": "critical",
+      "user_title": "Regulation source unavailable",
+      "user_message": "Required source data is missing from the latest report.",
+      "affects_score": true,
+      "affects_legal_status": true
+    },
+    {
+      "source": "adfg_fish_counts",
+      "severity": "warning",
+      "user_title": "Fish count data unavailable",
+      "user_message": "Required source data is missing from the latest report.",
+      "affects_score": true,
+      "affects_legal_status": false
+    }
+  ],
   "source_health": [
     {
       "source": "noaa_tides",
@@ -1166,8 +747,8 @@
       "severity": "info",
       "user_title": "Tide data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-16T12:24:48.766738Z",
-      "last_success_at": "2026-05-16T12:24:48.766738Z",
+      "last_checked_at": "2026-05-16T12:28:18.026807Z",
+      "last_success_at": "2026-05-16T12:28:18.026807Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1181,8 +762,8 @@
       "severity": "info",
       "user_title": "Weather data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-16T12:24:47.014138Z",
-      "last_success_at": "2026-05-16T12:24:47.014138Z",
+      "last_checked_at": "2026-05-16T12:28:17.654021Z",
+      "last_success_at": "2026-05-16T12:28:17.654021Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1192,48 +773,48 @@
     },
     {
       "source": "adfg_fishing_reports",
-      "status": "ok",
-      "severity": "info",
-      "user_title": "Fishing report data current",
-      "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-16T12:24:43.878625Z",
-      "last_success_at": "2026-05-16T12:24:43.878625Z",
+      "status": "failed",
+      "severity": "warning",
+      "user_title": "Fishing report data unavailable",
+      "user_message": "timed out",
+      "last_checked_at": "2026-05-16T12:27:56.693016Z",
+      "last_success_at": null,
       "freshness_minutes": 0,
-      "freshness_status": "current",
-      "last_error": null,
+      "freshness_status": "missing",
+      "last_error": "timed out",
       "affects_score": false,
       "affects_legal_status": false,
-      "message": "Fetched live source payload."
+      "message": "timed out"
     },
     {
       "source": "adfg_fish_counts",
-      "status": "ok",
-      "severity": "info",
-      "user_title": "Fish count data current",
-      "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-16T12:24:41.261695Z",
-      "last_success_at": "2026-05-16T12:24:41.261695Z",
-      "freshness_minutes": 0,
-      "freshness_status": "current",
-      "last_error": null,
+      "status": "failed",
+      "severity": "warning",
+      "user_title": "Fish count data unavailable",
+      "user_message": "timed out",
+      "last_checked_at": "2026-05-16T12:27:36.629705Z",
+      "last_success_at": null,
+      "freshness_minutes": 1,
+      "freshness_status": "missing",
+      "last_error": "timed out",
       "affects_score": true,
       "affects_legal_status": false,
-      "message": "Fetched live source payload."
+      "message": "timed out"
     },
     {
       "source": "adfg_emergency_orders",
-      "status": "ok",
-      "severity": "info",
-      "user_title": "Regulation source checked",
-      "user_message": "ADF&G emergency orders checked.",
-      "last_checked_at": "2026-05-16T12:24:38.701208Z",
-      "last_success_at": "2026-05-16T12:24:38.701208Z",
-      "freshness_minutes": 0,
-      "freshness_status": "current",
-      "last_error": null,
+      "status": "failed",
+      "severity": "critical",
+      "user_title": "Regulation source unavailable",
+      "user_message": "timed out",
+      "last_checked_at": "2026-05-16T12:27:16.477289Z",
+      "last_success_at": null,
+      "freshness_minutes": 1,
+      "freshness_status": "missing",
+      "last_error": "timed out",
       "affects_score": true,
       "affects_legal_status": true,
-      "message": "Fetched live source payload."
+      "message": "timed out"
     },
     {
       "source": "usgs_statistics",
@@ -1241,9 +822,9 @@
       "severity": "info",
       "user_title": "Historical flow data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-16T12:24:36.078067Z",
-      "last_success_at": "2026-05-16T12:24:36.078067Z",
-      "freshness_minutes": 0,
+      "last_checked_at": "2026-05-16T12:27:16.474184Z",
+      "last_success_at": "2026-05-16T12:27:16.474184Z",
+      "freshness_minutes": 1,
       "freshness_status": "current",
       "last_error": null,
       "affects_score": true,
@@ -1256,9 +837,9 @@
       "severity": "info",
       "user_title": "Water data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-16T12:24:35.160584Z",
-      "last_success_at": "2026-05-16T12:24:35.160584Z",
-      "freshness_minutes": 0,
+      "last_checked_at": "2026-05-16T12:27:16.336543Z",
+      "last_success_at": "2026-05-16T12:27:16.336543Z",
+      "freshness_minutes": 1,
       "freshness_status": "current",
       "last_error": null,
       "affects_score": true,
