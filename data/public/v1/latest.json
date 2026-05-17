@@ -3,11 +3,11 @@
   "engine_version": "0.1.0",
   "generated_by": "kenai-condition-engine",
   "report_date": "2026-05-17",
-  "generated_at": "2026-05-17T13:57:35.452972Z",
-  "expires_at": "2026-05-17T19:57:35.452972Z",
+  "generated_at": "2026-05-17T16:11:48.652909Z",
+  "expires_at": "2026-05-17T22:11:48.652909Z",
   "report_status": "ok",
   "river": "Kenai River",
-  "overall_score": 89,
+  "overall_score": 91,
   "overall_status": "excellent",
   "confidence": 0.72,
   "confidence_band": "high",
@@ -20,15 +20,15 @@
       "lat": 60.489,
       "lon": -149.834,
       "fishing_context": "Upper river drift, wade, trout, dolly varden, and seasonal salmon access.",
-      "condition_score": 62,
+      "condition_score": 64,
       "status": "fair",
-      "score": 62,
+      "score": 64,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15258000",
         "nwis_site_id": "15258000",
-        "discharge_cfs": 1030.0,
-        "gage_height_ft": 6.53,
+        "discharge_cfs": 1060.0,
+        "gage_height_ft": 6.59,
         "water_temp_c": 3.0,
         "water_temp_f": 37.4,
         "turbidity_fnu": null,
@@ -37,7 +37,7 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-05-17T13:00:00+00:00",
+        "observed_at": "2026-05-17T15:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
@@ -46,13 +46,13 @@
         "recent_rain_inches_24h": 0.11,
         "wind_mph": 20.7,
         "wind_direction": "E",
-        "temperature_f": 43.0,
+        "temperature_f": 46.0,
         "short_forecast": "Chance Light Rain",
-        "precipitation_probability": 33,
+        "precipitation_probability": 36,
         "detailed_forecast": "",
         "weather_summary": "Chance Light Rain",
         "wind": "20.7 mph E",
-        "rain_chance": "33%",
+        "rain_chance": "36%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
       },
@@ -63,8 +63,8 @@
       ],
       "notes": [
         "USGS 00010 at : 3 degC",
-        "USGS 00065 at : 6.53 ft",
-        "USGS 00060 at : 1030 ft^3/s",
+        "USGS 00065 at : 6.59 ft",
+        "USGS 00060 at : 1060 ft^3/s",
         "NWS forecast rain: 0.11 inches in 24h.",
         "NWS wind: 20.7 mph.",
         "NOAA tide stage: outgoing.",
@@ -74,13 +74,13 @@
         "Moderate wind can reduce casting and boat control.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 62,
-      "boat_fishing_score": 54,
+      "bank_fishing_score": 64,
+      "boat_fishing_score": 56,
       "sockeye_score": null,
-      "chinook_score": 62,
-      "coho_score": 62,
-      "rainbow_trout_score": 62,
-      "dolly_varden_score": 62,
+      "chinook_score": 64,
+      "coho_score": 64,
+      "rainbow_trout_score": 64,
+      "dolly_varden_score": 64,
       "score_delta_reason": "Mixed or incomplete signals keep the score in a fair range.",
       "contributing_factors": [
         "No active regulatory override found; using deterministic condition signals."
@@ -93,23 +93,23 @@
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Check the limiting factors and choose conservative access or timing.",
       "component_scores": {
-        "environmental": 62,
-        "location": 62,
-        "species": 62,
-        "overall": 62
+        "environmental": 64,
+        "location": 64,
+        "species": 64,
+        "overall": 64
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15258000",
-          "observed_at": "2026-05-17T13:00:00+00:00",
+          "observed_at": "2026-05-17T15:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-17T13:57:34.608000+00:00",
+          "observed_at": "2026-05-17T16:11:47.825930+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -122,9 +122,9 @@
       "lat": 60.489,
       "lon": -149.969,
       "fishing_context": "Sockeye-focused confluence and sanctuary-area context; check ADF&G orders.",
-      "condition_score": 70,
+      "condition_score": 72,
       "status": "good",
-      "score": 70,
+      "score": 72,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266010",
@@ -148,13 +148,13 @@
         "recent_rain_inches_24h": 0.11,
         "wind_mph": 20.7,
         "wind_direction": "E",
-        "temperature_f": 43.0,
+        "temperature_f": 46.0,
         "short_forecast": "Chance Light Rain",
-        "precipitation_probability": 33,
+        "precipitation_probability": 36,
         "detailed_forecast": "",
         "weather_summary": "Chance Light Rain",
         "wind": "20.7 mph E",
-        "rain_chance": "33%",
+        "rain_chance": "36%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
       },
@@ -164,7 +164,7 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 1680 ft^3/s",
+        "USGS 00060 at : 1730 ft^3/s",
         "NWS forecast rain: 0.11 inches in 24h.",
         "NWS wind: 20.7 mph.",
         "NOAA tide stage: outgoing.",
@@ -174,13 +174,13 @@
         "Moderate wind can reduce casting and boat control.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 70,
-      "boat_fishing_score": 62,
+      "bank_fishing_score": 72,
+      "boat_fishing_score": 64,
       "sockeye_score": null,
-      "chinook_score": 70,
-      "coho_score": 70,
-      "rainbow_trout_score": 70,
-      "dolly_varden_score": 70,
+      "chinook_score": 72,
+      "coho_score": 72,
+      "rainbow_trout_score": 72,
+      "dolly_varden_score": 72,
       "score_delta_reason": "Mostly favorable deterministic signals support a good score.",
       "contributing_factors": [
         "No active regulatory override found; using deterministic condition signals."
@@ -192,16 +192,16 @@
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 70,
-        "location": 70,
-        "species": 70,
-        "overall": 70
+        "environmental": 72,
+        "location": 72,
+        "species": 72,
+        "overall": 72
       },
       "source_provenance": [
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-17T13:57:34.608000+00:00",
+          "observed_at": "2026-05-17T16:11:47.825930+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -214,15 +214,15 @@
       "lat": 60.477,
       "lon": -150.47,
       "fishing_context": "Middle river boat and drift context below Skilak Lake.",
-      "condition_score": 70,
+      "condition_score": 72,
       "status": "good",
-      "score": 70,
+      "score": 72,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266110",
         "nwis_site_id": "15266110",
-        "discharge_cfs": 1680.0,
-        "gage_height_ft": 6.76,
+        "discharge_cfs": 1730.0,
+        "gage_height_ft": 6.79,
         "water_temp_c": null,
         "water_temp_f": null,
         "turbidity_fnu": null,
@@ -231,7 +231,7 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-05-17T13:30:00+00:00",
+        "observed_at": "2026-05-17T15:30:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
@@ -240,13 +240,13 @@
         "recent_rain_inches_24h": 0.11,
         "wind_mph": 20.7,
         "wind_direction": "E",
-        "temperature_f": 43.0,
+        "temperature_f": 46.0,
         "short_forecast": "Chance Light Rain",
-        "precipitation_probability": 33,
+        "precipitation_probability": 36,
         "detailed_forecast": "",
         "weather_summary": "Chance Light Rain",
         "wind": "20.7 mph E",
-        "rain_chance": "33%",
+        "rain_chance": "36%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
       },
@@ -256,8 +256,8 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 6.76 ft",
-        "USGS 00060 at : 1680 ft^3/s",
+        "USGS 00060 at : 1730 ft^3/s",
+        "USGS 00065 at : 6.79 ft",
         "NWS forecast rain: 0.11 inches in 24h.",
         "NWS wind: 20.7 mph.",
         "NOAA tide stage: outgoing.",
@@ -267,13 +267,13 @@
         "Moderate wind can reduce casting and boat control.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 70,
-      "boat_fishing_score": 62,
+      "bank_fishing_score": 72,
+      "boat_fishing_score": 64,
       "sockeye_score": null,
-      "chinook_score": 70,
-      "coho_score": 70,
-      "rainbow_trout_score": 70,
-      "dolly_varden_score": 70,
+      "chinook_score": 72,
+      "coho_score": 72,
+      "rainbow_trout_score": 72,
+      "dolly_varden_score": 72,
       "score_delta_reason": "Mostly favorable deterministic signals support a good score.",
       "contributing_factors": [
         "No active regulatory override found; using deterministic condition signals."
@@ -285,23 +285,23 @@
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 70,
-        "location": 70,
-        "species": 70,
-        "overall": 70
+        "environmental": 72,
+        "location": 72,
+        "species": 72,
+        "overall": 72
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266110",
-          "observed_at": "2026-05-17T13:30:00+00:00",
+          "observed_at": "2026-05-17T15:30:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-17T13:57:34.608000+00:00",
+          "observed_at": "2026-05-17T16:11:47.825930+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -314,9 +314,9 @@
       "lat": 60.487,
       "lon": -151.058,
       "fishing_context": "High-use bank and boat access near Soldotna.",
-      "condition_score": 92,
+      "condition_score": 94,
       "status": "excellent",
-      "score": 92,
+      "score": 94,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
@@ -331,7 +331,7 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-05-17T13:00:00+00:00",
+        "observed_at": "2026-05-17T15:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
@@ -340,13 +340,13 @@
         "recent_rain_inches_24h": 0.11,
         "wind_mph": 20.7,
         "wind_direction": "E",
-        "temperature_f": 43.0,
+        "temperature_f": 46.0,
         "short_forecast": "Chance Light Rain",
-        "precipitation_probability": 33,
+        "precipitation_probability": 36,
         "detailed_forecast": "",
         "weather_summary": "Chance Light Rain",
         "wind": "20.7 mph E",
-        "rain_chance": "33%",
+        "rain_chance": "36%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
       },
@@ -356,9 +356,9 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 2870 ft^3/s",
         "USGS 00010 at : 6.3 degC",
         "USGS 00065 at : 6.15 ft",
+        "USGS 00060 at : 2870 ft^3/s",
         "NWS forecast rain: 0.11 inches in 24h.",
         "NWS wind: 20.7 mph.",
         "NOAA tide stage: outgoing.",
@@ -368,13 +368,13 @@
         "Moderate wind can reduce casting and boat control.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 92,
-      "boat_fishing_score": 84,
+      "bank_fishing_score": 94,
+      "boat_fishing_score": 86,
       "sockeye_score": null,
-      "chinook_score": 98,
-      "coho_score": 88,
-      "rainbow_trout_score": 88,
-      "dolly_varden_score": 88,
+      "chinook_score": 100,
+      "coho_score": 90,
+      "rainbow_trout_score": 90,
+      "dolly_varden_score": 90,
       "score_delta_reason": "Strong water, weather, fish, or access signals lifted the score.",
       "contributing_factors": [
         "Water temperature is in the primary salmonid comfort band.",
@@ -388,23 +388,23 @@
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 88,
-        "location": 92,
-        "species": 88,
-        "overall": 89
+        "environmental": 90,
+        "location": 94,
+        "species": 90,
+        "overall": 91
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-05-17T13:00:00+00:00",
+          "observed_at": "2026-05-17T15:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-17T13:57:34.608000+00:00",
+          "observed_at": "2026-05-17T16:11:47.825930+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -417,9 +417,9 @@
       "lat": 60.553,
       "lon": -151.258,
       "fishing_context": "Lower river salmon movement influenced by tide stage and boat access.",
-      "condition_score": 87,
+      "condition_score": 89,
       "status": "excellent",
-      "score": 87,
+      "score": 89,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
@@ -434,7 +434,7 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-05-17T13:00:00+00:00",
+        "observed_at": "2026-05-17T15:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": "outgoing"
@@ -443,13 +443,13 @@
         "recent_rain_inches_24h": 0.11,
         "wind_mph": 20.7,
         "wind_direction": "E",
-        "temperature_f": 43.0,
+        "temperature_f": 46.0,
         "short_forecast": "Chance Light Rain",
-        "precipitation_probability": 33,
+        "precipitation_probability": 36,
         "detailed_forecast": "",
         "weather_summary": "Chance Light Rain",
         "wind": "20.7 mph E",
-        "rain_chance": "33%",
+        "rain_chance": "36%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
       },
@@ -459,9 +459,9 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 2870 ft^3/s",
         "USGS 00010 at : 6.3 degC",
         "USGS 00065 at : 6.15 ft",
+        "USGS 00060 at : 2870 ft^3/s",
         "NWS forecast rain: 0.11 inches in 24h.",
         "NWS wind: 20.7 mph.",
         "NOAA tide stage: outgoing.",
@@ -471,13 +471,13 @@
         "Moderate wind can reduce casting and boat control.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 87,
-      "boat_fishing_score": 79,
+      "bank_fishing_score": 89,
+      "boat_fishing_score": 81,
       "sockeye_score": null,
-      "chinook_score": 98,
-      "coho_score": 88,
-      "rainbow_trout_score": 88,
-      "dolly_varden_score": 88,
+      "chinook_score": 100,
+      "coho_score": 90,
+      "rainbow_trout_score": 90,
+      "dolly_varden_score": 90,
       "score_delta_reason": "Strong water, weather, fish, or access signals lifted the score.",
       "contributing_factors": [
         "Water temperature is in the primary salmonid comfort band.",
@@ -491,23 +491,23 @@
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 88,
-        "location": 87,
-        "species": 88,
-        "overall": 88
+        "environmental": 90,
+        "location": 89,
+        "species": 90,
+        "overall": 90
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-05-17T13:00:00+00:00",
+          "observed_at": "2026-05-17T15:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-17T13:57:34.608000+00:00",
+          "observed_at": "2026-05-17T16:11:47.825930+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -515,7 +515,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-05-17T13:57:35.452972+00:00",
+          "retrieved_at": "2026-05-17T16:11:48.652909+00:00",
           "role": "tide_stage"
         }
       ]
@@ -527,9 +527,9 @@
       "lat": 60.554,
       "lon": -151.27,
       "fishing_context": "Mouth and dipnet-adjacent context; strongly tide and regulation sensitive.",
-      "condition_score": 87,
+      "condition_score": 89,
       "status": "excellent",
-      "score": 87,
+      "score": 89,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
@@ -544,7 +544,7 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-05-17T13:00:00+00:00",
+        "observed_at": "2026-05-17T15:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": "outgoing"
@@ -553,13 +553,13 @@
         "recent_rain_inches_24h": 0.11,
         "wind_mph": 20.7,
         "wind_direction": "E",
-        "temperature_f": 43.0,
+        "temperature_f": 46.0,
         "short_forecast": "Chance Light Rain",
-        "precipitation_probability": 33,
+        "precipitation_probability": 36,
         "detailed_forecast": "",
         "weather_summary": "Chance Light Rain",
         "wind": "20.7 mph E",
-        "rain_chance": "33%",
+        "rain_chance": "36%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
       },
@@ -569,9 +569,9 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 2870 ft^3/s",
         "USGS 00010 at : 6.3 degC",
         "USGS 00065 at : 6.15 ft",
+        "USGS 00060 at : 2870 ft^3/s",
         "NWS forecast rain: 0.11 inches in 24h.",
         "NWS wind: 20.7 mph.",
         "NOAA tide stage: outgoing.",
@@ -581,13 +581,13 @@
         "Moderate wind can reduce casting and boat control.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 87,
-      "boat_fishing_score": 79,
+      "bank_fishing_score": 89,
+      "boat_fishing_score": 81,
       "sockeye_score": null,
-      "chinook_score": 98,
-      "coho_score": 88,
-      "rainbow_trout_score": 88,
-      "dolly_varden_score": 88,
+      "chinook_score": 100,
+      "coho_score": 90,
+      "rainbow_trout_score": 90,
+      "dolly_varden_score": 90,
       "score_delta_reason": "Strong water, weather, fish, or access signals lifted the score.",
       "contributing_factors": [
         "Water temperature is in the primary salmonid comfort band.",
@@ -601,23 +601,23 @@
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 88,
-        "location": 87,
-        "species": 88,
-        "overall": 88
+        "environmental": 90,
+        "location": 89,
+        "species": 90,
+        "overall": 90
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-05-17T13:00:00+00:00",
+          "observed_at": "2026-05-17T15:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-17T13:57:34.608000+00:00",
+          "observed_at": "2026-05-17T16:11:47.825930+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -625,7 +625,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-05-17T13:57:35.452972+00:00",
+          "retrieved_at": "2026-05-17T16:11:48.652909+00:00",
           "role": "tide_stage"
         }
       ]
@@ -642,7 +642,7 @@
     },
     {
       "species": "Chinook salmon",
-      "score": 98,
+      "score": 100,
       "status": "excellent",
       "confidence": 0.72,
       "explanation": "Score supported by current official fish-count records.",
@@ -1043,8 +1043,8 @@
       "severity": "info",
       "user_title": "Tide data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-17T13:57:34.371354Z",
-      "last_success_at": "2026-05-17T13:57:34.371354Z",
+      "last_checked_at": "2026-05-17T16:11:47.577309Z",
+      "last_success_at": "2026-05-17T16:11:47.577309Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1058,8 +1058,8 @@
       "severity": "info",
       "user_title": "Weather data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-17T13:57:33.981850Z",
-      "last_success_at": "2026-05-17T13:57:33.981850Z",
+      "last_checked_at": "2026-05-17T16:11:47.189855Z",
+      "last_success_at": "2026-05-17T16:11:47.189855Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1073,8 +1073,8 @@
       "severity": "info",
       "user_title": "Fishing report data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-17T13:57:32.974343Z",
-      "last_success_at": "2026-05-17T13:57:32.974343Z",
+      "last_checked_at": "2026-05-17T16:11:29.934698Z",
+      "last_success_at": "2026-05-17T16:11:29.934698Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1088,8 +1088,8 @@
       "severity": "info",
       "user_title": "Fish count data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-17T13:57:32.333014Z",
-      "last_success_at": "2026-05-17T13:57:32.333014Z",
+      "last_checked_at": "2026-05-17T16:11:29.358308Z",
+      "last_success_at": "2026-05-17T16:11:29.358308Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1103,8 +1103,8 @@
       "severity": "info",
       "user_title": "Regulation source checked",
       "user_message": "ADF&G emergency orders checked.",
-      "last_checked_at": "2026-05-17T13:57:31.564764Z",
-      "last_success_at": "2026-05-17T13:57:31.564764Z",
+      "last_checked_at": "2026-05-17T16:11:28.568337Z",
+      "last_success_at": "2026-05-17T16:11:28.568337Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1118,8 +1118,8 @@
       "severity": "info",
       "user_title": "Historical flow data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-17T13:57:30.890770Z",
-      "last_success_at": "2026-05-17T13:57:30.890770Z",
+      "last_checked_at": "2026-05-17T16:11:27.939199Z",
+      "last_success_at": "2026-05-17T16:11:27.939199Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1133,8 +1133,8 @@
       "severity": "info",
       "user_title": "Water data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-17T13:57:30.721760Z",
-      "last_success_at": "2026-05-17T13:57:30.721760Z",
+      "last_checked_at": "2026-05-17T16:11:27.467095Z",
+      "last_success_at": "2026-05-17T16:11:27.467095Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
