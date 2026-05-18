@@ -76,6 +76,10 @@ Location records include `id`, `name`, `segment`, `lat`, `lon`,
 `fishing_context`, `condition_score`, `status`, `confidence`, `water`,
 `weather`, `alerts`, and `notes`.
 
+Alert records include `title`, `severity`, `summary`, `source`,
+`advisory_explanation`, and `fishing_impact`. The explanation fields describe
+what the advisory means and how the advisory reason can affect a person fishing.
+
 ## Source-Health UI Mapping
 
 Each `source_health` item includes app-facing fields:

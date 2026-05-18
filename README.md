@@ -64,7 +64,7 @@ canonical local report artifact. The report contains:
 - `emergency_orders`
 - `regulations` for backward compatibility with emergency orders
 - `fish_counts`
-- `alerts`
+- `alerts`, including advisory explanation and fishing impact fields
 - `warnings`
 - `source_health`
 

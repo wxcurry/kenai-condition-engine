@@ -90,6 +90,33 @@ def test_default_source_health_exposes_adfg_fishing_reports_separately() -> None
     assert health_by_source["nws"].status == "ok"
 
 
+def test_report_alerts_include_advisory_explanation_and_fishing_impact() -> None:
+    report = build_condition_report(
+        datetime(2026, 7, 22, 22, 0, tzinfo=UTC),
+        regulations=[],
+        fish_counts=[],
+        alerts=[
+            Alert(
+                title="Flood Watch",
+                severity="watch",
+                summary="Flooding is possible on streams and rivers near Kenai.",
+                source="NWS Anchorage",
+            )
+        ],
+    )
+
+    alert = report.model_dump(mode="json")["alerts"][0]
+
+    assert alert["advisory_explanation"] == (
+        "A flood watch means conditions could develop that raise river levels or "
+        "create unsafe water conditions."
+    )
+    assert alert["fishing_impact"] == (
+        "Higher or rising water can reduce bank access, make wading unsafe, move fish "
+        "out of normal holding water, lower clarity, and make boat control harder."
+    )
+
+
 def test_adfg_fishing_report_source_health_exposes_stale_and_failed_states() -> None:
     generated_at = datetime(2026, 5, 16, 12, 0, tzinfo=UTC)
 
@@ -780,7 +807,17 @@ def test_pdf_only_emergency_order_creates_manual_review_warning_and_alert() -> N
     assert any(
         warning.user_title == "Emergency order needs manual review" for warning in report.warnings
     )
-    assert any(alert.title == "Manual review required for ADF&G order" for alert in report.alerts)
+    review_alert = next(
+        alert for alert in report.alerts if alert.title == "Manual review required for ADF&G order"
+    )
+    assert review_alert.advisory_explanation == (
+        "This ADF&G emergency-order advisory means the official order could not be "
+        "confidently parsed by the engine."
+    )
+    assert review_alert.fishing_impact == (
+        "The legal details may change whether, where, or how a person can fish; verify "
+        "the official ADF&G order before relying on this report."
+    )
 
 
 def test_unknown_manual_review_order_caps_v1_report_and_avoids_open_legal_copy() -> None:

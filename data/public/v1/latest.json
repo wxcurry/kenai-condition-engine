@@ -1014,13 +1014,17 @@
       "title": "Kenai River / Northern Kenai",
       "severity": "info",
       "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=5",
-      "source": "adfg_fishing_reports"
+      "source": "adfg_fishing_reports",
+      "advisory_explanation": "This ADF&G fishing-report advisory is official narrative context about recent fishing conditions.",
+      "fishing_impact": "Use it as context for timing, species activity, and local observations, but verify legal restrictions and safety conditions against the dedicated advisory sources."
     },
     {
       "title": "Homer / Southern Kenai",
       "severity": "info",
       "summary": "https://www.adfg.alaska.gov/sf/FishingReports/index.cfm?ADFG=R2.ReportDetail&area_key=8",
-      "source": "adfg_fishing_reports"
+      "source": "adfg_fishing_reports",
+      "advisory_explanation": "This ADF&G fishing-report advisory is official narrative context about recent fishing conditions.",
+      "fishing_impact": "Use it as context for timing, species activity, and local observations, but verify legal restrictions and safety conditions against the dedicated advisory sources."
     }
   ],
   "warnings": [],
