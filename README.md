@@ -53,7 +53,7 @@ canonical local report artifact. The report contains:
 - `schema_version` currently `1.0.0`
 - `generated_by`
 - `report_date`
-- `generated_at`
+- `generated_at` as `MM-DD-YYYY`
 - `river`
 - `overall_score`
 - `overall_status`

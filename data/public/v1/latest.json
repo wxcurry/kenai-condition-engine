@@ -3,11 +3,11 @@
   "engine_version": "0.1.0",
   "generated_by": "kenai-condition-engine",
   "report_date": "2026-05-18",
-  "generated_at": "2026-05-18T11:31:34.647684Z",
-  "expires_at": "2026-05-18T17:31:34.647684Z",
+  "generated_at": "05-18-2026",
+  "expires_at": "2026-05-18T18:02:49.512426Z",
   "report_status": "ok",
   "river": "Kenai River",
-  "overall_score": 92,
+  "overall_score": 97,
   "overall_status": "excellent",
   "confidence": 0.72,
   "confidence_band": "high",
@@ -67,7 +67,9 @@
         "NWS forecast rain: 0.23 inches in 24h.",
         "NWS wind: 3.5 mph.",
         "NOAA tide stage: incoming.",
+        "USGS flow percentile: 35.1 for the current day-of-year.",
         "Water temperature is in the primary salmonid comfort band.",
+        "Flow is near the normal fishable range for the date.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "bank_fishing_score": 68,
@@ -104,7 +106,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-18T11:31:33.830918+00:00",
+          "observed_at": "2026-05-18T12:02:49.213864+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -158,11 +160,14 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
+        "USGS 00060 at : 1710 ft^3/s",
         "USGS 00060 at : 1100 ft^3/s",
         "NWS forecast rain: 0.23 inches in 24h.",
         "NWS wind: 3.5 mph.",
         "NOAA tide stage: incoming.",
+        "USGS flow percentile: 35.1 for the current day-of-year.",
         "Water temperature is in the primary salmonid comfort band.",
+        "Flow is near the normal fishable range for the date.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "bank_fishing_score": 76,
@@ -192,7 +197,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-18T11:31:33.830918+00:00",
+          "observed_at": "2026-05-18T12:02:49.213864+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -212,8 +217,8 @@
       "water": {
         "monitoring_location_id": "USGS-15266110",
         "nwis_site_id": "15266110",
-        "discharge_cfs": 1730.0,
-        "gage_height_ft": 6.79,
+        "discharge_cfs": 1710.0,
+        "gage_height_ft": 6.78,
         "water_temp_c": null,
         "water_temp_f": null,
         "turbidity_fnu": null,
@@ -222,7 +227,7 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-05-18T10:30:00+00:00",
+        "observed_at": "2026-05-18T11:30:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
@@ -246,12 +251,14 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 6.79 ft",
-        "USGS 00060 at : 1730 ft^3/s",
+        "USGS 00060 at : 1710 ft^3/s",
+        "USGS 00065 at : 6.78 ft",
         "NWS forecast rain: 0.23 inches in 24h.",
         "NWS wind: 3.5 mph.",
         "NOAA tide stage: incoming.",
+        "USGS flow percentile: 35.1 for the current day-of-year.",
         "Water temperature is in the primary salmonid comfort band.",
+        "Flow is near the normal fishable range for the date.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "bank_fishing_score": 76,
@@ -281,14 +288,14 @@
         {
           "source": "usgs",
           "source_id": "15266110",
-          "observed_at": "2026-05-18T10:30:00+00:00",
+          "observed_at": "2026-05-18T11:30:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-18T11:31:33.830918+00:00",
+          "observed_at": "2026-05-18T12:02:49.213864+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -348,7 +355,9 @@
         "NWS forecast rain: 0.23 inches in 24h.",
         "NWS wind: 3.5 mph.",
         "NOAA tide stage: incoming.",
+        "USGS flow percentile: 35.1 for the current day-of-year.",
         "Water temperature is in the primary salmonid comfort band.",
+        "Flow is near the normal fishable range for the date.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "bank_fishing_score": 98,
@@ -387,7 +396,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-18T11:31:33.830918+00:00",
+          "observed_at": "2026-05-18T12:02:49.213864+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -447,7 +456,9 @@
         "NWS forecast rain: 0.23 inches in 24h.",
         "NWS wind: 3.5 mph.",
         "NOAA tide stage: incoming.",
+        "USGS flow percentile: 35.1 for the current day-of-year.",
         "Water temperature is in the primary salmonid comfort band.",
+        "Flow is near the normal fishable range for the date.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "bank_fishing_score": 100,
@@ -486,7 +497,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-18T11:31:33.830918+00:00",
+          "observed_at": "2026-05-18T12:02:49.213864+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -494,7 +505,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-05-18T11:31:34.647684+00:00",
+          "retrieved_at": "2026-05-18T12:02:49.512426+00:00",
           "role": "tide_stage"
         }
       ]
@@ -553,7 +564,9 @@
         "NWS forecast rain: 0.23 inches in 24h.",
         "NWS wind: 3.5 mph.",
         "NOAA tide stage: incoming.",
+        "USGS flow percentile: 35.1 for the current day-of-year.",
         "Water temperature is in the primary salmonid comfort band.",
+        "Flow is near the normal fishable range for the date.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "bank_fishing_score": 100,
@@ -592,7 +605,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-05-18T11:31:33.830918+00:00",
+          "observed_at": "2026-05-18T12:02:49.213864+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -600,7 +613,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-05-18T11:31:34.647684+00:00",
+          "retrieved_at": "2026-05-18T12:02:49.512426+00:00",
           "role": "tide_stage"
         }
       ]
@@ -1016,8 +1029,8 @@
       "severity": "info",
       "user_title": "Tide data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-18T11:31:33.592077Z",
-      "last_success_at": "2026-05-18T11:31:33.592077Z",
+      "last_checked_at": "2026-05-18T12:02:49.108587Z",
+      "last_success_at": "2026-05-18T12:02:49.108587Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1031,8 +1044,8 @@
       "severity": "info",
       "user_title": "Weather data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-18T11:31:33.206392Z",
-      "last_success_at": "2026-05-18T11:31:33.206392Z",
+      "last_checked_at": "2026-05-18T12:02:44.451394Z",
+      "last_success_at": "2026-05-18T12:02:44.451394Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1046,8 +1059,8 @@
       "severity": "info",
       "user_title": "Fishing report data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-18T11:31:31.652500Z",
-      "last_success_at": "2026-05-18T11:31:31.652500Z",
+      "last_checked_at": "2026-05-18T12:02:32.146255Z",
+      "last_success_at": "2026-05-18T12:02:32.146255Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1061,8 +1074,8 @@
       "severity": "info",
       "user_title": "Fish count data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-18T11:31:31.016316Z",
-      "last_success_at": "2026-05-18T11:31:31.016316Z",
+      "last_checked_at": "2026-05-18T12:02:27.855987Z",
+      "last_success_at": "2026-05-18T12:02:27.855987Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1076,8 +1089,8 @@
       "severity": "info",
       "user_title": "Regulation source checked",
       "user_message": "ADF&G emergency orders checked.",
-      "last_checked_at": "2026-05-18T11:31:30.300018Z",
-      "last_success_at": "2026-05-18T11:31:30.300018Z",
+      "last_checked_at": "2026-05-18T12:02:21.350436Z",
+      "last_success_at": "2026-05-18T12:02:21.350436Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -1091,9 +1104,9 @@
       "severity": "info",
       "user_title": "Historical flow data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-18T11:31:29.733311Z",
-      "last_success_at": "2026-05-18T11:31:29.733311Z",
-      "freshness_minutes": 0,
+      "last_checked_at": "2026-05-18T12:02:16.349667Z",
+      "last_success_at": "2026-05-18T12:02:16.349667Z",
+      "freshness_minutes": 1,
       "freshness_status": "current",
       "last_error": null,
       "affects_score": true,
@@ -1106,9 +1119,9 @@
       "severity": "info",
       "user_title": "Water data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-05-18T11:31:29.294509Z",
-      "last_success_at": "2026-05-18T11:31:29.294509Z",
-      "freshness_minutes": 0,
+      "last_checked_at": "2026-05-18T12:02:14.953831Z",
+      "last_success_at": "2026-05-18T12:02:14.953831Z",
+      "freshness_minutes": 1,
       "freshness_status": "current",
       "last_error": null,
       "affects_score": true,

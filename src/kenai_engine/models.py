@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 SCHEMA_VERSION = "1.0.0"
 ENGINE_NAME = "kenai-condition-engine"
 ENGINE_VERSION = "0.1.0"
+REPORT_GENERATED_AT_FORMAT = "%m-%d-%Y"
 
 ConditionStatus = Literal["poor", "fair", "good", "excellent", "restricted", "closed", "unknown"]
 RegulationStatus = Literal["open", "restricted", "closed", "unknown"]
@@ -387,3 +388,17 @@ class Report(BaseModel):
     alerts: list[Alert]
     warnings: list[SourceWarning] = Field(default_factory=list)
     source_health: list[SourceHealth]
+
+    @field_validator("generated_at", mode="before")
+    @classmethod
+    def parse_generated_at_date_only(cls, value: object) -> object:
+        if not isinstance(value, str):
+            return value
+        try:
+            return datetime.strptime(value, REPORT_GENERATED_AT_FORMAT).replace(tzinfo=UTC)
+        except ValueError:
+            return value
+
+    @field_serializer("generated_at", when_used="json")
+    def serialize_generated_at_date_only(self, value: datetime) -> str:
+        return value.strftime(REPORT_GENERATED_AT_FORMAT)
