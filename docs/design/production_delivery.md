@@ -68,9 +68,10 @@ Each location record is deterministic and remains present even when some source
 data is missing. Location confidence and warning fields tell the UI when data is
 incomplete.
 
-The report includes `generated_at` and `expires_at`. Kenai Pulse should treat
-responses past `expires_at` as stale and surface the report `warnings` or
-`source_health` details instead of implying current conditions.
+The report includes `generated_at` as `MM-DD-YYYY` and `expires_at` as an ISO
+timestamp. Kenai Pulse should treat responses past `expires_at` as stale and
+surface the report `warnings` or `source_health` details instead of implying
+current conditions.
 
 Location records include `id`, `name`, `segment`, `lat`, `lon`,
 `fishing_context`, `condition_score`, `status`, `confidence`, `water`,

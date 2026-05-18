@@ -53,6 +53,7 @@ def test_condition_report_has_app_contract_shape() -> None:
     assert dumped["schema_version"] == "1.0.0"
     assert dumped["engine_version"] == "0.1.0"
     assert dumped["generated_by"] == "kenai-condition-engine"
+    assert dumped["generated_at"] == "05-02-2026"
     assert dumped["expires_at"] == "2026-05-02T18:00:00Z"
     assert dumped["report_status"] == "degraded"
     assert dumped["confidence_band"] in {"low", "medium", "high"}
@@ -227,6 +228,15 @@ def test_report_schema_version_is_required() -> None:
         assert "schema_version" in str(error)
     else:
         raise AssertionError("Report validation should require schema_version.")
+
+
+def test_report_generated_at_date_only_format_round_trips() -> None:
+    payload = build_condition_report(datetime(2026, 5, 2, 12, 0, tzinfo=UTC)).model_dump(
+        mode="json"
+    )
+
+    assert payload["generated_at"] == "05-02-2026"
+    assert Report.model_validate(payload).generated_at == datetime(2026, 5, 2, tzinfo=UTC)
 
 
 def test_write_latest_report_creates_json_file(tmp_path) -> None:
