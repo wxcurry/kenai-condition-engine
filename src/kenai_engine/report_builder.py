@@ -1361,11 +1361,18 @@ def _alert_advisory_copy(alert: Alert) -> tuple[str, str]:
             "Use it as context for timing, species activity, and local observations, but verify "
             "legal restrictions and safety conditions against the dedicated advisory sources.",
         )
+    if not alert.summary.strip():
+        return (
+            f"{alert.title} is an advisory from {alert.source} that may affect current Kenai River "
+            "fishing conditions.",
+            f"{alert.title} may affect access, safety, fish behavior, and the practicality of "
+            "fishing before heading out.",
+        )
     return (
         f"{alert.title} is an advisory from {alert.source} that may affect current Kenai River "
         "fishing conditions.",
-        f"{alert.summary} Consider how this advisory affects access, safety, fish behavior, and "
-        "the practicality of fishing before heading out.",
+        f"{alert.summary.strip()} Consider how this advisory affects access, safety, fish "
+        "behavior, and the practicality of fishing before heading out.",
     )
 
 

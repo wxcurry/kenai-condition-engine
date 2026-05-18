@@ -117,6 +117,30 @@ def test_report_alerts_include_advisory_explanation_and_fishing_impact() -> None
     )
 
 
+def test_report_alert_generic_fishing_impact_handles_empty_summary() -> None:
+    report = build_condition_report(
+        datetime(2026, 7, 22, 22, 0, tzinfo=UTC),
+        regulations=[],
+        fish_counts=[],
+        alerts=[
+            Alert(
+                title="Special Weather Statement",
+                severity="info",
+                summary="",
+                source="nws",
+            )
+        ],
+    )
+
+    alert = report.model_dump(mode="json")["alerts"][0]
+
+    assert alert["fishing_impact"] == (
+        "Special Weather Statement may affect access, safety, fish behavior, and the "
+        "practicality of fishing before heading out."
+    )
+    assert not alert["fishing_impact"].startswith(" ")
+
+
 def test_adfg_fishing_report_source_health_exposes_stale_and_failed_states() -> None:
     generated_at = datetime(2026, 5, 16, 12, 0, tzinfo=UTC)
 
