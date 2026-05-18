@@ -153,6 +153,8 @@ class Alert(BaseModel):
     severity: Literal["info", "watch", "warning"]
     summary: str
     source: str
+    advisory_explanation: str = ""
+    fishing_impact: str = ""
 
 
 class WeatherObservation(BaseModel):

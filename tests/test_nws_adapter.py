@@ -195,18 +195,24 @@ def test_parse_nws_alerts_extracts_simple_alert_records() -> None:
             "severity": "warning",
             "summary": "Flood Warning issued for Kenai River",
             "source": "NWS Anchorage",
+            "advisory_explanation": "",
+            "fishing_impact": "",
         },
         {
             "title": "Hydrologic Outlook",
             "severity": "watch",
             "summary": "Rises are possible next week.",
             "source": "NWS Alaska Pacific River Forecast Center",
+            "advisory_explanation": "",
+            "fishing_impact": "",
         },
         {
             "title": "Special Weather Statement",
             "severity": "info",
             "summary": "",
             "source": "nws",
+            "advisory_explanation": "",
+            "fishing_impact": "",
         },
     ]
 

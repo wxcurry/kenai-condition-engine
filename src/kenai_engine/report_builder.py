@@ -238,6 +238,7 @@ def build_condition_report(
     manual_review_alerts = _manual_review_alerts(active_regulations)
     if manual_review_alerts:
         active_alerts = [*active_alerts, *manual_review_alerts]
+    active_alerts = _enrich_alert_advisories(active_alerts)
     report_confidence = score.confidence
     if baseline_missing:
         report_confidence = max(0.05, round(report_confidence - 0.2, 2))
@@ -1310,6 +1311,69 @@ def _manual_review_alerts(regulations: list[Regulation]) -> list[Alert]:
             )
         )
     return alerts
+
+
+def _enrich_alert_advisories(alerts: list[Alert]) -> list[Alert]:
+    return [_enrich_alert_advisory(alert) for alert in alerts]
+
+
+def _enrich_alert_advisory(alert: Alert) -> Alert:
+    advisory_explanation, fishing_impact = _alert_advisory_copy(alert)
+    return Alert(
+        title=alert.title,
+        severity=alert.severity,
+        summary=alert.summary,
+        source=alert.source,
+        advisory_explanation=alert.advisory_explanation or advisory_explanation,
+        fishing_impact=alert.fishing_impact or fishing_impact,
+    )
+
+
+def _alert_advisory_copy(alert: Alert) -> tuple[str, str]:
+    title = alert.title.lower()
+    source = alert.source.lower()
+    if "flood" in title and alert.severity == "warning":
+        return (
+            "A flood warning means flooding is occurring or expected and river conditions may "
+            "already be unsafe.",
+            "High or flooding water can make wading dangerous, cover normal bank access, "
+            "increase debris, lower clarity, change fish holding water, and make boat control "
+            "harder.",
+        )
+    if "flood" in title and alert.severity == "watch":
+        return (
+            "A flood watch means conditions could develop that raise river levels or create "
+            "unsafe water conditions.",
+            "Higher or rising water can reduce bank access, make wading unsafe, move fish out "
+            "of normal holding water, lower clarity, and make boat control harder.",
+        )
+    if source == "adfg_emergency_orders":
+        return (
+            "This ADF&G emergency-order advisory means the official order could not be "
+            "confidently parsed by the engine.",
+            "The legal details may change whether, where, or how a person can fish; verify "
+            "the official ADF&G order before relying on this report.",
+        )
+    if source == "adfg_fishing_reports":
+        return (
+            "This ADF&G fishing-report advisory is official narrative context about recent "
+            "fishing conditions.",
+            "Use it as context for timing, species activity, and local observations, but verify "
+            "legal restrictions and safety conditions against the dedicated advisory sources.",
+        )
+    if not alert.summary.strip():
+        return (
+            f"{alert.title} is an advisory from {alert.source} that may affect current Kenai River "
+            "fishing conditions.",
+            f"{alert.title} may affect access, safety, fish behavior, and the practicality of "
+            "fishing before heading out.",
+        )
+    return (
+        f"{alert.title} is an advisory from {alert.source} that may affect current Kenai River "
+        "fishing conditions.",
+        f"{alert.summary.strip()} Consider how this advisory affects access, safety, fish "
+        "behavior, and the practicality of fishing before heading out.",
+    )
 
 
 def _enrich_source_health(
