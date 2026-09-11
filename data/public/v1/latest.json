@@ -4,14 +4,14 @@
   "generated_by": "kenai-condition-engine",
   "report_date": "2026-09-11",
   "generated_at": "09-11-2026",
-  "expires_at": "2026-09-11T10:40:19.783066Z",
-  "report_status": "degraded",
+  "expires_at": "2026-09-11T17:21:15.629898Z",
+  "report_status": "ok",
   "river": "Kenai River",
   "overall_score": 90,
   "overall_status": "excellent",
-  "confidence": 0.62,
-  "confidence_band": "medium",
-  "summary": "Source warning: missing required sources (usgs_statistics). Production condition report with normalized USGS readings and source alerts.",
+  "confidence": 0.72,
+  "confidence_band": "high",
+  "summary": "Production condition report with normalized USGS readings and source alerts.",
   "locations": [
     {
       "id": "cooper_landing_upper_kenai",
@@ -23,35 +23,35 @@
       "condition_score": 90,
       "status": "excellent",
       "score": 90,
-      "confidence": 0.62,
+      "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15258000",
         "nwis_site_id": "15258000",
-        "discharge_cfs": 4030.0,
-        "gage_height_ft": 9.28,
-        "water_temp_c": 9.3,
-        "water_temp_f": 48.74,
+        "discharge_cfs": 4040.0,
+        "gage_height_ft": 9.29,
+        "water_temp_c": 9.2,
+        "water_temp_f": 48.56,
         "turbidity_fnu": null,
         "specific_conductance_us_cm": null,
         "dissolved_oxygen_mg_l": null,
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-09-11T04:00:00+00:00",
+        "observed_at": "2026-09-11T11:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 4.6,
+        "wind_mph": 1.2,
         "wind_direction": "",
-        "temperature_f": 56.0,
-        "short_forecast": "Partly Cloudy",
+        "temperature_f": 46.0,
+        "short_forecast": "Mostly Clear",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Partly Cloudy",
-        "wind": "4.6 mph",
+        "weather_summary": "Mostly Clear",
+        "wind": "1.2 mph",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -61,13 +61,12 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 9.28 ft",
-        "USGS 00010 at : 9.3 degC",
-        "USGS 00060 at : 4030 ft^3/s",
+        "USGS 00060 at : 4040 ft^3/s",
+        "USGS 00010 at : 9.2 degC",
+        "USGS 00065 at : 9.29 ft",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 4.6 mph.",
-        "NOAA tide stage: outgoing.",
-        "Missing required source data: usgs_statistics.",
+        "NWS wind: 1.2 mph.",
+        "NOAA tide stage: incoming.",
         "Water temperature is in the primary salmonid comfort band.",
         "No active regulatory override found; using deterministic condition signals."
       ],
@@ -84,9 +83,9 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Missing required source data: usgs_statistics."
+        "No major limiting factor identified from current deterministic inputs."
       ],
-      "confidence_explanation": "Confidence is 0.62. Missing sources reduce confidence: usgs_statistics.",
+      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
@@ -99,14 +98,14 @@
         {
           "source": "usgs",
           "source_id": "15258000",
-          "observed_at": "2026-09-11T04:00:00+00:00",
+          "observed_at": "2026-09-11T11:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-09-11T04:40:19.737290+00:00",
+          "observed_at": "2026-09-11T11:21:14.507143+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -122,7 +121,7 @@
       "condition_score": 80,
       "status": "good",
       "score": 80,
-      "confidence": 0.62,
+      "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266010",
         "nwis_site_id": "15266010",
@@ -143,14 +142,14 @@
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 4.6,
+        "wind_mph": 1.2,
         "wind_direction": "",
-        "temperature_f": 56.0,
-        "short_forecast": "Partly Cloudy",
+        "temperature_f": 46.0,
+        "short_forecast": "Mostly Clear",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Partly Cloudy",
-        "wind": "4.6 mph",
+        "weather_summary": "Mostly Clear",
+        "wind": "1.2 mph",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -160,11 +159,10 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 8730 ft^3/s",
+        "USGS 00060 at : 4040 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 4.6 mph.",
-        "NOAA tide stage: outgoing.",
-        "Missing required source data: usgs_statistics.",
+        "NWS wind: 1.2 mph.",
+        "NOAA tide stage: incoming.",
         "Water temperature is in the primary salmonid comfort band.",
         "No active regulatory override found; using deterministic condition signals."
       ],
@@ -180,9 +178,9 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Missing required source data: usgs_statistics."
+        "No major limiting factor identified from current deterministic inputs."
       ],
-      "confidence_explanation": "Confidence is 0.62. Missing sources reduce confidence: usgs_statistics.",
+      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
@@ -195,7 +193,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-09-11T04:40:19.737290+00:00",
+          "observed_at": "2026-09-11T11:21:14.507143+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -211,12 +209,12 @@
       "condition_score": 80,
       "status": "good",
       "score": 80,
-      "confidence": 0.62,
+      "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266110",
         "nwis_site_id": "15266110",
-        "discharge_cfs": 7870.0,
-        "gage_height_ft": 9.84,
+        "discharge_cfs": 7950.0,
+        "gage_height_ft": 9.87,
         "water_temp_c": null,
         "water_temp_f": null,
         "turbidity_fnu": null,
@@ -225,21 +223,21 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-09-11T03:30:00+00:00",
+        "observed_at": "2026-09-11T10:30:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 4.6,
+        "wind_mph": 1.2,
         "wind_direction": "",
-        "temperature_f": 56.0,
-        "short_forecast": "Partly Cloudy",
+        "temperature_f": 46.0,
+        "short_forecast": "Mostly Clear",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Partly Cloudy",
-        "wind": "4.6 mph",
+        "weather_summary": "Mostly Clear",
+        "wind": "1.2 mph",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -249,12 +247,11 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 7870 ft^3/s",
-        "USGS 00065 at : 9.84 ft",
+        "USGS 00060 at : 7950 ft^3/s",
+        "USGS 00065 at : 9.87 ft",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 4.6 mph.",
-        "NOAA tide stage: outgoing.",
-        "Missing required source data: usgs_statistics.",
+        "NWS wind: 1.2 mph.",
+        "NOAA tide stage: incoming.",
         "Water temperature is in the primary salmonid comfort band.",
         "No active regulatory override found; using deterministic condition signals."
       ],
@@ -270,9 +267,9 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Missing required source data: usgs_statistics."
+        "No major limiting factor identified from current deterministic inputs."
       ],
-      "confidence_explanation": "Confidence is 0.62. Missing sources reduce confidence: usgs_statistics.",
+      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
@@ -285,14 +282,14 @@
         {
           "source": "usgs",
           "source_id": "15266110",
-          "observed_at": "2026-09-11T03:30:00+00:00",
+          "observed_at": "2026-09-11T10:30:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-09-11T04:40:19.737290+00:00",
+          "observed_at": "2026-09-11T11:21:14.507143+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -308,35 +305,35 @@
       "condition_score": 90,
       "status": "excellent",
       "score": 90,
-      "confidence": 0.62,
+      "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
-        "discharge_cfs": 8730.0,
-        "gage_height_ft": 8.25,
-        "water_temp_c": 10.7,
-        "water_temp_f": 51.26,
+        "discharge_cfs": 8650.0,
+        "gage_height_ft": 8.23,
+        "water_temp_c": 10.2,
+        "water_temp_f": 50.36,
         "turbidity_fnu": null,
         "specific_conductance_us_cm": null,
         "dissolved_oxygen_mg_l": null,
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-09-11T04:00:00+00:00",
+        "observed_at": "2026-09-11T11:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 4.6,
+        "wind_mph": 1.2,
         "wind_direction": "",
-        "temperature_f": 56.0,
-        "short_forecast": "Partly Cloudy",
+        "temperature_f": 46.0,
+        "short_forecast": "Mostly Clear",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Partly Cloudy",
-        "wind": "4.6 mph",
+        "weather_summary": "Mostly Clear",
+        "wind": "1.2 mph",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -346,13 +343,12 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 8730 ft^3/s",
-        "USGS 00010 at : 10.7 degC",
-        "USGS 00065 at : 8.25 ft",
+        "USGS 00010 at : 10.2 degC",
+        "USGS 00065 at : 8.23 ft",
+        "USGS 00060 at : 8650 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 4.6 mph.",
-        "NOAA tide stage: outgoing.",
-        "Missing required source data: usgs_statistics.",
+        "NWS wind: 1.2 mph.",
+        "NOAA tide stage: incoming.",
         "Water temperature is in the primary salmonid comfort band.",
         "No active regulatory override found; using deterministic condition signals."
       ],
@@ -369,9 +365,9 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Missing required source data: usgs_statistics."
+        "No major limiting factor identified from current deterministic inputs."
       ],
-      "confidence_explanation": "Confidence is 0.62. Missing sources reduce confidence: usgs_statistics.",
+      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
@@ -384,14 +380,14 @@
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-09-11T04:00:00+00:00",
+          "observed_at": "2026-09-11T11:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-09-11T04:40:19.737290+00:00",
+          "observed_at": "2026-09-11T11:21:14.507143+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -404,38 +400,38 @@
       "lat": 60.553,
       "lon": -151.258,
       "fishing_context": "Lower river salmon movement influenced by tide stage and boat access.",
-      "condition_score": 85,
+      "condition_score": 98,
       "status": "excellent",
-      "score": 85,
-      "confidence": 0.62,
+      "score": 98,
+      "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
-        "discharge_cfs": 8730.0,
-        "gage_height_ft": 8.25,
-        "water_temp_c": 10.7,
-        "water_temp_f": 51.26,
+        "discharge_cfs": 8650.0,
+        "gage_height_ft": 8.23,
+        "water_temp_c": 10.2,
+        "water_temp_f": 50.36,
         "turbidity_fnu": null,
         "specific_conductance_us_cm": null,
         "dissolved_oxygen_mg_l": null,
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-09-11T04:00:00+00:00",
+        "observed_at": "2026-09-11T11:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
-        "tide_stage": "outgoing"
+        "tide_stage": "incoming"
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 4.6,
+        "wind_mph": 1.2,
         "wind_direction": "",
-        "temperature_f": 56.0,
-        "short_forecast": "Partly Cloudy",
+        "temperature_f": 46.0,
+        "short_forecast": "Mostly Clear",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Partly Cloudy",
-        "wind": "4.6 mph",
+        "weather_summary": "Mostly Clear",
+        "wind": "1.2 mph",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -445,21 +441,20 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 8730 ft^3/s",
-        "USGS 00010 at : 10.7 degC",
-        "USGS 00065 at : 8.25 ft",
+        "USGS 00010 at : 10.2 degC",
+        "USGS 00065 at : 8.23 ft",
+        "USGS 00060 at : 8650 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 4.6 mph.",
-        "NOAA tide stage: outgoing.",
-        "Missing required source data: usgs_statistics.",
+        "NWS wind: 1.2 mph.",
+        "NOAA tide stage: incoming.",
         "Water temperature is in the primary salmonid comfort band.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 80,
-      "boat_fishing_score": 85,
+      "bank_fishing_score": 93,
+      "boat_fishing_score": 98,
       "sockeye_score": null,
-      "chinook_score": 90,
-      "coho_score": 90,
+      "chinook_score": 94,
+      "coho_score": 96,
       "rainbow_trout_score": 90,
       "dolly_varden_score": 90,
       "score_delta_reason": "Strong water, weather, fish, or access signals lifted the score.",
@@ -468,29 +463,29 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Missing required source data: usgs_statistics."
+        "No major limiting factor identified from current deterministic inputs."
       ],
-      "confidence_explanation": "Confidence is 0.62. Missing sources reduce confidence: usgs_statistics.",
+      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
         "environmental": 90,
-        "location": 85,
+        "location": 98,
         "species": 90,
-        "overall": 89
+        "overall": 92
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-09-11T04:00:00+00:00",
+          "observed_at": "2026-09-11T11:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-09-11T04:40:19.737290+00:00",
+          "observed_at": "2026-09-11T11:21:14.507143+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -498,7 +493,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-09-11T04:40:19.783066+00:00",
+          "retrieved_at": "2026-09-11T11:21:15.629898+00:00",
           "role": "tide_stage"
         }
       ]
@@ -510,38 +505,38 @@
       "lat": 60.554,
       "lon": -151.27,
       "fishing_context": "Mouth and dipnet-adjacent context; strongly tide and regulation sensitive.",
-      "condition_score": 85,
+      "condition_score": 98,
       "status": "excellent",
-      "score": 85,
-      "confidence": 0.62,
+      "score": 98,
+      "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
-        "discharge_cfs": 8730.0,
-        "gage_height_ft": 8.25,
-        "water_temp_c": 10.7,
-        "water_temp_f": 51.26,
+        "discharge_cfs": 8650.0,
+        "gage_height_ft": 8.23,
+        "water_temp_c": 10.2,
+        "water_temp_f": 50.36,
         "turbidity_fnu": null,
         "specific_conductance_us_cm": null,
         "dissolved_oxygen_mg_l": null,
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-09-11T04:00:00+00:00",
+        "observed_at": "2026-09-11T11:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
-        "tide_stage": "outgoing"
+        "tide_stage": "incoming"
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 4.6,
+        "wind_mph": 1.2,
         "wind_direction": "",
-        "temperature_f": 56.0,
-        "short_forecast": "Partly Cloudy",
+        "temperature_f": 46.0,
+        "short_forecast": "Mostly Clear",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Partly Cloudy",
-        "wind": "4.6 mph",
+        "weather_summary": "Mostly Clear",
+        "wind": "1.2 mph",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -551,21 +546,20 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 8730 ft^3/s",
-        "USGS 00010 at : 10.7 degC",
-        "USGS 00065 at : 8.25 ft",
+        "USGS 00010 at : 10.2 degC",
+        "USGS 00065 at : 8.23 ft",
+        "USGS 00060 at : 8650 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 4.6 mph.",
-        "NOAA tide stage: outgoing.",
-        "Missing required source data: usgs_statistics.",
+        "NWS wind: 1.2 mph.",
+        "NOAA tide stage: incoming.",
         "Water temperature is in the primary salmonid comfort band.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 80,
-      "boat_fishing_score": 85,
+      "bank_fishing_score": 93,
+      "boat_fishing_score": 98,
       "sockeye_score": null,
-      "chinook_score": 90,
-      "coho_score": 90,
+      "chinook_score": 94,
+      "coho_score": 96,
       "rainbow_trout_score": 90,
       "dolly_varden_score": 90,
       "score_delta_reason": "Strong water, weather, fish, or access signals lifted the score.",
@@ -574,29 +568,29 @@
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Missing required source data: usgs_statistics."
+        "No major limiting factor identified from current deterministic inputs."
       ],
-      "confidence_explanation": "Confidence is 0.62. Missing sources reduce confidence: usgs_statistics.",
+      "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
         "environmental": 90,
-        "location": 85,
+        "location": 98,
         "species": 90,
-        "overall": 89
+        "overall": 92
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-09-11T04:00:00+00:00",
+          "observed_at": "2026-09-11T11:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-09-11T04:40:19.737290+00:00",
+          "observed_at": "2026-09-11T11:21:14.507143+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -604,7 +598,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-09-11T04:40:19.783066+00:00",
+          "retrieved_at": "2026-09-11T11:21:15.629898+00:00",
           "role": "tide_stage"
         }
       ]
@@ -615,7 +609,7 @@
       "species": "Sockeye salmon",
       "score": null,
       "status": "unknown",
-      "confidence": 0.37,
+      "confidence": 0.47,
       "explanation": "No current species-specific official count supports a score.",
       "source": null
     },
@@ -623,7 +617,7 @@
       "species": "Chinook salmon",
       "score": null,
       "status": "unknown",
-      "confidence": 0.37,
+      "confidence": 0.47,
       "explanation": "No current species-specific official count supports a score.",
       "source": null
     },
@@ -631,7 +625,7 @@
       "species": "Coho salmon",
       "score": null,
       "status": "unknown",
-      "confidence": 0.37,
+      "confidence": 0.47,
       "explanation": "No current species-specific official count supports a score.",
       "source": null
     },
@@ -639,7 +633,7 @@
       "species": "Rainbow trout",
       "score": null,
       "status": "unknown",
-      "confidence": 0.37,
+      "confidence": 0.47,
       "explanation": "No current species-specific official count supports a score.",
       "source": null
     },
@@ -647,7 +641,7 @@
       "species": "Dolly Varden",
       "score": null,
       "status": "unknown",
-      "confidence": 0.37,
+      "confidence": 0.47,
       "explanation": "No current species-specific official count supports a score.",
       "source": null
     }
@@ -711,24 +705,7 @@
       "fishing_impact": "Use it as context for timing, species activity, and local observations, but verify legal restrictions and safety conditions against the dedicated advisory sources."
     }
   ],
-  "warnings": [
-    {
-      "source": "usgs_statistics",
-      "severity": "warning",
-      "user_title": "Historical flow data unavailable",
-      "user_message": "Server error '503 ' for url 'https://waterservices.usgs.gov/nwis/stat/?format=rdb&sites=15258000%2C15266010%2C15266110%2C15266300&parameterCd=00060&statReportType=daily&statType=P25%2CP50%2CP75%2CP90%2CP95'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503",
-      "affects_score": true,
-      "affects_legal_status": false
-    },
-    {
-      "source": "usgs_statistics",
-      "severity": "warning",
-      "user_title": "Historical flow data unavailable",
-      "user_message": "Required source data is missing from the latest report.",
-      "affects_score": true,
-      "affects_legal_status": false
-    }
-  ],
+  "warnings": [],
   "source_health": [
     {
       "source": "noaa_tides",
@@ -736,8 +713,8 @@
       "severity": "info",
       "user_title": "Tide data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-09-11T04:40:19.627329Z",
-      "last_success_at": "2026-09-11T04:40:19.627329Z",
+      "last_checked_at": "2026-09-11T11:21:14.407642Z",
+      "last_success_at": "2026-09-11T11:21:14.407642Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -751,8 +728,8 @@
       "severity": "info",
       "user_title": "Weather data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-09-11T04:40:19.338710Z",
-      "last_success_at": "2026-09-11T04:40:19.338710Z",
+      "last_checked_at": "2026-09-11T11:21:14.043262Z",
+      "last_success_at": "2026-09-11T11:21:14.043262Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -766,8 +743,8 @@
       "severity": "info",
       "user_title": "Fishing report data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-09-11T04:40:18.643871Z",
-      "last_success_at": "2026-09-11T04:40:18.643871Z",
+      "last_checked_at": "2026-09-11T11:21:12.702702Z",
+      "last_success_at": "2026-09-11T11:21:12.702702Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -781,8 +758,8 @@
       "severity": "info",
       "user_title": "Fish count data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-09-11T04:40:17.792057Z",
-      "last_success_at": "2026-09-11T04:40:17.792057Z",
+      "last_checked_at": "2026-09-11T11:21:12.082326Z",
+      "last_success_at": "2026-09-11T11:21:12.082326Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -796,8 +773,8 @@
       "severity": "info",
       "user_title": "Regulation source checked",
       "user_message": "ADF&G emergency orders checked.",
-      "last_checked_at": "2026-09-11T04:40:17.771362Z",
-      "last_success_at": "2026-09-11T04:40:17.771362Z",
+      "last_checked_at": "2026-09-11T11:21:12.061523Z",
+      "last_success_at": "2026-09-11T11:21:12.061523Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -807,18 +784,18 @@
     },
     {
       "source": "usgs_statistics",
-      "status": "failed",
-      "severity": "warning",
-      "user_title": "Historical flow data unavailable",
-      "user_message": "Server error '503 ' for url 'https://waterservices.usgs.gov/nwis/stat/?format=rdb&sites=15258000%2C15266010%2C15266110%2C15266300&parameterCd=00060&statReportType=daily&statType=P25%2CP50%2CP75%2CP90%2CP95'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503",
-      "last_checked_at": "2026-09-11T04:40:09.574053Z",
-      "last_success_at": null,
+      "status": "ok",
+      "severity": "info",
+      "user_title": "Historical flow data current",
+      "user_message": "Fetched live source payload.",
+      "last_checked_at": "2026-09-11T11:21:11.387067Z",
+      "last_success_at": "2026-09-11T11:21:11.387067Z",
       "freshness_minutes": 0,
-      "freshness_status": "missing",
-      "last_error": "Server error '503 ' for url 'https://waterservices.usgs.gov/nwis/stat/?format=rdb&sites=15258000%2C15266010%2C15266110%2C15266300&parameterCd=00060&statReportType=daily&statType=P25%2CP50%2CP75%2CP90%2CP95'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503",
+      "freshness_status": "current",
+      "last_error": null,
       "affects_score": true,
       "affects_legal_status": false,
-      "message": "Server error '503 ' for url 'https://waterservices.usgs.gov/nwis/stat/?format=rdb&sites=15258000%2C15266010%2C15266110%2C15266300&parameterCd=00060&statReportType=daily&statType=P25%2CP50%2CP75%2CP90%2CP95'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503"
+      "message": "Fetched live source payload."
     },
     {
       "source": "usgs",
@@ -826,8 +803,8 @@
       "severity": "info",
       "user_title": "Water data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-09-11T04:40:09.569618Z",
-      "last_success_at": "2026-09-11T04:40:09.569618Z",
+      "last_checked_at": "2026-09-11T11:21:11.062352Z",
+      "last_success_at": "2026-09-11T11:21:11.062352Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
