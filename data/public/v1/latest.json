@@ -4,10 +4,10 @@
   "generated_by": "kenai-condition-engine",
   "report_date": "2026-10-28",
   "generated_at": "10-28-2026",
-  "expires_at": "2026-10-28T11:41:44.256089Z",
+  "expires_at": "2026-10-28T18:54:02.931881Z",
   "report_status": "ok",
   "river": "Kenai River",
-  "overall_score": 75,
+  "overall_score": 72,
   "overall_status": "good",
   "confidence": 0.72,
   "confidence_band": "high",
@@ -20,15 +20,15 @@
       "lat": 60.489,
       "lon": -149.834,
       "fishing_context": "Upper river drift, wade, trout, dolly varden, and seasonal salmon access.",
-      "condition_score": 83,
+      "condition_score": 80,
       "status": "good",
-      "score": 83,
+      "score": 80,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15258000",
         "nwis_site_id": "15258000",
-        "discharge_cfs": 1590.0,
-        "gage_height_ft": 7.47,
+        "discharge_cfs": 1550.0,
+        "gage_height_ft": 7.43,
         "water_temp_c": 6.8,
         "water_temp_f": 44.239999999999995,
         "turbidity_fnu": null,
@@ -37,7 +37,7 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-10-28T05:00:00+00:00",
+        "observed_at": "2026-10-28T12:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
@@ -46,7 +46,7 @@
         "recent_rain_inches_24h": 0.0,
         "wind_mph": 8.1,
         "wind_direction": "NE",
-        "temperature_f": 28.0,
+        "temperature_f": 21.0,
         "short_forecast": "Areas Of Freezing Fog",
         "precipitation_probability": 0,
         "detailed_forecast": "",
@@ -62,52 +62,52 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
+        "USGS 00060 at : 1550 ft^3/s",
+        "USGS 00065 at : 7.43 ft",
         "USGS 00010 at : 6.8 degC",
-        "USGS 00065 at : 7.47 ft",
-        "USGS 00060 at : 1590 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 8.1 mph.",
-        "NOAA tide stage: outgoing.",
-        "Cold air reduces angler comfort and practical fishing quality.",
+        "NOAA tide stage: incoming.",
+        "USGS flow percentile: 28.2 for the current day-of-year.",
+        "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 83,
-      "boat_fishing_score": 83,
+      "bank_fishing_score": 80,
+      "boat_fishing_score": 80,
       "sockeye_score": null,
-      "chinook_score": 83,
-      "coho_score": 83,
-      "rainbow_trout_score": 83,
-      "dolly_varden_score": 83,
+      "chinook_score": 80,
+      "coho_score": 80,
+      "rainbow_trout_score": 80,
+      "dolly_varden_score": 80,
       "score_delta_reason": "Mostly favorable deterministic signals support a good score.",
       "contributing_factors": [
         "Water temperature is in the primary salmonid comfort band.",
-        "Cold air reduces angler comfort and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Cold air reduces angler comfort and practical fishing quality."
+        "Very cold air reduces angler safety and practical fishing quality."
       ],
       "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 83,
-        "location": 83,
-        "species": 83,
-        "overall": 83
+        "environmental": 80,
+        "location": 80,
+        "species": 80,
+        "overall": 80
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15258000",
-          "observed_at": "2026-10-28T05:00:00+00:00",
+          "observed_at": "2026-10-28T12:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-10-28T05:41:43.205563+00:00",
+          "observed_at": "2026-10-28T12:54:01.385465+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -120,9 +120,9 @@
       "lat": 60.489,
       "lon": -149.969,
       "fishing_context": "Sockeye-focused confluence and sanctuary-area context; check ADF&G orders.",
-      "condition_score": 73,
+      "condition_score": 70,
       "status": "good",
-      "score": 73,
+      "score": 70,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266010",
@@ -146,7 +146,7 @@
         "recent_rain_inches_24h": 0.0,
         "wind_mph": 8.1,
         "wind_direction": "NE",
-        "temperature_f": 28.0,
+        "temperature_f": 21.0,
         "short_forecast": "Areas Of Freezing Fog",
         "precipitation_probability": 0,
         "detailed_forecast": "",
@@ -162,42 +162,43 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 3680 ft^3/s",
+        "USGS 00060 at : 2930 ft^3/s",
+        "USGS 00060 at : 1550 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 8.1 mph.",
-        "NOAA tide stage: outgoing.",
-        "Cold air reduces angler comfort and practical fishing quality.",
+        "NOAA tide stage: incoming.",
+        "USGS flow percentile: 28.2 for the current day-of-year.",
+        "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 73,
-      "boat_fishing_score": 73,
+      "bank_fishing_score": 70,
+      "boat_fishing_score": 70,
       "sockeye_score": null,
-      "chinook_score": 73,
-      "coho_score": 73,
-      "rainbow_trout_score": 73,
-      "dolly_varden_score": 73,
+      "chinook_score": 70,
+      "coho_score": 70,
+      "rainbow_trout_score": 70,
+      "dolly_varden_score": 70,
       "score_delta_reason": "Mostly favorable deterministic signals support a good score.",
       "contributing_factors": [
-        "Cold air reduces angler comfort and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Cold air reduces angler comfort and practical fishing quality."
+        "Very cold air reduces angler safety and practical fishing quality."
       ],
       "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 73,
-        "location": 73,
-        "species": 73,
-        "overall": 73
+        "environmental": 70,
+        "location": 70,
+        "species": 70,
+        "overall": 70
       },
       "source_provenance": [
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-10-28T05:41:43.205563+00:00",
+          "observed_at": "2026-10-28T12:54:01.385465+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -210,15 +211,15 @@
       "lat": 60.477,
       "lon": -150.47,
       "fishing_context": "Middle river boat and drift context below Skilak Lake.",
-      "condition_score": 73,
+      "condition_score": 70,
       "status": "good",
-      "score": 73,
+      "score": 70,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266110",
         "nwis_site_id": "15266110",
-        "discharge_cfs": 2970.0,
-        "gage_height_ft": 7.48,
+        "discharge_cfs": 2930.0,
+        "gage_height_ft": 7.46,
         "water_temp_c": null,
         "water_temp_f": null,
         "turbidity_fnu": null,
@@ -227,7 +228,7 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-10-28T04:30:00+00:00",
+        "observed_at": "2026-10-28T12:30:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
@@ -236,7 +237,7 @@
         "recent_rain_inches_24h": 0.0,
         "wind_mph": 8.1,
         "wind_direction": "NE",
-        "temperature_f": 28.0,
+        "temperature_f": 21.0,
         "short_forecast": "Areas Of Freezing Fog",
         "precipitation_probability": 0,
         "detailed_forecast": "",
@@ -252,50 +253,50 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 7.48 ft",
-        "USGS 00060 at : 2970 ft^3/s",
+        "USGS 00060 at : 2930 ft^3/s",
+        "USGS 00065 at : 7.46 ft",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 8.1 mph.",
-        "NOAA tide stage: outgoing.",
-        "Cold air reduces angler comfort and practical fishing quality.",
+        "NOAA tide stage: incoming.",
+        "USGS flow percentile: 28.2 for the current day-of-year.",
+        "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 73,
-      "boat_fishing_score": 73,
+      "bank_fishing_score": 70,
+      "boat_fishing_score": 70,
       "sockeye_score": null,
-      "chinook_score": 73,
-      "coho_score": 73,
-      "rainbow_trout_score": 73,
-      "dolly_varden_score": 73,
+      "chinook_score": 70,
+      "coho_score": 70,
+      "rainbow_trout_score": 70,
+      "dolly_varden_score": 70,
       "score_delta_reason": "Mostly favorable deterministic signals support a good score.",
       "contributing_factors": [
-        "Cold air reduces angler comfort and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Cold air reduces angler comfort and practical fishing quality."
+        "Very cold air reduces angler safety and practical fishing quality."
       ],
       "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 73,
-        "location": 73,
-        "species": 73,
-        "overall": 73
+        "environmental": 70,
+        "location": 70,
+        "species": 70,
+        "overall": 70
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266110",
-          "observed_at": "2026-10-28T04:30:00+00:00",
+          "observed_at": "2026-10-28T12:30:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-10-28T05:41:43.205563+00:00",
+          "observed_at": "2026-10-28T12:54:01.385465+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -308,24 +309,24 @@
       "lat": 60.487,
       "lon": -151.058,
       "fishing_context": "High-use bank and boat access near Soldotna.",
-      "condition_score": 75,
+      "condition_score": 72,
       "status": "good",
-      "score": 75,
+      "score": 72,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
         "discharge_cfs": 3680.0,
         "gage_height_ft": 6.62,
-        "water_temp_c": 5.2,
-        "water_temp_f": 41.36,
+        "water_temp_c": 4.9,
+        "water_temp_f": 40.82,
         "turbidity_fnu": null,
         "specific_conductance_us_cm": null,
         "dissolved_oxygen_mg_l": null,
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-10-28T05:00:00+00:00",
+        "observed_at": "2026-10-28T12:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
@@ -334,7 +335,7 @@
         "recent_rain_inches_24h": 0.0,
         "wind_mph": 8.1,
         "wind_direction": "NE",
-        "temperature_f": 28.0,
+        "temperature_f": 21.0,
         "short_forecast": "Areas Of Freezing Fog",
         "precipitation_probability": 0,
         "detailed_forecast": "",
@@ -350,51 +351,51 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 6.62 ft",
         "USGS 00060 at : 3680 ft^3/s",
-        "USGS 00010 at : 5.2 degC",
+        "USGS 00010 at : 4.9 degC",
+        "USGS 00065 at : 6.62 ft",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 8.1 mph.",
-        "NOAA tide stage: outgoing.",
-        "Cold air reduces angler comfort and practical fishing quality.",
+        "NOAA tide stage: incoming.",
+        "USGS flow percentile: 28.2 for the current day-of-year.",
+        "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 75,
-      "boat_fishing_score": 75,
+      "bank_fishing_score": 72,
+      "boat_fishing_score": 72,
       "sockeye_score": null,
-      "chinook_score": 75,
-      "coho_score": 75,
-      "rainbow_trout_score": 75,
-      "dolly_varden_score": 75,
+      "chinook_score": 72,
+      "coho_score": 72,
+      "rainbow_trout_score": 72,
+      "dolly_varden_score": 72,
       "score_delta_reason": "Mostly favorable deterministic signals support a good score.",
       "contributing_factors": [
-        "Cold air reduces angler comfort and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Cold air reduces angler comfort and practical fishing quality."
+        "Very cold air reduces angler safety and practical fishing quality."
       ],
       "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 75,
-        "location": 75,
-        "species": 75,
-        "overall": 75
+        "environmental": 72,
+        "location": 72,
+        "species": 72,
+        "overall": 72
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-10-28T05:00:00+00:00",
+          "observed_at": "2026-10-28T12:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-10-28T05:41:43.205563+00:00",
+          "observed_at": "2026-10-28T12:54:01.385465+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -407,33 +408,33 @@
       "lat": 60.553,
       "lon": -151.258,
       "fishing_context": "Lower river salmon movement influenced by tide stage and boat access.",
-      "condition_score": 70,
+      "condition_score": 80,
       "status": "good",
-      "score": 70,
+      "score": 80,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
         "discharge_cfs": 3680.0,
         "gage_height_ft": 6.62,
-        "water_temp_c": 5.2,
-        "water_temp_f": 41.36,
+        "water_temp_c": 4.9,
+        "water_temp_f": 40.82,
         "turbidity_fnu": null,
         "specific_conductance_us_cm": null,
         "dissolved_oxygen_mg_l": null,
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-10-28T05:00:00+00:00",
+        "observed_at": "2026-10-28T12:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
-        "tide_stage": "outgoing"
+        "tide_stage": "incoming"
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
         "wind_mph": 8.1,
         "wind_direction": "NE",
-        "temperature_f": 28.0,
+        "temperature_f": 21.0,
         "short_forecast": "Areas Of Freezing Fog",
         "precipitation_probability": 0,
         "detailed_forecast": "",
@@ -449,51 +450,51 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 6.62 ft",
         "USGS 00060 at : 3680 ft^3/s",
-        "USGS 00010 at : 5.2 degC",
+        "USGS 00010 at : 4.9 degC",
+        "USGS 00065 at : 6.62 ft",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 8.1 mph.",
-        "NOAA tide stage: outgoing.",
-        "Cold air reduces angler comfort and practical fishing quality.",
+        "NOAA tide stage: incoming.",
+        "USGS flow percentile: 28.2 for the current day-of-year.",
+        "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 70,
-      "boat_fishing_score": 70,
+      "bank_fishing_score": 80,
+      "boat_fishing_score": 80,
       "sockeye_score": null,
-      "chinook_score": 75,
-      "coho_score": 75,
-      "rainbow_trout_score": 75,
-      "dolly_varden_score": 75,
+      "chinook_score": 76,
+      "coho_score": 78,
+      "rainbow_trout_score": 72,
+      "dolly_varden_score": 72,
       "score_delta_reason": "Mostly favorable deterministic signals support a good score.",
       "contributing_factors": [
-        "Cold air reduces angler comfort and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Cold air reduces angler comfort and practical fishing quality."
+        "Very cold air reduces angler safety and practical fishing quality."
       ],
       "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 75,
-        "location": 70,
-        "species": 75,
+        "environmental": 72,
+        "location": 80,
+        "species": 72,
         "overall": 74
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-10-28T05:00:00+00:00",
+          "observed_at": "2026-10-28T12:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-10-28T05:41:43.205563+00:00",
+          "observed_at": "2026-10-28T12:54:01.385465+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -501,7 +502,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-10-28T05:41:44.256089+00:00",
+          "retrieved_at": "2026-10-28T12:54:02.931881+00:00",
           "role": "tide_stage"
         }
       ]
@@ -513,33 +514,33 @@
       "lat": 60.554,
       "lon": -151.27,
       "fishing_context": "Mouth and dipnet-adjacent context; strongly tide and regulation sensitive.",
-      "condition_score": 70,
+      "condition_score": 80,
       "status": "good",
-      "score": 70,
+      "score": 80,
       "confidence": 0.72,
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
         "discharge_cfs": 3680.0,
         "gage_height_ft": 6.62,
-        "water_temp_c": 5.2,
-        "water_temp_f": 41.36,
+        "water_temp_c": 4.9,
+        "water_temp_f": 40.82,
         "turbidity_fnu": null,
         "specific_conductance_us_cm": null,
         "dissolved_oxygen_mg_l": null,
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-10-28T05:00:00+00:00",
+        "observed_at": "2026-10-28T12:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
-        "tide_stage": "outgoing"
+        "tide_stage": "incoming"
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
         "wind_mph": 8.1,
         "wind_direction": "NE",
-        "temperature_f": 28.0,
+        "temperature_f": 21.0,
         "short_forecast": "Areas Of Freezing Fog",
         "precipitation_probability": 0,
         "detailed_forecast": "",
@@ -555,51 +556,51 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 6.62 ft",
         "USGS 00060 at : 3680 ft^3/s",
-        "USGS 00010 at : 5.2 degC",
+        "USGS 00010 at : 4.9 degC",
+        "USGS 00065 at : 6.62 ft",
         "NWS forecast rain: 0 inches in 24h.",
         "NWS wind: 8.1 mph.",
-        "NOAA tide stage: outgoing.",
-        "Cold air reduces angler comfort and practical fishing quality.",
+        "NOAA tide stage: incoming.",
+        "USGS flow percentile: 28.2 for the current day-of-year.",
+        "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
-      "bank_fishing_score": 70,
-      "boat_fishing_score": 70,
+      "bank_fishing_score": 80,
+      "boat_fishing_score": 80,
       "sockeye_score": null,
-      "chinook_score": 75,
-      "coho_score": 75,
-      "rainbow_trout_score": 75,
-      "dolly_varden_score": 75,
+      "chinook_score": 76,
+      "coho_score": 78,
+      "rainbow_trout_score": 72,
+      "dolly_varden_score": 72,
       "score_delta_reason": "Mostly favorable deterministic signals support a good score.",
       "contributing_factors": [
-        "Cold air reduces angler comfort and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
       ],
       "limiting_factors": [
-        "Cold air reduces angler comfort and practical fishing quality."
+        "Very cold air reduces angler safety and practical fishing quality."
       ],
       "confidence_explanation": "Confidence is 0.72. Required source freshness did not trigger a confidence penalty.",
       "legal_explanation": "No active closure or restriction was found in normalized records.",
       "recommended_user_action": "Conditions look fishable, but verify current regulations before heading out.",
       "component_scores": {
-        "environmental": 75,
-        "location": 70,
-        "species": 75,
+        "environmental": 72,
+        "location": 80,
+        "species": 72,
         "overall": 74
       },
       "source_provenance": [
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-10-28T05:00:00+00:00",
+          "observed_at": "2026-10-28T12:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-10-28T05:41:43.205563+00:00",
+          "observed_at": "2026-10-28T12:54:01.385465+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -607,7 +608,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-10-28T05:41:44.256089+00:00",
+          "retrieved_at": "2026-10-28T12:54:02.931881+00:00",
           "role": "tide_stage"
         }
       ]
@@ -700,10 +701,10 @@
     {
       "title": "Dense Fog Advisory",
       "severity": "watch",
-      "summary": "Dense Fog Advisory issued October 27 at 9:17PM AKDT until October 28 at 10:00AM AKDT by NWS Anchorage AK",
+      "summary": "Dense Fog Advisory issued October 27 at 11:40PM AKDT until October 28 at 10:00AM AKDT by NWS Anchorage AK",
       "source": "NWS Anchorage AK",
       "advisory_explanation": "Dense Fog Advisory is an advisory from NWS Anchorage AK that may affect current Kenai River fishing conditions.",
-      "fishing_impact": "Dense Fog Advisory issued October 27 at 9:17PM AKDT until October 28 at 10:00AM AKDT by NWS Anchorage AK Consider how this advisory affects access, safety, fish behavior, and the practicality of fishing before heading out."
+      "fishing_impact": "Dense Fog Advisory issued October 27 at 11:40PM AKDT until October 28 at 10:00AM AKDT by NWS Anchorage AK Consider how this advisory affects access, safety, fish behavior, and the practicality of fishing before heading out."
     },
     {
       "title": "Kenai River / Northern Kenai",
@@ -730,8 +731,8 @@
       "severity": "info",
       "user_title": "Tide data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-10-28T05:41:43.108824Z",
-      "last_success_at": "2026-10-28T05:41:43.108824Z",
+      "last_checked_at": "2026-10-28T12:54:01.294939Z",
+      "last_success_at": "2026-10-28T12:54:01.294939Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -745,8 +746,8 @@
       "severity": "info",
       "user_title": "Weather data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-10-28T05:41:42.774390Z",
-      "last_success_at": "2026-10-28T05:41:42.774390Z",
+      "last_checked_at": "2026-10-28T12:54:00.671618Z",
+      "last_success_at": "2026-10-28T12:54:00.671618Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -760,8 +761,8 @@
       "severity": "info",
       "user_title": "Fishing report data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-10-28T05:41:41.255716Z",
-      "last_success_at": "2026-10-28T05:41:41.255716Z",
+      "last_checked_at": "2026-10-28T12:53:58.528575Z",
+      "last_success_at": "2026-10-28T12:53:58.528575Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -775,8 +776,8 @@
       "severity": "info",
       "user_title": "Fish count data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-10-28T05:41:40.207152Z",
-      "last_success_at": "2026-10-28T05:41:40.207152Z",
+      "last_checked_at": "2026-10-28T12:53:57.734389Z",
+      "last_success_at": "2026-10-28T12:53:57.734389Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -790,8 +791,8 @@
       "severity": "info",
       "user_title": "Regulation source checked",
       "user_message": "ADF&G emergency orders checked.",
-      "last_checked_at": "2026-10-28T05:41:40.186692Z",
-      "last_success_at": "2026-10-28T05:41:40.186692Z",
+      "last_checked_at": "2026-10-28T12:53:57.692530Z",
+      "last_success_at": "2026-10-28T12:53:57.692530Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -805,8 +806,8 @@
       "severity": "info",
       "user_title": "Historical flow data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-10-28T05:41:39.147631Z",
-      "last_success_at": "2026-10-28T05:41:39.147631Z",
+      "last_checked_at": "2026-10-28T12:53:57.070737Z",
+      "last_success_at": "2026-10-28T12:53:57.070737Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -820,8 +821,8 @@
       "severity": "info",
       "user_title": "Water data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-10-28T05:41:38.818410Z",
-      "last_success_at": "2026-10-28T05:41:38.818410Z",
+      "last_checked_at": "2026-10-28T12:53:56.486133Z",
+      "last_success_at": "2026-10-28T12:53:56.486133Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
