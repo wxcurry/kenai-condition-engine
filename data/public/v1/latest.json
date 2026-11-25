@@ -4,7 +4,7 @@
   "generated_by": "kenai-condition-engine",
   "report_date": "2026-11-25",
   "generated_at": "11-25-2026",
-  "expires_at": "2026-11-25T14:32:54.556140Z",
+  "expires_at": "2026-11-26T01:15:37.035370Z",
   "report_status": "ok",
   "river": "Kenai River",
   "overall_score": 74,
@@ -27,31 +27,31 @@
       "water": {
         "monitoring_location_id": "USGS-15258000",
         "nwis_site_id": "15258000",
-        "discharge_cfs": 1780.0,
-        "gage_height_ft": 7.64,
-        "water_temp_c": 4.3,
-        "water_temp_f": 39.74,
+        "discharge_cfs": 1750.0,
+        "gage_height_ft": 7.61,
+        "water_temp_c": 4.2,
+        "water_temp_f": 39.56,
         "turbidity_fnu": null,
         "specific_conductance_us_cm": null,
         "dissolved_oxygen_mg_l": null,
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-11-25T08:00:00+00:00",
+        "observed_at": "2026-11-25T19:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 6.9,
+        "wind_mph": 5.8,
         "wind_direction": "E",
-        "temperature_f": 20.0,
-        "short_forecast": "Mostly Cloudy",
+        "temperature_f": 18.0,
+        "short_forecast": "Mostly Sunny",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Mostly Cloudy",
-        "wind": "6.9 mph E",
+        "weather_summary": "Mostly Sunny",
+        "wind": "5.8 mph E",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -61,11 +61,11 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 7.64 ft",
-        "USGS 00060 at : 1780 ft^3/s",
-        "USGS 00010 at : 4.3 degC",
+        "USGS 00010 at : 4.2 degC",
+        "USGS 00060 at : 1750 ft^3/s",
+        "USGS 00065 at : 7.61 ft",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 6.9 mph.",
+        "NWS wind: 5.8 mph.",
         "NOAA tide stage: low.",
         "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
@@ -97,14 +97,14 @@
         {
           "source": "usgs",
           "source_id": "15258000",
-          "observed_at": "2026-11-25T08:00:00+00:00",
+          "observed_at": "2026-11-25T19:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-11-25T08:32:54.079712+00:00",
+          "observed_at": "2026-11-25T19:15:36.055882+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -141,14 +141,14 @@
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 6.9,
+        "wind_mph": 5.8,
         "wind_direction": "E",
-        "temperature_f": 20.0,
-        "short_forecast": "Mostly Cloudy",
+        "temperature_f": 18.0,
+        "short_forecast": "Mostly Sunny",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Mostly Cloudy",
-        "wind": "6.9 mph E",
+        "weather_summary": "Mostly Sunny",
+        "wind": "5.8 mph E",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -158,9 +158,8 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 1780 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 6.9 mph.",
+        "NWS wind: 5.8 mph.",
         "NOAA tide stage: low.",
         "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
@@ -192,7 +191,7 @@
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-11-25T08:32:54.079712+00:00",
+          "observed_at": "2026-11-25T19:15:36.055882+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -212,8 +211,8 @@
       "water": {
         "monitoring_location_id": "USGS-15266110",
         "nwis_site_id": "15266110",
-        "discharge_cfs": 3090.0,
-        "gage_height_ft": 7.54,
+        "discharge_cfs": 3070.0,
+        "gage_height_ft": 7.53,
         "water_temp_c": null,
         "water_temp_f": null,
         "turbidity_fnu": null,
@@ -222,21 +221,21 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-11-25T07:30:00+00:00",
+        "observed_at": "2026-11-25T18:30:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 6.9,
+        "wind_mph": 5.8,
         "wind_direction": "E",
-        "temperature_f": 20.0,
-        "short_forecast": "Mostly Cloudy",
+        "temperature_f": 18.0,
+        "short_forecast": "Mostly Sunny",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Mostly Cloudy",
-        "wind": "6.9 mph E",
+        "weather_summary": "Mostly Sunny",
+        "wind": "5.8 mph E",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -246,10 +245,10 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00060 at : 3090 ft^3/s",
-        "USGS 00065 at : 7.54 ft",
+        "USGS 00065 at : 7.53 ft",
+        "USGS 00060 at : 3070 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 6.9 mph.",
+        "NWS wind: 5.8 mph.",
         "NOAA tide stage: low.",
         "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
@@ -281,14 +280,14 @@
         {
           "source": "usgs",
           "source_id": "15266110",
-          "observed_at": "2026-11-25T07:30:00+00:00",
+          "observed_at": "2026-11-25T18:30:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-11-25T08:32:54.079712+00:00",
+          "observed_at": "2026-11-25T19:15:36.055882+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -308,8 +307,8 @@
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
-        "discharge_cfs": 3430.0,
-        "gage_height_ft": 6.52,
+        "discharge_cfs": 3380.0,
+        "gage_height_ft": 6.5,
         "water_temp_c": 2.0,
         "water_temp_f": 35.6,
         "turbidity_fnu": null,
@@ -318,21 +317,21 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-11-25T08:00:00+00:00",
+        "observed_at": "2026-11-25T19:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": null
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 6.9,
+        "wind_mph": 5.8,
         "wind_direction": "E",
-        "temperature_f": 20.0,
-        "short_forecast": "Mostly Cloudy",
+        "temperature_f": 18.0,
+        "short_forecast": "Mostly Sunny",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Mostly Cloudy",
-        "wind": "6.9 mph E",
+        "weather_summary": "Mostly Sunny",
+        "wind": "5.8 mph E",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -342,11 +341,11 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 6.52 ft",
-        "USGS 00060 at : 3430 ft^3/s",
         "USGS 00010 at : 2 degC",
+        "USGS 00065 at : 6.5 ft",
+        "USGS 00060 at : 3380 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 6.9 mph.",
+        "NWS wind: 5.8 mph.",
         "NOAA tide stage: low.",
         "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
@@ -379,14 +378,14 @@
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-11-25T08:00:00+00:00",
+          "observed_at": "2026-11-25T19:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-11-25T08:32:54.079712+00:00",
+          "observed_at": "2026-11-25T19:15:36.055882+00:00",
           "retrieved_at": null,
           "role": "weather"
         }
@@ -406,8 +405,8 @@
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
-        "discharge_cfs": 3430.0,
-        "gage_height_ft": 6.52,
+        "discharge_cfs": 3380.0,
+        "gage_height_ft": 6.5,
         "water_temp_c": 2.0,
         "water_temp_f": 35.6,
         "turbidity_fnu": null,
@@ -416,21 +415,21 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-11-25T08:00:00+00:00",
+        "observed_at": "2026-11-25T19:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": "low"
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 6.9,
+        "wind_mph": 5.8,
         "wind_direction": "E",
-        "temperature_f": 20.0,
-        "short_forecast": "Mostly Cloudy",
+        "temperature_f": 18.0,
+        "short_forecast": "Mostly Sunny",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Mostly Cloudy",
-        "wind": "6.9 mph E",
+        "weather_summary": "Mostly Sunny",
+        "wind": "5.8 mph E",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -440,11 +439,11 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 6.52 ft",
-        "USGS 00060 at : 3430 ft^3/s",
         "USGS 00010 at : 2 degC",
+        "USGS 00065 at : 6.5 ft",
+        "USGS 00060 at : 3380 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 6.9 mph.",
+        "NWS wind: 5.8 mph.",
         "NOAA tide stage: low.",
         "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
@@ -477,14 +476,14 @@
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-11-25T08:00:00+00:00",
+          "observed_at": "2026-11-25T19:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-11-25T08:32:54.079712+00:00",
+          "observed_at": "2026-11-25T19:15:36.055882+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -492,7 +491,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-11-25T08:32:54.556140+00:00",
+          "retrieved_at": "2026-11-25T19:15:37.035370+00:00",
           "role": "tide_stage"
         }
       ]
@@ -511,8 +510,8 @@
       "water": {
         "monitoring_location_id": "USGS-15266300",
         "nwis_site_id": "15266300",
-        "discharge_cfs": 3430.0,
-        "gage_height_ft": 6.52,
+        "discharge_cfs": 3380.0,
+        "gage_height_ft": 6.5,
         "water_temp_c": 2.0,
         "water_temp_f": 35.6,
         "turbidity_fnu": null,
@@ -521,21 +520,21 @@
         "ph": null,
         "trend": "unknown",
         "trend_window_minutes": 0,
-        "observed_at": "2026-11-25T08:00:00+00:00",
+        "observed_at": "2026-11-25T19:00:00+00:00",
         "source": "USGS",
         "data_status": "current",
         "tide_stage": "low"
       },
       "weather": {
         "recent_rain_inches_24h": 0.0,
-        "wind_mph": 6.9,
+        "wind_mph": 5.8,
         "wind_direction": "E",
-        "temperature_f": 20.0,
-        "short_forecast": "Mostly Cloudy",
+        "temperature_f": 18.0,
+        "short_forecast": "Mostly Sunny",
         "precipitation_probability": 0,
         "detailed_forecast": "",
-        "weather_summary": "Mostly Cloudy",
-        "wind": "6.9 mph E",
+        "weather_summary": "Mostly Sunny",
+        "wind": "5.8 mph E",
         "rain_chance": "0%",
         "clarity": "unknown",
         "clarity_source": "flow_rain_estimate"
@@ -545,11 +544,11 @@
         "Homer / Southern Kenai"
       ],
       "notes": [
-        "USGS 00065 at : 6.52 ft",
-        "USGS 00060 at : 3430 ft^3/s",
         "USGS 00010 at : 2 degC",
+        "USGS 00065 at : 6.5 ft",
+        "USGS 00060 at : 3380 ft^3/s",
         "NWS forecast rain: 0 inches in 24h.",
-        "NWS wind: 6.9 mph.",
+        "NWS wind: 5.8 mph.",
         "NOAA tide stage: low.",
         "Very cold air reduces angler safety and practical fishing quality.",
         "No active regulatory override found; using deterministic condition signals."
@@ -582,14 +581,14 @@
         {
           "source": "usgs",
           "source_id": "15266300",
-          "observed_at": "2026-11-25T08:00:00+00:00",
+          "observed_at": "2026-11-25T19:00:00+00:00",
           "retrieved_at": null,
           "role": "local_water"
         },
         {
           "source": "nws",
           "source_id": "nws",
-          "observed_at": "2026-11-25T08:32:54.079712+00:00",
+          "observed_at": "2026-11-25T19:15:36.055882+00:00",
           "retrieved_at": null,
           "role": "weather"
         },
@@ -597,7 +596,7 @@
           "source": "noaa_tides",
           "source_id": "9455742",
           "observed_at": null,
-          "retrieved_at": "2026-11-25T08:32:54.556140+00:00",
+          "retrieved_at": "2026-11-25T19:15:37.035370+00:00",
           "role": "tide_stage"
         }
       ]
@@ -712,8 +711,8 @@
       "severity": "info",
       "user_title": "Tide data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-11-25T08:32:54.016379Z",
-      "last_success_at": "2026-11-25T08:32:54.016379Z",
+      "last_checked_at": "2026-11-25T19:15:35.985395Z",
+      "last_success_at": "2026-11-25T19:15:35.985395Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -727,8 +726,8 @@
       "severity": "info",
       "user_title": "Weather data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-11-25T08:32:53.978399Z",
-      "last_success_at": "2026-11-25T08:32:53.978399Z",
+      "last_checked_at": "2026-11-25T19:15:35.716876Z",
+      "last_success_at": "2026-11-25T19:15:35.716876Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -742,8 +741,8 @@
       "severity": "info",
       "user_title": "Fishing report data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-11-25T08:32:53.065416Z",
-      "last_success_at": "2026-11-25T08:32:53.065416Z",
+      "last_checked_at": "2026-11-25T19:15:34.024035Z",
+      "last_success_at": "2026-11-25T19:15:34.024035Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -757,8 +756,8 @@
       "severity": "info",
       "user_title": "Fish count data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-11-25T08:32:52.277576Z",
-      "last_success_at": "2026-11-25T08:32:52.277576Z",
+      "last_checked_at": "2026-11-25T19:15:33.112022Z",
+      "last_success_at": "2026-11-25T19:15:33.112022Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -772,8 +771,8 @@
       "severity": "info",
       "user_title": "Regulation source checked",
       "user_message": "ADF&G emergency orders checked.",
-      "last_checked_at": "2026-11-25T08:32:52.272188Z",
-      "last_success_at": "2026-11-25T08:32:52.272188Z",
+      "last_checked_at": "2026-11-25T19:15:33.106320Z",
+      "last_success_at": "2026-11-25T19:15:33.106320Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -787,8 +786,8 @@
       "severity": "info",
       "user_title": "Historical flow data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-11-25T08:32:51.466269Z",
-      "last_success_at": "2026-11-25T08:32:51.466269Z",
+      "last_checked_at": "2026-11-25T19:15:31.925745Z",
+      "last_success_at": "2026-11-25T19:15:31.925745Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
@@ -802,8 +801,8 @@
       "severity": "info",
       "user_title": "Water data current",
       "user_message": "Fetched live source payload.",
-      "last_checked_at": "2026-11-25T08:32:36.543614Z",
-      "last_success_at": "2026-11-25T08:32:36.543614Z",
+      "last_checked_at": "2026-11-25T19:15:21.744143Z",
+      "last_success_at": "2026-11-25T19:15:21.744143Z",
       "freshness_minutes": 0,
       "freshness_status": "current",
       "last_error": null,
